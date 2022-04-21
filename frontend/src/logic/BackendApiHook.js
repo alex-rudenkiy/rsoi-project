@@ -5,7 +5,7 @@ import {useHistory} from "react-router-dom";
 
 
 const useBackendApi = () => {
-    const baseUrl = "http://localhost:8090";
+    const baseUrl = "http://localhost:8888";
     //const [token, setToken] = useState(null);
     const history = useHistory();
 
@@ -24,6 +24,7 @@ const useBackendApi = () => {
         return localStorage.getItem("token");
     }
 
+
     function checkAuth() {
         let token = getLocalToken();
         return (token !== null);
@@ -39,6 +40,7 @@ const useBackendApi = () => {
         console.log(data);
         axios.post(`${baseUrl}/token`, data)
             .then(res => {
+                if(res.data.length<5) return;
                 console.log(res.data);
                 localStorage.setItem("token", res.data);
                 let token = getLocalToken();
@@ -84,7 +86,7 @@ const useBackendApi = () => {
     async function registration(data, redirect) {
         let result = (await axios.post(`${baseUrl}/user`, data))
         console.log("reg step1");
-        localStorage.setItem("token", result.data);
+        localStorage.setItem("token", result.data.token);
         return result.data;
     }
 
@@ -95,10 +97,21 @@ const useBackendApi = () => {
         formData.append('fileType', data.fileType);
         //formData.append('token',data.token);
 
-        return fetch('http://localhost:8090/file/', {
+        return fetch('http://localhost:8888/file/', {
             method: 'POST',
             body: formData
         })
+    }
+
+    async function getAllUsers() {
+        let res;
+
+        try {
+            res = (await axios.get(`${baseUrl}/user`)).data;
+        }catch (e) {
+            console.log('ERRRRORR!!');
+        }
+        return res;
     }
 
 
@@ -108,8 +121,8 @@ const useBackendApi = () => {
             const t = getLocalToken();
             console.log("t=", t);
             try {
-                const r = await axios.get(`${baseUrl}/user?token=${t}`);
-                if ((r == null || r.id != null) && redirect) history.push('/login')
+                const r = (await axios.get(`${baseUrl}/token?jwt=${t}`)).data;
+                if (r.id === null && redirect) history.push('/login')
                 console.log(r);
                 return r;
             } catch (e) {
@@ -124,7 +137,14 @@ const useBackendApi = () => {
 
 
         } else {
-            return await axios.get(`${baseUrl}/user/${id}`);
+            let res;
+
+            try {
+                res = (await axios.get(`${baseUrl}/user/${id}`)).data;
+            }catch (e) {
+                console.log('ERRRRORR!!');
+            }
+            return res;
         }
     }
 
@@ -160,8 +180,17 @@ const useBackendApi = () => {
         });
         console.log(result);
         return result;
+    }
 
-
+    async function patchOrder(data, appealId) {
+        const cfg = {
+            headers: {
+                token: getLocalToken(),
+            }
+        }
+        const result = await axios.patch(`${baseUrl}/moderator/appeal/${appealId}`, data, cfg);
+        console.log(result);
+        return result;
     }
 
     async function getOrderInfoById(id) {
@@ -172,7 +201,7 @@ const useBackendApi = () => {
                 token: token,
             }
         }
-        const result = (await axios.get(`${baseUrl}/appeal/${id}`, cfg)).data
+        const result = (await axios.get(`${baseUrl}/appeal/${id}`, cfg)).data;
 
         //const t = registration({ "name":data.name,"surname":data.surname, "patronymic":data.patronymic, "mobilenumber":data.mobilenumber });
 
@@ -188,7 +217,6 @@ const useBackendApi = () => {
         }
         return axios.put(`${baseUrl}/user`, data, cfg);
     }
-
 
     async function putCamMaskById(camid, maskFileFakeName) {
         let token;
@@ -240,7 +268,7 @@ const useBackendApi = () => {
             }
 
 
-            result = (await axios.get(`${baseUrl}/appeal/count`, cfg)).data;
+            result = (await axios.get(`${baseUrl}/appeal/count`, cfg)).data.length;
             //console.log(result);
 
 
@@ -255,16 +283,27 @@ const useBackendApi = () => {
                 token: await getLocalToken(orderId),
             }
         }
-        const result = (await axios.post(`${baseUrl}/comment`, {orderId: orderId, content: content}, cfg)).data;
+        const result = (await axios.post(`${baseUrl}/comment`, {appeal: orderId, content: content}, cfg)).data;
+        return result;
+    }
+
+    async function deleteComment(commentId) {
+        const cfg = {
+            headers: {
+                token: getLocalToken(),
+            }
+        }
+        const result = await axios.delete(`${baseUrl}/moderator/comment/${commentId}`, cfg);
+        console.log(result);
         return result;
     }
 
     async function getAllOrders(page, size) {
         let result;
         if (page == null || size == null) {
-            result = (await axios.get(`${baseUrl}/appeal/all`)).data;
+            result = (await axios.get(`${baseUrl}/appeal/`)).data;
         } else {
-            result = (await axios.get(`${baseUrl}/appeal/all?page=${page}&size=${size}`)).data
+            result = (await axios.get(`${baseUrl}/appeal/pages?page=${page}&size=${size}`)).data
         }
         //const result = (await axios.get(`${baseUrl}/getall/appeals`)).data;
         return result;
@@ -279,7 +318,6 @@ const useBackendApi = () => {
         const result = (await axios.get(`${baseUrl}/AppealCategory`)).data;
         return result;
     }
-
 
     async function getCameraInfoById(id) {
         const cfg = {
@@ -340,7 +378,7 @@ const useBackendApi = () => {
         getLastCreated, addNewCamera, getCameraInfoById,
         putCamMaskById, updateCameraInfoById, deleteCameraById,
         getAllAppealCategory, updateUserInfo, updateUserPassword,
-        oAuthAuthentication
+        oAuthAuthentication, patchOrder, deleteComment, getAllUsers,
     };
 }
 

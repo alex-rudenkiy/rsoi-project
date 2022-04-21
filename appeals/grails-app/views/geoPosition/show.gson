@@ -1,0 +1,7 @@
+import com.rest.GeoPosition
+
+model {
+	GeoPosition geoPosition
+}
+
+json tmpl.geoPosition(geoPosition)

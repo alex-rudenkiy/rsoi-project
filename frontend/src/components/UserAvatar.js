@@ -40,8 +40,8 @@ export function UserAvatar(props) {
         // Make sure to revoke the data uris to avoid memory leaks
         //files.forEach(file => URL.revokeObjectURL(file.preview));
         //console.log(userData);
-        //alert(`http:\\\\localhost:8090\\\\files\\\\preview\\\\${userData.avatarFileFakeUrl}`);
-        //console.log(`http:\\\\localhost:8090\\\\file\\\\preview\\\\${userData.avatarFileFakeUrl}`);
+        //alert(`http:\\\\localhost:8888\\\\files\\\\preview\\\\${userData.avatarFileFakeUrl}`);
+        //console.log(`http:\\\\localhost:8888\\\\file\\\\preview\\\\${userData.avatarFileFakeUrl}`);
     }, [userData]);
 
     return (
@@ -84,8 +84,8 @@ export function UserAvatar(props) {
             }
         >
             {props.clickable?<Link to={`/profile/${userData&&userData.id}`}>
-                <Avatar alt="Remy Sharp" src={userData&&`http:\\\\localhost:8090\\file\\preview\\${userData.avatarFileFakeUrl}`} style={props.style}/>
-            </Link>:<Avatar alt="Remy Sharp" src={userData&&`http:\\\\localhost:8090\\file\\preview\\${userData.avatarFileFakeUrl}`} style={props.style}/>}
+                <Avatar alt="Remy Sharp" src={userData&&`http:\\\\localhost:8888\\file\\preview\\${userData.avatarFileFakeUrl}`} style={props.style}/>
+            </Link>:<Avatar alt="Remy Sharp" src={userData&&`http:\\\\localhost:8888\\file\\preview\\${userData.avatarFileFakeUrl}`} style={props.style}/>}
 
         </Badge>
 

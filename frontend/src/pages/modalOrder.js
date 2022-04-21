@@ -23,55 +23,82 @@ import SendIcon from "@material-ui/icons/Send";
 import {MDBBtn, MDBModal, MDBModalBody, MDBModalFooter, MDBModalHeader} from "mdbreact";
 import useBackendApi from "../logic/BackendApiHook";
 import {UserAvatar} from "../components/UserAvatar";
+import _ from "lodash";
+import {Link} from "react-router-dom";
+import {stringAvatar} from '../utils';
 
 function ModalOrder(props) {
-    const {authentication, registration, fileUpload, getUserInfo, checkAuth, logout, postOrder, getOrderInfoById, getOrdersByOwnerId, getCountOrdersByOwnerId, postComment} = useBackendApi();
+    const {
+        authentication,
+        registration,
+        fileUpload,
+        getUserInfo,
+        checkAuth,
+        logout,
+        postOrder,
+        getOrderInfoById,
+        getOrdersByOwnerId,
+        getCountOrdersByOwnerId,
+        postComment
+    } = useBackendApi();
     const [orderInfo, setOrderInfo] = useState();
+    const [authorInfo, setAuthorInfo] = useState();
     const [commentText, setCommentText] = useState("");
     const [comments, setComments] = useState();
     const [forceRedraw, setForceRedraw] = useState(false);
     const [authorAvatar, setAuthorAvatar] = useState();
 
-    useEffect(()=>{
+
+    useEffect(() => {
         //setComments(orderInfo&&Array.from(orderInfo).map(e=>e.));
-        //console.log(`http://localhost:8090/file/preview/${orderInfo&&orderInfo.attachments[0].shortFilename}`);
-        setAuthorAvatar(orderInfo!=null?                            <UserAvatar userId={orderInfo&&orderInfo.ownerId.id} clickable style={{width:"1.5em", height:"1.5em"}}/>
-            :<></>);
+        //console.log(`http://localhost:8888/file/preview/${orderInfo&&orderInfo.attachments[0]}`);
+        orderInfo && getUserInfo(orderInfo.authorid).then(e=>setAuthorInfo(e));
 
-    },[orderInfo]);
+        /*setAuthorAvatar(orderInfo != null ?
+            <UserAvatar userId={orderInfo && orderInfo.authorid} clickable style={{width: "1.5em", height: "1.5em"}}/>
+            : <></>);*/
 
-    useEffect(async ()=>{
+    }, [orderInfo]);
+
+    useEffect(async () => {
         console.log((await getOrderInfoById(props.orderId)));
         setOrderInfo((await getOrderInfoById(props.orderId)));
         setForceRedraw(false);
-    },[props.orderId, forceRedraw])
+    }, [props.orderId, forceRedraw])
 
-    return(<div> <MDBModal overflowScroll={true} isOpen={true} size="lg">
+    return (<div><MDBModal overflowScroll={true} isOpen={true} size="lg">
 
             <MDBModalHeader style={{display: "content"}}>
-                <div style={{display: "flex", width:"100%"}}>
-                    <h3 className="font-weight-light text-left flex-grow-1">{`Заявка №${orderInfo?orderInfo.id:""} (от ${orderInfo?orderInfo.createdAt:""})`}</h3>
+                <div style={{display: "flex", width: "100%"}}>
+                    <h3 className="font-weight-light text-left flex-grow-1">{`Заявка №${orderInfo ? orderInfo.id : ""} (от ${orderInfo ? orderInfo.createdAt : ""})`}</h3>
                     <IconButton
                         aria-label="more"
                         aria-controls="long-menu"
                         aria-haspopup="true"
-                        style={{    width: "1.5em",
-                            height: "1.5em", marginRight:"1em"}}
+                        style={{
+                            width: "1.5em",
+                            height: "1.5em", marginRight: "1em"
+                        }}
                     >
-                        <CloseIcon onClick={()=>props.selfClose()}/>
+                        <CloseIcon onClick={() => props.selfClose()}/>
                     </IconButton></div>
 
             </MDBModalHeader>
 
-            <MDBModalBody style={{ border: "none", padding:"0px"}}>
-                <div className="row" style={{ display: "inline-flex", width: "100%"}}>
-                    <div className="col-sm-8 pl-0" style={{backgroundImage:`url(http://localhost:8090/file/preview/${orderInfo&&orderInfo.attachments[0].shortFilename})`, backgroundPosition: "center", backgroundRepeat: "no-repeat", backgroundSize: "cover"}}>
+            <MDBModalBody style={{border: "none", padding: "0px"}}>
+                <div className="row" style={{display: "inline-flex", width: "100%"}}>
+                    <div className="col-sm-8 pl-0" style={{
+                        backgroundImage: `url(http://localhost:8888/file/preview/${orderInfo && orderInfo.attachments[0]})`,
+                        backgroundPosition: "center",
+                        backgroundRepeat: "no-repeat",
+                        backgroundSize: "cover"
+                    }}>
                     </div>
                     <div className="col-sm-4 pt-4 pl-4 pr-4 pb-4">
 
                         <Row className={"d-flex mb-0 ml-1"}>
 
-{/*
+                            {/*
                             <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
                                 {(popupState) => (
                                     <React.Fragment>
@@ -103,86 +130,109 @@ function ModalOrder(props) {
 
                         <Alert className={"mb-3"} severity="success" style={{textAlign: "left", width: "100%"}}>
                             <AlertTitle>Объект ремонтируется</AlertTitle>
-                            Ремонтом объекта занимается волонтёрская команда <strong style={{color:"#4e96ce"}}>БГТУ им В.Г.Шухова</strong>
+                            Ремонтом объекта занимается волонтёрская команда <strong style={{color: "#4e96ce"}}>БГТУ им
+                            В.Г.Шухова</strong>
                         </Alert>
 
 
                         <div className="row ml-1">
-                            {/*<Avatar alt="Remy Sharp" src={avatar} style={{width:"1.0em", height:"1.0em"}}/>*/}
-                            {authorAvatar}
-                            <p style={{color:"#919191", fontSize: "11px"}}>&nbsp; {`@${orderInfo?orderInfo.ownerId.login:""}`} &nbsp;</p>
-                            <p style={{color:"#919191", fontSize: "11px", textAlign: "left"}}><ViewsIcon fontSize={'small'}/>{orderInfo?orderInfo.views.length:"-"} &nbsp; <MessageIcon fontSize={'small'}/>{orderInfo?orderInfo.comments.length:"-"}</p>
+                            {/*<Avatar alt="Remy Sharp" src={avatar} style={{width:"1.0em", height:"1.0em"}}/>    //orderInfo.ownerId*/}
+                            {/* src={authorInfo&&`http:\\\\localhost:8888\\file\\preview\\${authorInfo.avatarFileFakeUrl}`}*/}
+                            {/*<UserAvatar userId={orderInfo && orderInfo.authorid}  clickable style={{width: "1.5em", height: "1.5em"}}/>*/}
+                            <Link to={`/profile/${authorInfo&&authorInfo.id}`}>
+                                <Avatar {...stringAvatar(authorInfo?authorInfo.login:". .")} style={props.style}/>
+                            </Link>
+
+                            <p style={{
+                                color: "#919191",
+                                fontSize: "11px"
+                            }}>&nbsp; {`@${authorInfo && authorInfo.login}`} &nbsp;</p>
+
+
+                            <p style={{color: "#919191", fontSize: "11px", textAlign: "left"}}>
+                                <MessageIcon fontSize={'small'}/>
+                                {orderInfo && orderInfo.comments.length}
+                            </p>
                         </div>
 
 
-
-
-
-
-                        <p style={{textAlign:"left"}} className={"mt-3 mb-3"}>{`Комментарии (${orderInfo&&orderInfo.comments.length})`}</p>
-                        <List style={{height:"30em", overflow: "auto"}}>
-                            {orderInfo&&orderInfo.comments.map(e=>
+                        <p style={{textAlign: "left"}}
+                           className={"mt-3 mb-3"}>{`Комментарии (${orderInfo && orderInfo.comments.length})`}</p>
+                        <List style={{height: "30em", overflow: "auto"}}>
+                            {orderInfo && orderInfo.comments.map(e =>
                                 <><ListItem alignItems="flex-start">
-                                <ListItemAvatar>
-                                    <UserAvatar clickable userId={e&&e.createdBy.id} style={{width:"1.5em", height:"1.5em"}}/>
-{/*
+                                    <ListItemAvatar>
+                                        <UserAvatar clickable userId={e && e.createdBy.id}
+                                                    style={{width: "1.5em", height: "1.5em"}}/>
+                                        {/*
                                     <Avatar click alt={
                                         e.createdBy.login.length>0?
-                                            `${e.createdBy.login}`:`${e.createdBy.name} ${e.createdBy.patronymic}`} src={`http://localhost:8090/file/preview/${e.createdBy.avatarFileFakeUrl}`} />
+                                            `${e.createdBy.login}`:`${e.createdBy.name} ${e.createdBy.patronymic}`} src={`http://localhost:8888/file/preview/${e.createdBy.avatarFileFakeUrl}`} />
 */}
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={
-                                        e.createdBy.login.length>0?
-                                            `@${e.createdBy.login}`:`${e.createdBy.name} ${e.createdBy.patronymic}`}
-                                    secondary={
-                                        <React.Fragment>
-                                            {/*<Typography*/}
-                                            {/*    component="span"*/}
-                                            {/*    variant="body2"*/}
-                                            {/*    color="textPrimary"*/}
-                                            {/*>*/}
-                                            {/*    Ali Connors*/}
-                                            {/*</Typography>*/}
-                                            {e.content}
-                                        </React.Fragment>
-                                    }
-                                />
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        primary={
+                                            e.createdBy.login > 0 ?
+                                                `@${e.createdBy.login}` : `${e.createdBy.name} ${e.createdBy.patronymic}`}
+                                        secondary={
+                                            <React.Fragment>
+                                                {/*<Typography*/}
+                                                {/*    component="span"*/}
+                                                {/*    variant="body2"*/}
+                                                {/*    color="textPrimary"*/}
+                                                {/*>*/}
+                                                {/*    Ali Connors*/}
+                                                {/*</Typography>*/}
+                                                {e.content}
+                                            </React.Fragment>
+                                        }
+                                    />
 
-                                <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
-                                    {(popupState) => (
-                                        <React.Fragment>
+                                    <PopupState variant="popover" popupId="demo-popup-menu" style={{float: "right"}}>
+                                        {(popupState) => (
+                                            <React.Fragment>
 
-                                            <IconButton
-                                                aria-label="more"
-                                                aria-controls="long-menu"
-                                                aria-haspopup="true"
-                                                style={{ width: "1.5em", height: "1.5em", marginRight:"1em", marginTop:"0.5em"}}
-                                                {...bindTrigger(popupState)}
-                                            >
-                                                <MoreVertIcon />
-                                            </IconButton>
+                                                <IconButton
+                                                    aria-label="more"
+                                                    aria-controls="long-menu"
+                                                    aria-haspopup="true"
+                                                    style={{
+                                                        width: "1.5em",
+                                                        height: "1.5em",
+                                                        marginRight: "1em",
+                                                        marginTop: "0.5em"
+                                                    }}
+                                                    {...bindTrigger(popupState)}
+                                                >
+                                                    <MoreVertIcon/>
+                                                </IconButton>
 
-                                            <Menu {...bindMenu(popupState)}>
-                                                <MenuItem onClick={popupState.close}>Удалить сообщение</MenuItem>
-                                                <MenuItem onClick={popupState.close}>Заблокировать автора</MenuItem>
-                                            </Menu>
-                                        </React.Fragment>
-                                    )}
-                                </PopupState>
-                            </ListItem>
-                                <Divider variant="inset" component="li" /></>
-                                )}
+                                                <Menu {...bindMenu(popupState)}>
+                                                    <MenuItem onClick={popupState.close}>Удалить сообщение</MenuItem>
+                                                    <MenuItem onClick={popupState.close}>Заблокировать автора</MenuItem>
+                                                </Menu>
+                                            </React.Fragment>
+                                        )}
+                                    </PopupState>
+                                </ListItem>
+                                    <Divider variant="inset" component="li"/></>
+                            )}
 
                         </List>
 
                         <Row className={"d-flex mt-3"}>
-                            <TextField className={"flex-grow-1 ml-3"} id="filled-basic" value={commentText} label="Текст сообщения" variant="filled" onChange={(e)=>setCommentText(e.target.value)} />
-                            <IconButton className={"mx-3"} color="primary" aria-label="upload picture" component="span" onClick={(e)=>{postComment(props.orderId, commentText);setForceRedraw(true);setCommentText("")}}>
+                            <TextField className={"flex-grow-1 ml-3"} id="filled-basic" value={commentText}
+                                       label="Текст сообщения" variant="filled"
+                                       onChange={(e) => setCommentText(e.target.value)}/>
+                            <IconButton className={"mx-3"} color="primary" aria-label="upload picture" component="span"
+                                        onClick={(e) => {
+                                            postComment(props.orderId, commentText);
+                                            setForceRedraw(true);
+                                            setCommentText("")
+                                        }}>
                                 <SendIcon/>
                             </IconButton>
                         </Row>
-
 
 
                     </div>
@@ -191,7 +241,7 @@ function ModalOrder(props) {
             </MDBModalBody>
 
             <MDBModalFooter>
-                <MDBBtn color="secondary" onClick={()=>props.selfClose()} >Close</MDBBtn>
+                <MDBBtn color="secondary" onClick={() => props.selfClose()}>Close</MDBBtn>
                 <MDBBtn color="primary">Save changes</MDBBtn>
             </MDBModalFooter>
 

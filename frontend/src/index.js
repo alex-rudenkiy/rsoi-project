@@ -41,12 +41,10 @@ ReactDOM.render(
                         <Route exact path="/">
                             <WelcomePage/>
                         </Route>
-                        <Route path="/profile/:userId">
+                        <Route path="/profile/:userId?">
                             <UserProfilePage/>
                         </Route>
-                        <Route path="/profile">
-                            <UserProfilePage/>
-                        </Route>
+
                         <Route path="/makeRequest">
                             <OrderingPage/>
                         </Route>

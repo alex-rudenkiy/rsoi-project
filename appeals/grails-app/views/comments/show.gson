@@ -1,0 +1,7 @@
+import com.rest.Comments
+
+model {
+	Comments comments
+}
+
+json tmpl.comments(comments)

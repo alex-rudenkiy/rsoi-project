@@ -1,0 +1,8 @@
+import com.rest.Appeal
+
+model {
+	Iterable<Appeal> appealList
+}
+
+json tmpl.appeal(appealList ?: [])
+

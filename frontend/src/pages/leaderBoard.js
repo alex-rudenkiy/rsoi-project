@@ -1,5 +1,5 @@
 import logo from '../resources/easylogo.svg';
-import React from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {Button, Col, Image, Row} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
@@ -64,6 +64,9 @@ import DoneAllIcon from '@material-ui/icons/DoneAll';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import HeaderNav from "../components/headerNav";
+import useBackendApi from "../logic/BackendApiHook";
+
+
 
 function LeaderBoardPage() {
 
@@ -73,6 +76,17 @@ function LeaderBoardPage() {
     var Blur = require('react-blur').default;
 
     console.log(zvezdi);
+
+    const {                authentication, registration, fileUpload,
+        getUserInfo, checkAuth, logout, postOrder,
+        getOrderInfoById, getOrdersByOwnerId,
+        getCountOrdersByOwnerId, postComment, getAllOrders,
+        getLastCreated, addNewCamera, getCameraInfoById,
+        putCamMaskById, updateCameraInfoById, deleteCameraById,
+        getAllAppealCategory, updateUserInfo, updateUserPassword,
+        oAuthAuthentication, patchOrder, deleteComment, getAllUsers,
+
+    } = useBackendApi();
 
     const CardExampleCard = () => (
         <Card>
@@ -140,6 +154,17 @@ function LeaderBoardPage() {
         </Card>
     )
 
+    const [users, setUsers] = useState();
+
+    const updateUsers = useCallback(async () => {
+        let result;
+        result = (await getAllUsers());
+        console.log(result);
+        setUsers(result);
+        return result;
+    },[]);
+
+    useEffect(()=>updateUsers(),[]);
 
     return (
         <div className="App">
@@ -161,856 +186,68 @@ function LeaderBoardPage() {
                 {/*Page Content*/}
 
 
-                <section className="pb-3 pt-0">
+                <section className="pb-5 pt-4">
                     <div className="container pl-sm-5">
                         <Row>
-                            <h5 className="font-weight-light text-left">Лучшие за всё время</h5>
+                            <h5 className="font-weight-light text-left">Общий рейтинг</h5>
                         </Row>
 
-                        <Row className={"align-items-stretch mt-3"}>
-                            <Col>
 
-<CardExampleCard/>
-                            </Col>
-                            <Col>
-                                <CardExampleCard/>
-                            </Col>
-                            <Col>
-                                <CardExampleCard/>
-                            </Col>
+                        <div className="list-group pt-3">
 
-                        </Row>
-                    </div>
-                </section>
+                            {users && users.map(u =>
+                                <button type="button" className="list-group-item list-group-item-action">
+                                    <Row style={{marginLeft:"1em"}}>
 
-                <section className="pb-5 pt-3">
-                    <div className="container pl-sm-5">
-                        <div className="row">
+                                        <Avatar alt="Remy Sharp" src={avatar} style={{width:"2em", height:"2em", margin:"auto"}}/>
 
-                            <div className="col-6">
-                                <Row>
-                                    <h5 className="font-weight-light text-left">Лучшие за последний год</h5>
-                                </Row>
+                                        <Col>
+                                            <p className="text-left" style={{    marginBottom: "auto"}}>{`@${u.login}`}</p>
+                                            <p className="text-left" style={{color:"Silver",     fontSize: "smaller"}}> {`${u.patronymic} ${u.name}`}
+{/*
+                                                <DoneAllIcon fontSize={"small"}/>12 исправлений &nbsp; <DateRangeIcon fontSize={"small"}/>156 дней с нами
+*/}
+                                            </p>
 
-
-                                <div className="list-group pt-2">
-                                    <button type="button" className="list-group-item list-group-item-action">
-                                        <Row style={{marginLeft:"1em"}}>
-
-                                            <Avatar alt="Remy Sharp" src={avatar} style={{width:"2em", height:"2em", margin:"auto"}}/>
-
-                                            <Col>
-                                                <p className="text-left" style={{    marginBottom: "auto"}}>Когда будет тратуар?!</p>
-                                                <p className="text-left" style={{color:"Silver",     fontSize: "smaller"}}><DoneAllIcon fontSize={"small"}/>12 исправлений &nbsp; <DateRangeIcon fontSize={"small"}/>156 дней с нами</p>
-
-                                            </Col>
-                                            <div className="col-2">
-                                                <div style={{float:"right", alignSelf: "center"}}>
-                                                    <IconButton style={{width:"1em", height:"1em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                        <Image src={vkIcon} style={{width:"2em"}}/>
-                                                    </IconButton><IconButton style={{width:"1em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                    <Image src={googleIcon} style={{width:"2em"}}/>
-                                                </IconButton>
-                                                </div>
-                                            </div>
+                                        </Col>
 
 
 
 
 
-                                            <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
+                                        <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
 
-                                                {(popupState) => (
-                                                    <React.Fragment>
+                                            {(popupState) => (
+                                                <React.Fragment>
 
-                                                        <IconButton
-                                                            aria-label="more"
-                                                            aria-controls="long-menu"
-                                                            aria-haspopup="true"
-                                                            style={{ width: "1.5em", height: "1.5em", marginRight:"1em", marginTop:"0em"}}
-                                                            {...bindTrigger(popupState)}
-                                                        >
-                                                            <MoreVertIcon />
-                                                        </IconButton>
+                                                    <IconButton
+                                                        aria-label="more"
+                                                        aria-controls="long-menu"
+                                                        aria-haspopup="true"
+                                                        style={{ width: "1.5em", height: "1.5em", marginRight:"1em", marginTop:"0em"}}
+                                                        {...bindTrigger(popupState)}
+                                                    >
+                                                        <MoreVertIcon />
+                                                    </IconButton>
 
-                                                        <Menu {...bindMenu(popupState)}>
-                                                            <MenuItem onClick={popupState.close}>Удалить сообщение</MenuItem>
-                                                            <MenuItem onClick={popupState.close}>Заблокировать автора</MenuItem>
-                                                        </Menu>
-                                                    </React.Fragment>
-                                                )}
-                                            </PopupState>
+                                                    <Menu {...bindMenu(popupState)}>
+                                                        <MenuItem onClick={popupState.close}>Назначить роль</MenuItem>
+                                                        <MenuItem onClick={popupState.close}>Заблокировать пользователя</MenuItem>
+                                                        <MenuItem onClick={popupState.close}>Удалить пользователя</MenuItem>
+                                                    </Menu>
+                                                </React.Fragment>
+                                            )}
+                                        </PopupState>
 
-                                        </Row>
-                                    </button>
-                                    <button type="button" className="list-group-item list-group-item-action">
-                                        <Row style={{marginLeft:"1em"}}>
+                                    </Row>
+                                </button>
+                            )}
 
-                                            <Avatar alt="Remy Sharp" src={avatar} style={{width:"2em", height:"2em", margin:"auto"}}/>
-
-                                            <Col>
-                                                <p className="text-left" style={{    marginBottom: "auto"}}>Когда будет тратуар?!</p>
-                                                <p className="text-left" style={{color:"Silver",     fontSize: "smaller"}}><DoneAllIcon fontSize={"small"}/>12 исправлений &nbsp; <DateRangeIcon fontSize={"small"}/>156 дней с нами</p>
-
-                                            </Col>
-                                            <div className="col-2">
-                                                <div style={{float:"right", alignSelf: "center"}}>
-                                                    <IconButton style={{width:"1em", height:"1em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                        <Image src={vkIcon} style={{width:"2em"}}/>
-                                                    </IconButton><IconButton style={{width:"1em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                    <Image src={googleIcon} style={{width:"2em"}}/>
-                                                </IconButton>
-                                                </div>
-                                            </div>
-
-
-
-
-
-                                            <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
-
-                                                {(popupState) => (
-                                                    <React.Fragment>
-
-                                                        <IconButton
-                                                            aria-label="more"
-                                                            aria-controls="long-menu"
-                                                            aria-haspopup="true"
-                                                            style={{ width: "1.5em", height: "1.5em", marginRight:"1em", marginTop:"0em"}}
-                                                            {...bindTrigger(popupState)}
-                                                        >
-                                                            <MoreVertIcon />
-                                                        </IconButton>
-
-                                                        <Menu {...bindMenu(popupState)}>
-                                                            <MenuItem onClick={popupState.close}>Удалить сообщение</MenuItem>
-                                                            <MenuItem onClick={popupState.close}>Заблокировать автора</MenuItem>
-                                                        </Menu>
-                                                    </React.Fragment>
-                                                )}
-                                            </PopupState>
-
-                                        </Row>
-                                    </button>
-                                    <button type="button" className="list-group-item list-group-item-action">
-                                        <Row style={{marginLeft:"1em"}}>
-
-                                            <Avatar alt="Remy Sharp" src={avatar} style={{width:"2em", height:"2em", margin:"auto"}}/>
-
-                                            <Col>
-                                                <p className="text-left" style={{    marginBottom: "auto"}}>Когда будет тратуар?!</p>
-                                                <p className="text-left" style={{color:"Silver",     fontSize: "smaller"}}><DoneAllIcon fontSize={"small"}/>12 исправлений &nbsp; <DateRangeIcon fontSize={"small"}/>156 дней с нами</p>
-
-                                            </Col>
-                                            <div className="col-2">
-                                                <div style={{float:"right", alignSelf: "center"}}>
-                                                    <IconButton style={{width:"1em", height:"1em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                        <Image src={vkIcon} style={{width:"2em"}}/>
-                                                    </IconButton><IconButton style={{width:"1em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                    <Image src={googleIcon} style={{width:"2em"}}/>
-                                                </IconButton>
-                                                </div>
-                                            </div>
-
-
-
-
-
-                                            <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
-
-                                                {(popupState) => (
-                                                    <React.Fragment>
-
-                                                        <IconButton
-                                                            aria-label="more"
-                                                            aria-controls="long-menu"
-                                                            aria-haspopup="true"
-                                                            style={{ width: "1.5em", height: "1.5em", marginRight:"1em", marginTop:"0em"}}
-                                                            {...bindTrigger(popupState)}
-                                                        >
-                                                            <MoreVertIcon />
-                                                        </IconButton>
-
-                                                        <Menu {...bindMenu(popupState)}>
-                                                            <MenuItem onClick={popupState.close}>Удалить сообщение</MenuItem>
-                                                            <MenuItem onClick={popupState.close}>Заблокировать автора</MenuItem>
-                                                        </Menu>
-                                                    </React.Fragment>
-                                                )}
-                                            </PopupState>
-
-                                        </Row>
-                                    </button>
-
-                                </div>
-
+                            <div className={"pt-4"} style={{alignSelf: "center"}}>
+                                <Pagination count={10} page={0} />
                             </div>
-                            <div className="col-6">
-                                <Row>
-                                    <h5 className="font-weight-light text-left">Лучшие за последний месяц</h5>
-                                </Row>
 
-                                <div className="list-group pt-2">
-                                    <button type="button" className="list-group-item list-group-item-action">
-                                        <Row style={{marginLeft:"1em"}}>
-
-                                            <Avatar alt="Remy Sharp" src={avatar} style={{width:"2em", height:"2em", margin:"auto"}}/>
-
-                                            <Col>
-                                                <p className="text-left" style={{    marginBottom: "auto"}}>Когда будет тратуар?!</p>
-                                                <p className="text-left" style={{color:"Silver",     fontSize: "smaller"}}><DoneAllIcon fontSize={"small"}/>12 исправлений &nbsp; <DateRangeIcon fontSize={"small"}/>156 дней с нами</p>
-
-                                            </Col>
-                                            <div className="col-2">
-                                                <div style={{float:"right", alignSelf: "center"}}>
-                                                    <IconButton style={{width:"1em", height:"1em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                        <Image src={vkIcon} style={{width:"2em"}}/>
-                                                    </IconButton><IconButton style={{width:"1em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                    <Image src={googleIcon} style={{width:"2em"}}/>
-                                                </IconButton>
-                                                </div>
-                                            </div>
-
-
-
-
-
-                                            <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
-
-                                                {(popupState) => (
-                                                    <React.Fragment>
-
-                                                        <IconButton
-                                                            aria-label="more"
-                                                            aria-controls="long-menu"
-                                                            aria-haspopup="true"
-                                                            style={{ width: "1.5em", height: "1.5em", marginRight:"1em", marginTop:"0em"}}
-                                                            {...bindTrigger(popupState)}
-                                                        >
-                                                            <MoreVertIcon />
-                                                        </IconButton>
-
-                                                        <Menu {...bindMenu(popupState)}>
-                                                            <MenuItem onClick={popupState.close}>Удалить сообщение</MenuItem>
-                                                            <MenuItem onClick={popupState.close}>Заблокировать автора</MenuItem>
-                                                        </Menu>
-                                                    </React.Fragment>
-                                                )}
-                                            </PopupState>
-
-                                        </Row>
-                                    </button>
-                                    <button type="button" className="list-group-item list-group-item-action">
-                                        <Row style={{marginLeft:"1em"}}>
-
-                                            <Avatar alt="Remy Sharp" src={avatar} style={{width:"2em", height:"2em", margin:"auto"}}/>
-
-                                            <Col>
-                                                <p className="text-left" style={{    marginBottom: "auto"}}>Когда будет тратуар?!</p>
-                                                <p className="text-left" style={{color:"Silver",     fontSize: "smaller"}}><DoneAllIcon fontSize={"small"}/>12 исправлений &nbsp; <DateRangeIcon fontSize={"small"}/>156 дней с нами</p>
-
-                                            </Col>
-                                            <div className="col-2">
-                                                <div style={{float:"right", alignSelf: "center"}}>
-                                                    <IconButton style={{width:"1em", height:"1em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                        <Image src={vkIcon} style={{width:"2em"}}/>
-                                                    </IconButton><IconButton style={{width:"1em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                    <Image src={googleIcon} style={{width:"2em"}}/>
-                                                </IconButton>
-                                                </div>
-                                            </div>
-
-
-
-
-
-                                            <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
-
-                                                {(popupState) => (
-                                                    <React.Fragment>
-
-                                                        <IconButton
-                                                            aria-label="more"
-                                                            aria-controls="long-menu"
-                                                            aria-haspopup="true"
-                                                            style={{ width: "1.5em", height: "1.5em", marginRight:"1em", marginTop:"0em"}}
-                                                            {...bindTrigger(popupState)}
-                                                        >
-                                                            <MoreVertIcon />
-                                                        </IconButton>
-
-                                                        <Menu {...bindMenu(popupState)}>
-                                                            <MenuItem onClick={popupState.close}>Удалить сообщение</MenuItem>
-                                                            <MenuItem onClick={popupState.close}>Заблокировать автора</MenuItem>
-                                                        </Menu>
-                                                    </React.Fragment>
-                                                )}
-                                            </PopupState>
-
-                                        </Row>
-                                    </button>
-                                    <button type="button" className="list-group-item list-group-item-action">
-                                        <Row style={{marginLeft:"1em"}}>
-
-                                            <Avatar alt="Remy Sharp" src={avatar} style={{width:"2em", height:"2em", margin:"auto"}}/>
-
-                                            <Col>
-                                                <p className="text-left" style={{    marginBottom: "auto"}}>Когда будет тратуар?!</p>
-                                                <p className="text-left" style={{color:"Silver",     fontSize: "smaller"}}><DoneAllIcon fontSize={"small"}/>12 исправлений &nbsp; <DateRangeIcon fontSize={"small"}/>156 дней с нами</p>
-
-                                            </Col>
-                                            <div className="col-2">
-                                                <div style={{float:"right", alignSelf: "center"}}>
-                                                    <IconButton style={{width:"1em", height:"1em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                        <Image src={vkIcon} style={{width:"2em"}}/>
-                                                    </IconButton><IconButton style={{width:"1em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                    <Image src={googleIcon} style={{width:"2em"}}/>
-                                                </IconButton>
-                                                </div>
-                                            </div>
-
-
-
-
-
-                                            <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
-
-                                                {(popupState) => (
-                                                    <React.Fragment>
-
-                                                        <IconButton
-                                                            aria-label="more"
-                                                            aria-controls="long-menu"
-                                                            aria-haspopup="true"
-                                                            style={{ width: "1.5em", height: "1.5em", marginRight:"1em", marginTop:"0em"}}
-                                                            {...bindTrigger(popupState)}
-                                                        >
-                                                            <MoreVertIcon />
-                                                        </IconButton>
-
-                                                        <Menu {...bindMenu(popupState)}>
-                                                            <MenuItem onClick={popupState.close}>Удалить сообщение</MenuItem>
-                                                            <MenuItem onClick={popupState.close}>Заблокировать автора</MenuItem>
-                                                        </Menu>
-                                                    </React.Fragment>
-                                                )}
-                                            </PopupState>
-
-                                        </Row>
-                                    </button>
-
-                                </div>
-                            </div>
                         </div>
-                    </div>
-                </section>
-
-
-                    <section className="pb-5 pt-0">
-                    <div className="container pl-sm-5">
-                        <Row>
-                            <h5 className="font-weight-light text-left">Общий рэйтинг</h5>
-                        </Row>
-
-
-                            <div className="list-group pt-3">
-                                <button type="button" className="list-group-item list-group-item-action">
-                                    <Row style={{marginLeft:"1em"}}>
-
-                                            <Avatar alt="Remy Sharp" src={avatar} style={{width:"2em", height:"2em", margin:"auto"}}/>
-
-                                        <Col>
-                                            <p className="text-left" style={{    marginBottom: "auto"}}>Когда будет тратуар?!</p>
-                                            <p className="text-left" style={{color:"Silver",     fontSize: "smaller"}}><DoneAllIcon fontSize={"small"}/>12 исправлений &nbsp; <DateRangeIcon fontSize={"small"}/>156 дней с нами</p>
-
-                                        </Col>
-<Col>
-    <div style={{float:"right", alignSelf: "center"}}>
-        <IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-            <Image src={vkIcon} style={{width:"2em"}}/>
-        </IconButton><IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-        <Image src={googleIcon} style={{width:"2em"}}/>
-    </IconButton>
-    </div>
-</Col>
-
-
-
-
-
-                                        <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
-
-                                            {(popupState) => (
-                                                <React.Fragment>
-
-                                                    <IconButton
-                                                        aria-label="more"
-                                                        aria-controls="long-menu"
-                                                        aria-haspopup="true"
-                                                        style={{ width: "1.5em", height: "1.5em", marginRight:"1em", marginTop:"0em"}}
-                                                        {...bindTrigger(popupState)}
-                                                    >
-                                                        <MoreVertIcon />
-                                                    </IconButton>
-
-                                                    <Menu {...bindMenu(popupState)}>
-                                                        <MenuItem onClick={popupState.close}>Удалить сообщение</MenuItem>
-                                                        <MenuItem onClick={popupState.close}>Заблокировать автора</MenuItem>
-                                                    </Menu>
-                                                </React.Fragment>
-                                            )}
-                                        </PopupState>
-
-                                    </Row>
-                                </button>
-                                <button type="button" className="list-group-item list-group-item-action">
-                                    <Row style={{marginLeft:"1em"}}>
-
-                                        <Avatar alt="Remy Sharp" src={avatar} style={{width:"2em", height:"2em", margin:"auto"}}/>
-
-                                        <Col>
-                                            <p className="text-left" style={{    marginBottom: "auto"}}>Когда будет тратуар?!</p>
-                                            <p className="text-left" style={{color:"Silver",     fontSize: "smaller"}}><DoneAllIcon fontSize={"small"}/>12 исправлений &nbsp; <DateRangeIcon fontSize={"small"}/>156 дней с нами</p>
-
-                                        </Col>
-                                        <Col>
-                                            <div style={{float:"right", alignSelf: "center"}}>
-                                                <IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                    <Image src={vkIcon} style={{width:"2em"}}/>
-                                                </IconButton><IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                <Image src={googleIcon} style={{width:"2em"}}/>
-                                            </IconButton>
-                                            </div>
-                                        </Col>
-
-
-
-
-
-                                        <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
-
-                                            {(popupState) => (
-                                                <React.Fragment>
-
-                                                    <IconButton
-                                                        aria-label="more"
-                                                        aria-controls="long-menu"
-                                                        aria-haspopup="true"
-                                                        style={{ width: "1.5em", height: "1.5em", marginRight:"1em", marginTop:"0em"}}
-                                                        {...bindTrigger(popupState)}
-                                                    >
-                                                        <MoreVertIcon />
-                                                    </IconButton>
-
-                                                    <Menu {...bindMenu(popupState)}>
-                                                        <MenuItem onClick={popupState.close}>Удалить сообщение</MenuItem>
-                                                        <MenuItem onClick={popupState.close}>Заблокировать автора</MenuItem>
-                                                    </Menu>
-                                                </React.Fragment>
-                                            )}
-                                        </PopupState>
-
-                                    </Row>
-                                </button>
-                                <button type="button" className="list-group-item list-group-item-action">
-                                    <Row style={{marginLeft:"1em"}}>
-
-                                        <Avatar alt="Remy Sharp" src={avatar} style={{width:"2em", height:"2em", margin:"auto"}}/>
-
-                                        <Col>
-                                            <p className="text-left" style={{    marginBottom: "auto"}}>Когда будет тратуар?!</p>
-                                            <p className="text-left" style={{color:"Silver",     fontSize: "smaller"}}><DoneAllIcon fontSize={"small"}/>12 исправлений &nbsp; <DateRangeIcon fontSize={"small"}/>156 дней с нами</p>
-
-                                        </Col>
-                                        <Col>
-                                            <div style={{float:"right", alignSelf: "center"}}>
-                                                <IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                    <Image src={vkIcon} style={{width:"2em"}}/>
-                                                </IconButton><IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                <Image src={googleIcon} style={{width:"2em"}}/>
-                                            </IconButton>
-                                            </div>
-                                        </Col>
-
-
-
-
-
-                                        <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
-
-                                            {(popupState) => (
-                                                <React.Fragment>
-
-                                                    <IconButton
-                                                        aria-label="more"
-                                                        aria-controls="long-menu"
-                                                        aria-haspopup="true"
-                                                        style={{ width: "1.5em", height: "1.5em", marginRight:"1em", marginTop:"0em"}}
-                                                        {...bindTrigger(popupState)}
-                                                    >
-                                                        <MoreVertIcon />
-                                                    </IconButton>
-
-                                                    <Menu {...bindMenu(popupState)}>
-                                                        <MenuItem onClick={popupState.close}>Удалить сообщение</MenuItem>
-                                                        <MenuItem onClick={popupState.close}>Заблокировать автора</MenuItem>
-                                                    </Menu>
-                                                </React.Fragment>
-                                            )}
-                                        </PopupState>
-
-                                    </Row>
-                                </button>
-                                <button type="button" className="list-group-item list-group-item-action">
-                                    <Row style={{marginLeft:"1em"}}>
-
-                                        <Avatar alt="Remy Sharp" src={avatar} style={{width:"2em", height:"2em", margin:"auto"}}/>
-
-                                        <Col>
-                                            <p className="text-left" style={{    marginBottom: "auto"}}>Когда будет тратуар?!</p>
-                                            <p className="text-left" style={{color:"Silver",     fontSize: "smaller"}}><DoneAllIcon fontSize={"small"}/>12 исправлений &nbsp; <DateRangeIcon fontSize={"small"}/>156 дней с нами</p>
-
-                                        </Col>
-                                        <Col>
-                                            <div style={{float:"right", alignSelf: "center"}}>
-                                                <IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                    <Image src={vkIcon} style={{width:"2em"}}/>
-                                                </IconButton><IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                <Image src={googleIcon} style={{width:"2em"}}/>
-                                            </IconButton>
-                                            </div>
-                                        </Col>
-
-
-
-
-
-                                        <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
-
-                                            {(popupState) => (
-                                                <React.Fragment>
-
-                                                    <IconButton
-                                                        aria-label="more"
-                                                        aria-controls="long-menu"
-                                                        aria-haspopup="true"
-                                                        style={{ width: "1.5em", height: "1.5em", marginRight:"1em", marginTop:"0em"}}
-                                                        {...bindTrigger(popupState)}
-                                                    >
-                                                        <MoreVertIcon />
-                                                    </IconButton>
-
-                                                    <Menu {...bindMenu(popupState)}>
-                                                        <MenuItem onClick={popupState.close}>Удалить сообщение</MenuItem>
-                                                        <MenuItem onClick={popupState.close}>Заблокировать автора</MenuItem>
-                                                    </Menu>
-                                                </React.Fragment>
-                                            )}
-                                        </PopupState>
-
-                                    </Row>
-                                </button>
-                                <button type="button" className="list-group-item list-group-item-action">
-                                    <Row style={{marginLeft:"1em"}}>
-
-                                        <Avatar alt="Remy Sharp" src={avatar} style={{width:"2em", height:"2em", margin:"auto"}}/>
-
-                                        <Col>
-                                            <p className="text-left" style={{    marginBottom: "auto"}}>Когда будет тратуар?!</p>
-                                            <p className="text-left" style={{color:"Silver",     fontSize: "smaller"}}><DoneAllIcon fontSize={"small"}/>12 исправлений &nbsp; <DateRangeIcon fontSize={"small"}/>156 дней с нами</p>
-
-                                        </Col>
-                                        <Col>
-                                            <div style={{float:"right", alignSelf: "center"}}>
-                                                <IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                    <Image src={vkIcon} style={{width:"2em"}}/>
-                                                </IconButton><IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                <Image src={googleIcon} style={{width:"2em"}}/>
-                                            </IconButton>
-                                            </div>
-                                        </Col>
-
-
-
-
-
-                                        <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
-
-                                            {(popupState) => (
-                                                <React.Fragment>
-
-                                                    <IconButton
-                                                        aria-label="more"
-                                                        aria-controls="long-menu"
-                                                        aria-haspopup="true"
-                                                        style={{ width: "1.5em", height: "1.5em", marginRight:"1em", marginTop:"0em"}}
-                                                        {...bindTrigger(popupState)}
-                                                    >
-                                                        <MoreVertIcon />
-                                                    </IconButton>
-
-                                                    <Menu {...bindMenu(popupState)}>
-                                                        <MenuItem onClick={popupState.close}>Удалить сообщение</MenuItem>
-                                                        <MenuItem onClick={popupState.close}>Заблокировать автора</MenuItem>
-                                                    </Menu>
-                                                </React.Fragment>
-                                            )}
-                                        </PopupState>
-
-                                    </Row>
-                                </button>
-                                <button type="button" className="list-group-item list-group-item-action">
-                                    <Row style={{marginLeft:"1em"}}>
-
-                                        <Avatar alt="Remy Sharp" src={avatar} style={{width:"2em", height:"2em", margin:"auto"}}/>
-
-                                        <Col>
-                                            <p className="text-left" style={{    marginBottom: "auto"}}>Когда будет тратуар?!</p>
-                                            <p className="text-left" style={{color:"Silver",     fontSize: "smaller"}}><DoneAllIcon fontSize={"small"}/>12 исправлений &nbsp; <DateRangeIcon fontSize={"small"}/>156 дней с нами</p>
-
-                                        </Col>
-                                        <Col>
-                                            <div style={{float:"right", alignSelf: "center"}}>
-                                                <IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                    <Image src={vkIcon} style={{width:"2em"}}/>
-                                                </IconButton><IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                <Image src={googleIcon} style={{width:"2em"}}/>
-                                            </IconButton>
-                                            </div>
-                                        </Col>
-
-
-
-
-
-                                        <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
-
-                                            {(popupState) => (
-                                                <React.Fragment>
-
-                                                    <IconButton
-                                                        aria-label="more"
-                                                        aria-controls="long-menu"
-                                                        aria-haspopup="true"
-                                                        style={{ width: "1.5em", height: "1.5em", marginRight:"1em", marginTop:"0em"}}
-                                                        {...bindTrigger(popupState)}
-                                                    >
-                                                        <MoreVertIcon />
-                                                    </IconButton>
-
-                                                    <Menu {...bindMenu(popupState)}>
-                                                        <MenuItem onClick={popupState.close}>Удалить сообщение</MenuItem>
-                                                        <MenuItem onClick={popupState.close}>Заблокировать автора</MenuItem>
-                                                    </Menu>
-                                                </React.Fragment>
-                                            )}
-                                        </PopupState>
-
-                                    </Row>
-                                </button>
-                                <button type="button" className="list-group-item list-group-item-action">
-                                    <Row style={{marginLeft:"1em"}}>
-
-                                        <Avatar alt="Remy Sharp" src={avatar} style={{width:"2em", height:"2em", margin:"auto"}}/>
-
-                                        <Col>
-                                            <p className="text-left" style={{    marginBottom: "auto"}}>Когда будет тратуар?!</p>
-                                            <p className="text-left" style={{color:"Silver",     fontSize: "smaller"}}><DoneAllIcon fontSize={"small"}/>12 исправлений &nbsp; <DateRangeIcon fontSize={"small"}/>156 дней с нами</p>
-
-                                        </Col>
-                                        <Col>
-                                            <div style={{float:"right", alignSelf: "center"}}>
-                                                <IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                    <Image src={vkIcon} style={{width:"2em"}}/>
-                                                </IconButton><IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                <Image src={googleIcon} style={{width:"2em"}}/>
-                                            </IconButton>
-                                            </div>
-                                        </Col>
-
-
-
-
-
-                                        <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
-
-                                            {(popupState) => (
-                                                <React.Fragment>
-
-                                                    <IconButton
-                                                        aria-label="more"
-                                                        aria-controls="long-menu"
-                                                        aria-haspopup="true"
-                                                        style={{ width: "1.5em", height: "1.5em", marginRight:"1em", marginTop:"0em"}}
-                                                        {...bindTrigger(popupState)}
-                                                    >
-                                                        <MoreVertIcon />
-                                                    </IconButton>
-
-                                                    <Menu {...bindMenu(popupState)}>
-                                                        <MenuItem onClick={popupState.close}>Удалить сообщение</MenuItem>
-                                                        <MenuItem onClick={popupState.close}>Заблокировать автора</MenuItem>
-                                                    </Menu>
-                                                </React.Fragment>
-                                            )}
-                                        </PopupState>
-
-                                    </Row>
-                                </button>
-                                <button type="button" className="list-group-item list-group-item-action">
-                                    <Row style={{marginLeft:"1em"}}>
-
-                                        <Avatar alt="Remy Sharp" src={avatar} style={{width:"2em", height:"2em", margin:"auto"}}/>
-
-                                        <Col>
-                                            <p className="text-left" style={{    marginBottom: "auto"}}>Когда будет тратуар?!</p>
-                                            <p className="text-left" style={{color:"Silver",     fontSize: "smaller"}}><DoneAllIcon fontSize={"small"}/>12 исправлений &nbsp; <DateRangeIcon fontSize={"small"}/>156 дней с нами</p>
-
-                                        </Col>
-                                        <Col>
-                                            <div style={{float:"right", alignSelf: "center"}}>
-                                                <IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                    <Image src={vkIcon} style={{width:"2em"}}/>
-                                                </IconButton><IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                <Image src={googleIcon} style={{width:"2em"}}/>
-                                            </IconButton>
-                                            </div>
-                                        </Col>
-
-
-
-
-
-                                        <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
-
-                                            {(popupState) => (
-                                                <React.Fragment>
-
-                                                    <IconButton
-                                                        aria-label="more"
-                                                        aria-controls="long-menu"
-                                                        aria-haspopup="true"
-                                                        style={{ width: "1.5em", height: "1.5em", marginRight:"1em", marginTop:"0em"}}
-                                                        {...bindTrigger(popupState)}
-                                                    >
-                                                        <MoreVertIcon />
-                                                    </IconButton>
-
-                                                    <Menu {...bindMenu(popupState)}>
-                                                        <MenuItem onClick={popupState.close}>Удалить сообщение</MenuItem>
-                                                        <MenuItem onClick={popupState.close}>Заблокировать автора</MenuItem>
-                                                    </Menu>
-                                                </React.Fragment>
-                                            )}
-                                        </PopupState>
-
-                                    </Row>
-                                </button>
-                                <button type="button" className="list-group-item list-group-item-action">
-                                    <Row style={{marginLeft:"1em"}}>
-
-                                        <Avatar alt="Remy Sharp" src={avatar} style={{width:"2em", height:"2em", margin:"auto"}}/>
-
-                                        <Col>
-                                            <p className="text-left" style={{    marginBottom: "auto"}}>Когда будет тратуар?!</p>
-                                            <p className="text-left" style={{color:"Silver",     fontSize: "smaller"}}><DoneAllIcon fontSize={"small"}/>12 исправлений &nbsp; <DateRangeIcon fontSize={"small"}/>156 дней с нами</p>
-
-                                        </Col>
-                                        <Col>
-                                            <div style={{float:"right", alignSelf: "center"}}>
-                                                <IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                    <Image src={vkIcon} style={{width:"2em"}}/>
-                                                </IconButton><IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                <Image src={googleIcon} style={{width:"2em"}}/>
-                                            </IconButton>
-                                            </div>
-                                        </Col>
-
-
-
-
-
-                                        <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
-
-                                            {(popupState) => (
-                                                <React.Fragment>
-
-                                                    <IconButton
-                                                        aria-label="more"
-                                                        aria-controls="long-menu"
-                                                        aria-haspopup="true"
-                                                        style={{ width: "1.5em", height: "1.5em", marginRight:"1em", marginTop:"0em"}}
-                                                        {...bindTrigger(popupState)}
-                                                    >
-                                                        <MoreVertIcon />
-                                                    </IconButton>
-
-                                                    <Menu {...bindMenu(popupState)}>
-                                                        <MenuItem onClick={popupState.close}>Удалить сообщение</MenuItem>
-                                                        <MenuItem onClick={popupState.close}>Заблокировать автора</MenuItem>
-                                                    </Menu>
-                                                </React.Fragment>
-                                            )}
-                                        </PopupState>
-
-                                    </Row>
-                                </button>
-                                <button type="button" className="list-group-item list-group-item-action">
-                                    <Row style={{marginLeft:"1em"}}>
-
-                                        <Avatar alt="Remy Sharp" src={avatar} style={{width:"2em", height:"2em", margin:"auto"}}/>
-
-                                        <Col>
-                                            <p className="text-left" style={{    marginBottom: "auto"}}>Когда будет тратуар?!</p>
-                                            <p className="text-left" style={{color:"Silver",     fontSize: "smaller"}}><DoneAllIcon fontSize={"small"}/>12 исправлений &nbsp; <DateRangeIcon fontSize={"small"}/>156 дней с нами</p>
-
-                                        </Col>
-                                        <Col>
-                                            <div style={{float:"right", alignSelf: "center"}}>
-                                                <IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                    <Image src={vkIcon} style={{width:"2em"}}/>
-                                                </IconButton><IconButton style={{width:"1.5em", height:"1.5em", padding:"0"}} color="primary" aria-label="add to shopping cart">
-                                                <Image src={googleIcon} style={{width:"2em"}}/>
-                                            </IconButton>
-                                            </div>
-                                        </Col>
-
-
-
-
-
-                                        <PopupState variant="popover" popupId="demo-popup-menu" style={{float:"right"}}>
-
-                                            {(popupState) => (
-                                                <React.Fragment>
-
-                                                    <IconButton
-                                                        aria-label="more"
-                                                        aria-controls="long-menu"
-                                                        aria-haspopup="true"
-                                                        style={{ width: "1.5em", height: "1.5em", marginRight:"1em", marginTop:"0em"}}
-                                                        {...bindTrigger(popupState)}
-                                                    >
-                                                        <MoreVertIcon />
-                                                    </IconButton>
-
-                                                    <Menu {...bindMenu(popupState)}>
-                                                        <MenuItem onClick={popupState.close}>Удалить сообщение</MenuItem>
-                                                        <MenuItem onClick={popupState.close}>Заблокировать автора</MenuItem>
-                                                    </Menu>
-                                                </React.Fragment>
-                                            )}
-                                        </PopupState>
-
-                                    </Row>
-                                </button>
-
-
-                                <div className={"pt-4"} style={{alignSelf: "center"}}>
-                                    <Pagination count={10} page={0} />
-                                </div>
-
-                            </div>
 
 
 
@@ -1043,10 +280,7 @@ function LeaderBoardPage() {
 
 
 
-
-
-
-                <footer className="footer">
+                <footer className="footer" style={{position: 'absolute', bottom: '0px'}}>
                     <div className="footer-left col-md-2 col-sm-6">
                         <h2> POVTAS </h2>
                         <div className="icons">

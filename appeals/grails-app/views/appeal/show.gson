@@ -1,0 +1,7 @@
+import com.rest.Appeal
+
+model {
+	Appeal appeal
+}
+
+json tmpl.appeal(appeal)

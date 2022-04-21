@@ -80,7 +80,7 @@ function LoginPage() {
 
                             <div className="col-8 px-5"><Container >
 
-                                <ReactPlayer
+                              {/*  <ReactPlayer
                                     url={viderurl}
                                     playing={true}
                                     muted={true}
@@ -90,7 +90,7 @@ function LoginPage() {
 
                                         }
                                     }}
-                                />
+                                />*/}
 
                             </Container></div>
 
@@ -98,8 +98,8 @@ function LoginPage() {
                                 <h2 className="font-weight-light" > Авторизация </h2>
 
                                 <div className="mt-5" >
-                                    <TextField id="input-with-icon-grid" label={<p><AccountCircle /> &nbsp; Почта/логин</p>} variant="filled" fullWidth onChange={e=>{settextFieldsData({...textFieldsData,...{"loginOrMobile":e.target.value}})}}/>
-                                    <TextField id="input-with-icon-grid" label={<p><KeyIcon /> &nbsp; Пароль</p>} variant="filled" fullWidth onChange={e=>{settextFieldsData({...textFieldsData,...{"password":e.target.value}})}}/>
+                                    <TextField id="input-with-icon-grid" label={<p><AccountCircle /> &nbsp; Почта/логин</p>} variant="filled" type = "text" fullWidth onChange={e=>{settextFieldsData({...textFieldsData,...{"loginOrMobile":e.target.value}})}}/>
+                                    <TextField id="input-with-icon-grid" label={<p><KeyIcon /> &nbsp; Пароль</p>} variant="filled" type="password" fullWidth onChange={e=>{settextFieldsData({...textFieldsData,...{"password":e.target.value}})}}/>
                                 </div>
 
                                 <FormControlLabel
@@ -123,27 +123,27 @@ function LoginPage() {
 
                                 <Row className="d-flex justify-content-center">
                                     <IconButton style={{width:"2.5em", height:"2.5em"}} color="primary" aria-label="add to shopping cart"
-                                                onClick={event =>  window.location.href='http://localhost:8090/oauth2/authorization/google'}
+                                                onClick={event =>  window.location.href='http://localhost:8888/oauth2/authorization/google'}
                                                 onClick={()=>{
-                                                    const childWindow = window.open("http://localhost:8090/oauth2/authorization/google", "_blank", "width=500, height=650");
+                                                    const childWindow = window.open("http://localhost:8888/oauth2/authorization/google", "_blank", "width=500, height=650");
                                                 }}
                                     >
                                         <Image src={vkIcon} style={{width:"2.5em"}} />
                                     </IconButton>
 
                                     <IconButton style={{width:"2.6em", height:"2.6em"}} color="primary" aria-label="add to shopping cart"
-                                                //onClick={event =>  window.location.href='http://localhost:8090/oauth2/authorization/google'}
+                                                //onClick={event =>  window.location.href='http://localhost:8888/oauth2/authorization/google'}
                                                 onClick={()=>{
-                                                    const childWindow = window.open("http://localhost:8090/oauth2/authorization/google", "_blank", "width=500, height=650");
+                                                    const childWindow = window.open("http://localhost:8888/oauth2/authorization/google", "_blank", "width=500, height=650");
                                                 }}
                                     >
                                         <Image src={googleIcon} style={{width:"3em"}}/>
                                     </IconButton>
 
                                     <IconButton style={{width:"2.5em", height:"2.5em"}} color="primary" aria-label="add to shopping cart"
-                                                //onClick={event =>  window.location.href='http://localhost:8090/oauth2/authorization/google'
+                                                //onClick={event =>  window.location.href='http://localhost:8888/oauth2/authorization/google'
                                                 onClick={()=>{
-                                                    const childWindow = window.open("http://localhost:8090/oauth2/authorization/google", "_blank", "width=500, height=650");
+                                                    const childWindow = window.open("http://localhost:8888/oauth2/authorization/google", "_blank", "width=500, height=650");
                                                 }}
 
                                     >

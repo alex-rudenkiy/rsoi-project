@@ -96,6 +96,10 @@ function RegistrationPage() {
                                                variant="filled" fullWidth onChange={e => {
                                         settextFieldsData({...textFieldsData, ...{"mobilenumber": e.target.value}})
                                     }}/>
+                                    <TextField id="input-with-icon-grid" label={<p> &nbsp; Email</p>}
+                                               variant="filled" fullWidth onChange={e => {
+                                        settextFieldsData({...textFieldsData, ...{"email": e.target.value}})
+                                    }}/>
                                     <TextField id="input-with-icon-grid" label={<p><KeyIcon/> &nbsp; Пароль</p>}
                                                variant="filled"
                                                helperText="Придумайте пароль посложнее и постарайтесь не забыть!"
@@ -234,7 +238,7 @@ function RegistrationPage() {
                                             onClick={
                                                 () => {
                                                     registration(textFieldsData, true).then(result=>{
-                                                        if(result != null && result.length>0){
+                                                        if(result != null && result.token.length>0){
                                                             history.push('/profile');
                                                         }
                                                     });

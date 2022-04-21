@@ -1,67 +1,25 @@
-import logo from '../resources/easylogo.svg';
 import React, {useEffect, useState} from "react";
 import {Button, Col, Image, Row} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
 import * as _ from 'lodash';
 
-import Navbar from "react-bootstrap/Navbar";
-import Nav from "react-bootstrap/Nav";
-import NavDropdown from "react-bootstrap/NavDropdown";
-import FormControl from "@material-ui/core/FormControl";
-import Form from "react-bootstrap/Form";
-import col from "react-bootstrap/Col";
-import graffityImg from '../resources/graffity_image.png';
-import simg1 from "../resources/park.png";
-import simg2 from "../resources/vandalism.png";
-import simg3 from "../resources/park (1).png";
-import simg4 from "../resources/playing.png";
-import sponsorLogo1 from "../resources/sponsor1.png";
-import sponsorLogo2 from "../resources/sponsor2.png";
-import sponsorLogo3 from "../resources/sponsor3.png";
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faVk, faTelegram, faDiscord} from '@fortawesome/free-brands-svg-icons'
-import {faMapMarker, faPhone} from "@fortawesome/free-solid-svg-icons";
-import {faEnvelope} from "@fortawesome/free-regular-svg-icons";
-import {faAt} from "@fortawesome/free-solid-svg-icons";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import Input from "@material-ui/core/Input";
-import Grid from "@material-ui/core/Grid";
-import {AccountCircle} from "@material-ui/icons";
 import TextField from "@material-ui/core/TextField";
-import KeyIcon from '@material-ui/icons/VpnKey';
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import DividerWithText from "../components/DividerWithText";
-import vkIcon from "../resources/vk_icon.svg";
-import googleIcon from "../resources/google_icon.svg";
-import okIcon from "../resources/ok_icon.svg";
-import IconButton from "@material-ui/core/IconButton";
-import RegistrationCarousel from "../components/RegistrationCarousel";
 import {Reveal, Step} from 'semantic-ui-react'
-import CustomizedSteppers from "../components/MaterialStepper";
 import Paper from "@material-ui/core/Paper";
 import InputBase from "@material-ui/core/InputBase";
 import CallIcon from '@material-ui/icons/Call';
 import {useDropzone} from 'react-dropzone';
 import 'react-dropzone/examples/theme.css';
-import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
 import ImageOutlinedIcon from '@material-ui/icons/ImageOutlined';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
-import ModalExampleDimmer from "../components/ModalAgreeText";
 import Modal from "react-bootstrap/Modal";
 import HeaderNav from "../components/headerNav";
-import {Map} from "leaflet";
-import {Marker, Popup, TileLayer} from "react-leaflet";
 import {EditableOpenMap} from "../components/Openmap";
 import Alert from "react-bootstrap/Alert";
 import {SelectableHorizontalGallery} from "../components/SelectableGallery";
 import useBackendApi from "../logic/BackendApiHook";
 import {useHistory} from "react-router-dom";
-import {tileData} from "./tileData";
-import image1 from "../resources/sample_graffiti.jpg";
 
 const thumbsContainer = {
     display: 'flex',
@@ -135,16 +93,16 @@ function Previews(props) {
     useEffect(async () => {
         const axios = require('axios').default;
 
-        //((await axios.post('http://localhost:8090/file')));
+        //((await axios.post('http://localhost:8888/file')));
 
         const links = [];
-        for (const file of files) {
+/*        for (const file of files) {
             const formData = new FormData();
             formData.append('token', '');
             formData.append('fileType', "");
             formData.append('file', file);
             links.push((await axios({
-                url: 'http://localhost:8090/file',
+                url: 'http://localhost:8888/file',
                 method: 'POST',
                 data: formData,
                 headers: {
@@ -152,10 +110,28 @@ function Previews(props) {
                     'Content-Type': 'multipart/form-data',
                 },
             })).data.fileFakeName);
-        }
-        setFilesLinks(links);
-        console.log(links);
-        props.onUploaded(links);
+        }*/
+        let formData = new FormData();
+        formData.append('token', '');
+        formData.append('fileType', "");
+        // formData.append('files', files);
+        files.forEach(file => {
+            formData.append('uploadedFile[]', file);
+        });
+
+        links.push((await axios({
+            url: 'http://localhost:8888/file',
+            method: 'POST',
+            data: formData,
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'multipart/form-data',
+            },
+        })).data.fileFakeName);
+
+        setFilesLinks(links[0]);
+        console.log(links[0]);
+        props.onUploaded(links[0]);
 
         // Make sure to revoke the data uris to avoid memory leaks
         for (const file of files) {
@@ -288,14 +264,14 @@ function OrderingPage() {
         //s = _.map(e, 'id').join(',');
         s = _.map(e,'id').concat();
         console.log(textFieldsData);
-        setTextFieldsData({...textFieldsData, ...{"category": s}});
+        setTextFieldsData({...textFieldsData, ...{"category": s, "status": "opened"}});
         console.log("joined : ", s);
     };
 
     useEffect(() => {
         getUserInfo().then(e => {
-            console.log('id=', e, e.data.id, !(e.data.id > 0));
-            e && setRegistrationFieldShow(!(e.data.id > 0));
+            console.log('id=', e, e.id, !(e.id > 0));
+            e && setRegistrationFieldShow(!(e.id > 0));
 
         }).catch(
             c => {
@@ -317,7 +293,7 @@ function OrderingPage() {
                     id: c.id,
                     img: c.imageUrl,
                     title: c.name,
-                    author: c.mergedOrganization.name
+                    author: c.mergedOrganization?.name
                 });
             });
             setSelectableHorizontalGallery(<SelectableHorizontalGallery tileData={result} onChange={(t,d)=>updateFieldsData(t, textFieldsData, setTextFieldsData)}/>);

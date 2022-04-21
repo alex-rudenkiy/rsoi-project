@@ -1,0 +1,8 @@
+import com.rest.Appeal
+
+model {
+	Appeal appeal
+}
+
+//json g.render(appeal, [resolveTemplate: false])
+json g.render(appeal, [deep:true])

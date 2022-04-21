@@ -1,0 +1,7 @@
+import com.rest.AppealCategory
+
+model {
+	AppealCategory appealCategory
+}
+
+json tmpl.appealCategory(appealCategory)

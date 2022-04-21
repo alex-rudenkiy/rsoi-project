@@ -117,7 +117,7 @@ function WebcamControl() {
             formData.append('fileType', "mask");
             formData.append('file', dataURIToBlob(d));
             axios({
-                url: 'http://localhost:8090/file',
+                url: 'http://localhost:8888/file',
                 method: 'POST',
                 data: formData,
                 headers: {
@@ -191,7 +191,7 @@ function WebcamControl() {
                                         description:
                                             <div>
 
-                                            <Image src={t.shortFilename&&`http:\\\\localhost:8090\\file\\preview\\${t.shortFilename}`}
+                                            <Image src={t&&`http:\\\\localhost:8888\\file\\preview\\${t}`}
                                                    style={{width:"100%"}}/>
                                         </div>}))}>
                         </ControlledAccordions>
@@ -202,7 +202,7 @@ function WebcamControl() {
                     setLastFrame(e.lastFrame!=null?<Image
                         style={{width: "inherit",     height: "100%"}}
                         key={new Date().getTime()}
-                        src={e.lastFrame.shortFilename&&`http:\\\\localhost:8090\\file\\preview\\${e.lastFrame.shortFilename}?random=${new Date().getTime()}`}></Image>:
+                        src={e.lastFrame&&`http:\\\\localhost:8888\\file\\preview\\${e.lastFrame}?random=${new Date().getTime()}`}></Image>:
                         //<p>Stream is failed!</p>
                         <Placeholder style={{margin: "auto",  marginBottom: "2em"}}>
                             <Placeholder.Image rectangular />
@@ -210,7 +210,7 @@ function WebcamControl() {
                     );
                     /*setMask(e.lastFrame!=null?<ReactSketchCanvas
                             style={{width: "inherit"}}
-                            background={e.lastFrame.shortFilename&&`http:\\\\localhost:8090\\file\\preview\\${e.lastFrame.shortFilename}`}
+                            background={e.lastFrame&&`http:\\\\localhost:8888\\file\\preview\\${e.lastFrame}`}
                             width="600"
                             height="400"
                             strokeWidth={4}
@@ -230,9 +230,9 @@ function WebcamControl() {
                     style={{width: "inherit", height:"100%"}}
                     width={640}
                     height={320}
-                    //background={`background: url("http://localhost:8090/file/preview/cameraid_31_lastframe.jpg")`}
+                    //background={`background: url("http://localhost:8888/file/preview/cameraid_31_lastframe.jpg")`}
                     key={new Date().getTime()}
-                    background={`no-repeat scroll top / cover url(http://localhost:8090/file/preview/${currentCamera.lastFrame.shortFilename}?random=${new Date().getTime()})`}
+                    background={`no-repeat scroll top / cover url(http://localhost:8888/file/preview/${currentCamera.lastFrame}?random=${new Date().getTime()})`}
                     ref={refContainer}
                     strokeWidth={4}
                     strokeColor="black"
@@ -570,7 +570,7 @@ function WebcamControl() {
 
                 <footer style={{    marginTop: "15em"}} className="footer">
                     <div className="footer-left col-md-2 col-sm-6">
-                        <h2> POVTAS </h2>
+                        <h2> IU7Studio </h2>
                         <div className="icons">
 
                             <a href="#"><i><FontAwesomeIcon icon={faVk}/></i></a>
@@ -579,11 +579,11 @@ function WebcamControl() {
 
                         </div>
                     </div>
-                    <div className="footer-center col-md-2 col-sm-6">
+                    <div className="footer-center col-md-3 col-sm-6">
                         <h5>Контактные данные</h5>
                         <div>
                             <i><FontAwesomeIcon icon={faMapMarker}/></i>
-                            <p><span>г. Белгород, ул. Костюкова 46</span></p>
+                            <p><span>г. Москва, ул. Бауманская, д. 46</span></p>
                         </div>
                         <div>
                             <i><FontAwesomeIcon icon={faPhone}/></i>
@@ -591,7 +591,7 @@ function WebcamControl() {
                         </div>
                         <div>
                             <i><FontAwesomeIcon icon={faEnvelope}/></i>
-                            <p><a href="#"> alex-rudenkiy@bstu.edu</a></p>
+                            <p><a href="#"> alex-rudenkiy@bmstu.edu</a></p>
                         </div>
                     </div>
                     <div className="footer-center col-md-3 col-sm-6">
@@ -614,7 +614,7 @@ function WebcamControl() {
 
                         </p>
                     </div>
-                    <div className="footer-center col-md-5 col-sm-6">
+                    <div className="footer-center col-md-4 col-sm-6">
                         <h5>Подписаться на новостную рассылку</h5>
                         <div style={{maxWidth: "30em"}}><FormControl className={"mt-3 pl-2 pr-2 pt-2"} variant="filled"
                                                                      style={{background: "white"}} fullWidth>
@@ -633,9 +633,10 @@ function WebcamControl() {
 
 
                     </div>
-                    <p className="name mt-5"> Copyright &copy; ПОВТАС, 2021. Пользовательское соглашение Соглашение об
+                    <p className="name mt-5"> Copyright &copy; ИУ7, 2021. Пользовательское соглашение Соглашение об
                         обработке персональных данных. 12+</p>
                 </footer>
+
 
             </div>
         </div>

@@ -1,0 +1,8 @@
+import com.rest.GeoPosition
+
+model {
+	Iterable<GeoPosition> geoPositionList
+}
+
+json tmpl.geoPosition(geoPositionList ?: [])
+

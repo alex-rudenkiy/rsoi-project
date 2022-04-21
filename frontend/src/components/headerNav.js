@@ -18,7 +18,7 @@ export default function HeaderNav(props) {
     const {authentication, registration, fileUpload, getUserInfo, checkAuth, logout} = useBackendApi();
     const [logoutShow, setLogoutShow] = useState(false);
     useEffect(() => {
-        getUserInfo().then(e => {e&&setLogoutShow(e.data.id>0)});
+        getUserInfo().then(e => {e&&setLogoutShow(e.id>0)});
     }, []);
 
     return (

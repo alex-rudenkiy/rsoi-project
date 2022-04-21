@@ -61,6 +61,7 @@ import {Link} from "react-router-dom";
 import HeaderNav from "../components/headerNav";
 import ModalOrder from "./modalOrder";
 import useBackendApi from "../logic/BackendApiHook";
+import _ from "lodash";
 
 function ProblemsStorePage() {
     const {
@@ -103,11 +104,11 @@ function ProblemsStorePage() {
             setPageListOrders(o.content.map(e=>
                 <button type="button" className="list-group-item list-group-item-action" onClick={()=>setModalOrderId(e.id)}>
                     <Row style={{marginLeft: "1em"}}>
-                        <Image style={{maxWidth: "4em", maxHeight: "4em"}} src={e.attachments&&`http:\\\\localhost:8090\\file\\preview\\${e.attachments[0].shortFilename}`}  fluid/>
+                        <Image style={{maxWidth: "4em", maxHeight: "4em"}} src={e.attachments&&`http:\\\\localhost:8888\\file\\preview\\${e.attachments[0]}`}  fluid/>
                         <Col>
                             <p className="text-left" style={{marginBottom: "auto"}}>{e.title}</p>
                             <p className="text-left" style={{color: "Silver", fontSize: "smaller"}}>
-                                <ViewsIcon fontSize={"small"}/>{e.views.length} &nbsp; <MessageIcon fontSize={"small"}/>{e.comments.length}
+                                <ViewsIcon fontSize={"small"}/>{_.isEmpty(e.views)? 0 : e.views.length} &nbsp; <MessageIcon fontSize={"small"}/>{_.isEmpty(e.comments) ? 0 : e.comments.length}
                             </p>
                         </Col>
 
@@ -170,7 +171,7 @@ function ProblemsStorePage() {
                                     style={{color: "#68a5ff", fontWeight: "bold"}}>на рассмотрении </p>
                                 </Row>
                                 <Row>
-                                    <p style={{color: "white"}}><ViewsIcon fontSize={'small'}/>{comments.length} &nbsp;
+                                    <p style={{color: "white"}}><ViewsIcon fontSize={'small'}/>{comments?.length} &nbsp;
                                         <MessageIcon fontSize={'small'}/>{views.length}</p>
                                 </Row>
 
@@ -212,8 +213,8 @@ function ProblemsStorePage() {
             </Popup>
         </Marker>})));
         getLastCreated().then((c) => {
-            //alert(c.attachments[0].shortFilename);
-            setTopAppealBanner(createAppealBanner(c.id, `http://localhost:8090/file/preview/${ c.attachments[0].shortFilename}`,c.title,c.description,c.views,c.comments));
+            //alert(c.attachments[0]);
+            setTopAppealBanner(createAppealBanner(c.id, `http://localhost:8888/file/preview/${ c.attachments[0]}`,c.title,c.description,c.views,c.comments));
         });
 
     }, [])

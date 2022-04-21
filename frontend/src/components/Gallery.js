@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function GalleryList(props) {
-    /*const photos = [
+  /*  const photos = [
         {
             src: "https://source.unsplash.com/2ShvY8Lf6l0/800x599",
             width: 4,
@@ -74,6 +74,7 @@ export default function GalleryList(props) {
     const [viewerIsOpen, setViewerIsOpen] = useState(false);
 
     const openLightbox = useCallback((event, { photo, index }) => {
+        console.log('openLightbox');
         setCurrentImage(index);
         setViewerIsOpen(true);
     }, []);
@@ -93,8 +94,10 @@ export default function GalleryList(props) {
                             currentIndex={currentImage}
                             views={props.photos.map(x => ({
                                 ...x,
-                                srcset: x.srcSet,
-                                caption: x.title
+                                src: x.src,
+                                width: 4,
+                                height: 3,
+                                // caption: x.title
                             }))}
                         />
                     </Modal>

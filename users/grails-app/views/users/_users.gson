@@ -1,0 +1,7 @@
+import com.rest.Users
+
+model {
+	Users users
+}
+
+json g.render(users, [resolveTemplate: false])

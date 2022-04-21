@@ -16,7 +16,7 @@ const options = [
 function SocialNetworkUsing(props) {
 
     useEffect(()=>{
-        axios.get("http://localhost:8090/socialNetwork").then((d)=>{
+        axios.get("http://localhost:8888/socialNetwork").then((d)=>{
             _.map(d.data,(e)=>{
                 options.push({key: e.name, text: e.fullName, value: {id: e.id, icon: e.logoUrl, hint: "ivanov@yandex.ru"}});
             });

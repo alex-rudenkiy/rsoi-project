@@ -28,14 +28,15 @@ import {useHistory, useParams} from "react-router-dom";
 function OAuthRegisteredPage() {
     let { token } = useParams();
     const history = useHistory();
-    const {        authentication, registration, fileUpload,
+    const {                authentication, registration, fileUpload,
         getUserInfo, checkAuth, logout, postOrder,
         getOrderInfoById, getOrdersByOwnerId,
         getCountOrdersByOwnerId, postComment, getAllOrders,
         getLastCreated, addNewCamera, getCameraInfoById,
         putCamMaskById, updateCameraInfoById, deleteCameraById,
         getAllAppealCategory, updateUserInfo, updateUserPassword,
-        oAuthAuthentication
+        oAuthAuthentication, patchOrder, deleteComment, getAllUsers,
+
     } = useBackendApi();
 
     useEffect(()=>{

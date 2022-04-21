@@ -44,7 +44,8 @@ import Badge from "@material-ui/core/Badge";
 import HeaderNav from "../components/headerNav";
 import {UserAvatar} from "../components/UserAvatar";
 import useBackendApi from "../logic/BackendApiHook";
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
+import {stringAvatar} from '../utils';
 
 function UserProfilePage() {
     var Carousel = require('react-responsive-carousel').Carousel;
@@ -57,46 +58,59 @@ function UserProfilePage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [countOrders, setCountOrders] = useState(0);
     const pageSize = 2;
-    let { userId } = useParams();
+    const { userId = -1 } = useParams();
+    console.log('userId', userId)
     const [userAvatar, setUserAvatar] = useState();
 
+    useEffect(()=>{
+        getUserInfo(userId === -1? undefined : userId).then(e=>{
+            setUserInfo(e);
+        });
 
+        getOrdersByOwnerId(currentPage, pageSize, userId).then(orders=>{
+            console.log('getOrdersByOwnerId ====> ',orders);
+            setUserOrdersView(orders.map(e => <button type="button" className="list-group-item list-group-item-action">
+                    <Row style={{marginLeft: "1em"}}>
+                        <Image style={{maxWidth: "4em", maxHeight: "4em"}} src={e.attachments&&`http:\\\\localhost:8888\\file\\preview\\${e.attachments[0]}`} fluid/>
+                        <Col>
+                            <p className="text-left" style={{marginBottom: "auto"}}>{e.title}</p>
+                            <p className="text-left" style={{color: "Silver", fontSize: "smaller"}}>
+                                <ViewsIcon fontSize={"small"}/>{e.views && e.views.length}&nbsp;
+                                <MessageIcon fontSize={"small"}/>{e.comments && e.comments.length}</p>
+                        </Col>
+                    </Row>
+                </button>
+            ));
+        })
+
+        /*const u = (getUserInfo(userId, false)).data;
+        console.log('u=',u);*/
+
+
+
+
+    },[]);
 
     useEffect(async () => {
         console.log("let's go");
         //getUserInfo(undefined, true).then(e=>console.log("gg", e));
-        const c = await getCountOrdersByOwnerId();
-        setPagesCount(Math.ceil(c / pageSize));
-        setCountOrders(c);
-        const u = (await getUserInfo(userId, true)).data;
-        console.log('u=',u);
-        setUserInfo(u);
-        setUserAvatar(userId!=null?<UserAvatar userId={userId}  withlinks style={{width: "5em", height: "5em", margin: "auto"}}/> : <UserAvatar  withlinks style={{width: "5em", height: "5em", margin: "auto"}}/>);
-        //alert(u.id);
-        setUserOrdersInfo(await getOrdersByOwnerId(currentPage, pageSize, userId));
+        try {
+            const c = await getCountOrdersByOwnerId();
+            setPagesCount(Math.ceil(c / pageSize));
+            setCountOrders(c);
+        } catch (e) {
+            
+        }
 
 
     }, [currentPage]);
 
-    useEffect(()=>{
-        setUserOrdersView(userOrdersInfo&&userOrdersInfo.map(e => <button type="button" className="list-group-item list-group-item-action">
-            <Row style={{marginLeft: "1em"}}>
-                <Image style={{maxWidth: "4em", maxHeight: "4em"}} src={e.attachments&&`http:\\\\localhost:8090\\file\\preview\\${e.attachments[0].shortFilename}`} fluid/>
-                <Col>
-                    <p className="text-left" style={{marginBottom: "auto"}}>{e.title}</p>
-                    <p className="text-left" style={{color: "Silver", fontSize: "smaller"}}>
-                        <ViewsIcon fontSize={"small"}/>{e.views && e.views.length}&nbsp;
-                        <MessageIcon fontSize={"small"}/>{e.comments && e.comments.length}</p>
-                </Col>
-            </Row>
-        </button>))},[userOrdersInfo]);
 
 
     return (
 
         <div className="App">
 
-            <div>
                 <HeaderNav/>
 
 
@@ -131,7 +145,7 @@ function UserProfilePage() {
                                 </div>
                                 <div className="col-2">
 
-                                    {userAvatar}
+                                    <Avatar {...stringAvatar(userInfo?userInfo.login:". .")} style={{height:'4em', width:'4em', margin: 'auto'}}/>
 
                                 </div>
                                 <div className="col text-left">
@@ -193,6 +207,7 @@ function UserProfilePage() {
                 </section>*/}
 
 
+
                 <section className="pb-5 pt-0">
                     <div className="container pl-sm-5 text-left">
                         <p>Зафиксированые недостатки</p>
@@ -214,76 +229,79 @@ function UserProfilePage() {
                     </div>
                 </section>
 
-                <footer style={{    marginTop: "15em"}} className="footer">
-                    <div className="footer-left col-md-2 col-sm-6">
-                        <h2> POVTAS </h2>
-                        <div className="icons">
 
-                            <a href="#"><i><FontAwesomeIcon icon={faVk}/></i></a>
-                            <a href="#"><i><FontAwesomeIcon icon={faTelegram}/></i></a>
-                            <a href="#"><i><FontAwesomeIcon icon={faDiscord}/></i></a>
 
-                        </div>
-                    </div>
-                    <div className="footer-center col-md-2 col-sm-6">
-                        <h5>Контактные данные</h5>
-                        <div>
-                            <i><FontAwesomeIcon icon={faMapMarker}/></i>
-                            <p><span>г. Белгород, ул. Костюкова 46</span></p>
-                        </div>
-                        <div>
-                            <i><FontAwesomeIcon icon={faPhone}/></i>
-                            <p> (+7) 800 555 35 35</p>
-                        </div>
-                        <div>
-                            <i><FontAwesomeIcon icon={faEnvelope}/></i>
-                            <p><a href="#"> alex-rudenkiy@bstu.edu</a></p>
-                        </div>
-                    </div>
-                    <div className="footer-center col-md-3 col-sm-6">
-                        <h5>Поддержка</h5>
-                        <p className="menu">
-                            <ul className="nav flex-column">
-                                <li className="nav-item">
-                                    <a className="nav-link active" href="#">Партнерские программы</a>
-                                </li>
-                                <li className="nav-item">
-                                    <a className="nav-link" href="#">Видеоинструкции</a>
-                                </li>
-                                <li className="nav-item">
-                                    <a className="nav-link" href="#">Сообщить об ошибке</a>
-                                </li>
-                                <li className="nav-item">
-                                    <a className="nav-link disabled" href="#">Трудоустройство</a>
-                                </li>
-                            </ul>
+            <footer style={{    marginTop: "15em"}} className="footer">
+                <div className="footer-left col-md-2 col-sm-6">
+                    <h2> IU7Studio </h2>
+                    <div className="icons">
 
-                        </p>
-                    </div>
-                    <div className="footer-center col-md-5 col-sm-6">
-                        <h5>Подписаться на новостную рассылку</h5>
-                        <div style={{maxWidth: "30em"}}><FormControl className={"mt-3 pl-2 pr-2 pt-2"} variant="filled"
-                                                                     style={{background: "white"}} fullWidth>
-                            <Input
-                                id="outlined-adornment-weight"
-                                //value={values.weight}
-                                //onChange={handleChange('weight')}
-                                endAdornment={<InputAdornment position="end"><FontAwesomeIcon
-                                    icon={faAt}/></InputAdornment>}
-                                placeholder={"ваш электронный адрес"}
-                                labelWidth={0}
-                            />
-                        </FormControl>
-                            <Button className={"align-self-end float-right mt-3"}
-                                    variant="btn btn-outline-light">Подписаться</Button></div>
-
+                        <a href="#"><i><FontAwesomeIcon icon={faVk}/></i></a>
+                        <a href="#"><i><FontAwesomeIcon icon={faTelegram}/></i></a>
+                        <a href="#"><i><FontAwesomeIcon icon={faDiscord}/></i></a>
 
                     </div>
-                    <p className="name mt-5"> Copyright &copy; ПОВТАС, 2021. Пользовательское соглашение Соглашение об
-                        обработке персональных данных. 12+</p>
-                </footer>
+                </div>
+                <div className="footer-center col-md-3 col-sm-6">
+                    <h5>Контактные данные</h5>
+                    <div>
+                        <i><FontAwesomeIcon icon={faMapMarker}/></i>
+                        <p><span>г. Москва, ул. Бауманская, д. 46</span></p>
+                    </div>
+                    <div>
+                        <i><FontAwesomeIcon icon={faPhone}/></i>
+                        <p> (+7) 800 555 35 35</p>
+                    </div>
+                    <div>
+                        <i><FontAwesomeIcon icon={faEnvelope}/></i>
+                        <p><a href="#"> alex-rudenkiy@bmstu.edu</a></p>
+                    </div>
+                </div>
+                <div className="footer-center col-md-3 col-sm-6">
+                    <h5>Поддержка</h5>
+                    <p className="menu">
+                        <ul className="nav flex-column">
+                            <li className="nav-item">
+                                <a className="nav-link active" href="#">Партнерские программы</a>
+                            </li>
+                            <li className="nav-item">
+                                <a className="nav-link" href="#">Видеоинструкции</a>
+                            </li>
+                            <li className="nav-item">
+                                <a className="nav-link" href="#">Сообщить об ошибке</a>
+                            </li>
+                            <li className="nav-item">
+                                <a className="nav-link disabled" href="#">Трудоустройство</a>
+                            </li>
+                        </ul>
 
-            </div>
+                    </p>
+                </div>
+                <div className="footer-center col-md-4 col-sm-6">
+                    <h5>Подписаться на новостную рассылку</h5>
+                    <div style={{maxWidth: "30em"}}><FormControl className={"mt-3 pl-2 pr-2 pt-2"} variant="filled"
+                                                                 style={{background: "white"}} fullWidth>
+                        <Input
+                            id="outlined-adornment-weight"
+                            //value={values.weight}
+                            //onChange={handleChange('weight')}
+                            endAdornment={<InputAdornment position="end"><FontAwesomeIcon
+                                icon={faAt}/></InputAdornment>}
+                            placeholder={"ваш электронный адрес"}
+                            labelWidth={0}
+                        />
+                    </FormControl>
+                        <Button className={"align-self-end float-right mt-3"}
+                                variant="btn btn-outline-light">Подписаться</Button></div>
+
+
+                </div>
+                <p className="name mt-5"> Copyright &copy; ИУ7, 2021. Пользовательское соглашение Соглашение об
+                    обработке персональных данных. 12+</p>
+            </footer>
+
+
+
         </div>
     );
 }

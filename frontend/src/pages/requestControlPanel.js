@@ -1,5 +1,5 @@
 import logo from '../resources/easylogo.svg';
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, Col, Container, Image, ListGroup, Row} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
@@ -43,6 +43,11 @@ import {
 import useBackendApi from "../logic/BackendApiHook";
 import {UserAvatar} from "../components/UserAvatar";
 import GalleryList from "../components/Gallery";
+import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
+import Paper from "@material-ui/core/Paper";
+import InputBase from "@material-ui/core/InputBase";
+import OrderTextBox from "../components/OrderTextBox";
+import DropdownSimple from "../components/DropdownSimple";
 
 function TabPanel(props) {
     const {children, value, index, ...other} = props;
@@ -127,20 +132,54 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const Statuses = ['closed', 'check', 'accepted', 'working'];
+
+function getStatusRusStr(status) {
+    let result = 'неизвестно';
+
+    switch(status) {
+        case 'closed':
+            result = 'закрыто';
+            break;
+
+        case 'check':
+            result = 'на модерации';
+            break;
+
+        case 'accepted':
+            result = 'на рассмотрении';
+            break;
+
+        case 'working':
+            result = 'в работе';
+            break;
+    }
+    return result;
+}
 
 function RequestControlPanel() {
-    let { orderId } = useParams();
+    let {orderId} = useParams();
     const classes = useStyles();
     const [value, setValue] = React.useState(0);
-    const {authentication, registration, fileUpload, getUserInfo, checkAuth, logout, postOrder, getOrderInfoById} = useBackendApi();
+    const {
+        authentication, registration, fileUpload,
+        getUserInfo, checkAuth, logout, postOrder,
+        getOrderInfoById, getOrdersByOwnerId,
+        getCountOrdersByOwnerId, postComment, getAllOrders,
+        getLastCreated, addNewCamera, getCameraInfoById,
+        putCamMaskById, updateCameraInfoById, deleteCameraById,
+        getAllAppealCategory, updateUserInfo, updateUserPassword,
+        oAuthAuthentication, patchOrder, deleteComment
+    } = useBackendApi();
     const [order, setOrder] = React.useState();
+    const [textFieldsData, setTextFieldsData] = useState({});
 
 
     useEffect(async () => {
         const oid = orderId;
         setOrder(await getOrderInfoById(oid));
         console.log(order);
-    },[]);
+    }, []);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -158,15 +197,14 @@ function RequestControlPanel() {
                     <Col sm={12} md={12} lg={12} xl={5}>
 
                         <Row style={{placeContent: "center"}}>
-                            <h2 className="font-weight-light">Заявление №{order&&order.id}</h2>
+                            <h2 className="font-weight-light">Заявление №{order && order.id}</h2>
                         </Row>
                         <Row style={{justifyContent: "center"}}>
-                            <p style={{justifyContent: "center"}}>статус: <b style={{color: "#007bff"}}>на
-                                рассмотрении</b></p>
+                            <p style={{justifyContent: "center"}}>статус: <b style={{color: "#007bff"}}>{order && getStatusRusStr(order.status)}</b></p>
                         </Row>
 
                         <Step.Group size='mini' className={"mt-4"}>
-                            <Step>
+                            <Step disabled={order && !(Statuses.indexOf(order.status) >= 1)} active={order && (Statuses.indexOf(order.status) === 1)}>
                                 <Icon name='pencil alternate'/>
                                 <Step.Content>
                                     <Step.Title>Этап 1</Step.Title>
@@ -174,7 +212,7 @@ function RequestControlPanel() {
                                 </Step.Content>
                             </Step>
 
-                            <Step>
+                            <Step disabled={order && !(Statuses.indexOf(order.status) >= 2)} >
                                 <Icon name='paper plane outline icon'/>
                                 <Step.Content>
                                     <Step.Title>Этап 2</Step.Title>
@@ -182,7 +220,7 @@ function RequestControlPanel() {
                                 </Step.Content>
                             </Step>
 
-                            <Step active>
+                            <Step disabled={order && !(Statuses.indexOf(order.status) >= 2)} active={order && (Statuses.indexOf(order.status) === 2)}>
                                 <Icon name='spinner loading'/>
                                 <Step.Content>
                                     <Step.Title>Этап 3</Step.Title>
@@ -190,7 +228,7 @@ function RequestControlPanel() {
                                 </Step.Content>
                             </Step>
 
-                            <Step disabled>
+                            <Step disabled={order && !(Statuses.indexOf(order.status) >= 3)} active={order && (Statuses.indexOf(order.status) === 3)}>
                                 <Icon name='thumbs up outline'/>
                                 <Step.Content>
                                     <Step.Title>Этап 4</Step.Title>
@@ -202,18 +240,14 @@ function RequestControlPanel() {
                         <br/>
                         <br/>
 
-                        <Card className={"mb-5"} style={{width: '100%', textAlign: "left"}}>
-                            <Card.Body>
-                                <Card.Title>Текст обращения</Card.Title>
-                                <Card.Subtitle className="mb-2 text-muted">{order&&order.createdAt}</Card.Subtitle>
-                                <Card.Text>
-                                    {order&&order.description}
 
-                                </Card.Text>
-                                <Button variant={"outline-primary"}>Редактировать</Button>
-                            </Card.Body>
-                        </Card>
-
+                        {
+                            order && <OrderTextBox order={order} isEdit={true} onChangeDescription={(e)=>setTextFieldsData({...textFieldsData, ...{"description": e.target.value}})}></OrderTextBox>
+                        }
+                        <Button variant="primary" className={"w-100"} onClick={async () => {
+                            console.log("agree");
+                            const result = await patchOrder(textFieldsData, orderId);
+                        }}>Сохранить изменения</Button>
                     </Col>
 
                     <Col>
@@ -222,76 +256,77 @@ function RequestControlPanel() {
                         <div className={classes.root}>
                             <div className={classes.demo1}>
                                 <AntTabs value={value} onChange={handleChange} aria-label="ant example">
-                                    <AntTab value={1} label={`Приложения (${order&&order.attachments.length})`}/>
+                                    <AntTab value={1} label={`Приложения (${order && order.attachments.length})`}/>
                                     <AntTab value={2} label="Документы (--)"/>
-                                    <AntTab value={3} label={`Комментарии (${order&&order.comments.length})`}/>
+                                    <AntTab value={3} label={`Комментарии (${order && order.comments.length})`}/>
                                     <AntTab value={4} label="Действия"/>
                                 </AntTabs>
                                 <Typography className={classes.padding}/>
 
 
                                 <TabPanel value={value} index={1}>
-                                    <GalleryList photos={order&&order.attachments.map(e=>({
-                                        src: `http://localhost:8090/file/preview/${ e.shortFilename}`,
-                                            width: 4,
-                                            height: 3
+                                    <GalleryList photos={order && order.attachments.map(e => ({
+                                        src: `http://localhost:8888/file/preview/${e}`,
+                                        width: 4,
+                                        height: 3
 
                                     }))}/>
                                 </TabPanel>
                                 <TabPanel value={value} index={3}>
                                     <List style={{height: "30em", overflow: "auto"}}>
-                                        {order&&order.comments.map(e=> <> <ListItem alignItems="flex-start">
-                                            <ListItemAvatar>
-                                                <UserAvatar clickable userId={e&&e.createdBy.id} style={{width:"1.5em", height:"1.5em"}}/>
-                                            </ListItemAvatar>
-                                            <ListItemText
-                                                primary={e&&e.content}
-                                                secondary={
-                                                    <React.Fragment>
-                                                        <Typography
-                                                            component="span"
-                                                            variant="body2"
-                                                            color="textPrimary"
-                                                        >
-                                                            {e&&e.createdBy.login}
-                                                        </Typography>
-                                                        {` - ${e&&e.createdAt}`}
-                                                    </React.Fragment>
-                                                }
-                                            />
+                                        {order && order.comments.map(e => <> <ListItem alignItems="flex-start">
+                                                <ListItemAvatar>
+                                                    <UserAvatar clickable userId={e && e.createdBy.id}
+                                                                style={{width: "1.5em", height: "1.5em"}}/>
+                                                </ListItemAvatar>
+                                                <ListItemText
+                                                    primary={e && e.content}
+                                                    secondary={
+                                                        <React.Fragment>
+                                                            <Typography
+                                                                component="span"
+                                                                variant="body2"
+                                                                color="textPrimary"
+                                                            >
+                                                                {e && e.createdBy.login}
+                                                            </Typography>
+                                                            {` - ${e && e.createdAt}`}
+                                                        </React.Fragment>
+                                                    }
+                                                />
 
-                                            <PopupState variant="popover" popupId="demo-popup-menu"
-                                                        style={{float: "right"}}>
-                                                {(popupState) => (
-                                                    <React.Fragment>
+                                                <PopupState variant="popover" popupId="demo-popup-menu"
+                                                            style={{float: "right"}}>
+                                                    {(popupState) => (
+                                                        <React.Fragment>
 
-                                                        <IconButton
-                                                            aria-label="more"
-                                                            aria-controls="long-menu"
-                                                            aria-haspopup="true"
-                                                            style={{
-                                                                width: "1.5em",
-                                                                height: "1.5em",
-                                                                marginRight: "1em",
-                                                                marginTop: "0.5em"
-                                                            }}
-                                                            {...bindTrigger(popupState)}
-                                                        >
-                                                            <MoreVertIcon/>
-                                                        </IconButton>
+                                                            <IconButton
+                                                                aria-label="more"
+                                                                aria-controls="long-menu"
+                                                                aria-haspopup="true"
+                                                                style={{
+                                                                    width: "1.5em",
+                                                                    height: "1.5em",
+                                                                    marginRight: "1em",
+                                                                    marginTop: "0.5em"
+                                                                }}
+                                                                {...bindTrigger(popupState)}
+                                                            >
+                                                                <MoreVertIcon/>
+                                                            </IconButton>
 
-                                                        <Menu {...bindMenu(popupState)}>
-                                                            <MenuItem onClick={popupState.close}>Удалить
-                                                                сообщение</MenuItem>
-                                                            <MenuItem onClick={popupState.close}>Заблокировать
-                                                                автора</MenuItem>
-                                                        </Menu>
-                                                    </React.Fragment>
-                                                )}
-                                            </PopupState>
-                                        </ListItem>
-                                            <Divider variant="inset" component="li"/></>
-                                            )}
+                                                            <Menu {...bindMenu(popupState)}>
+                                                                <MenuItem onClick={()=> {deleteComment(e.id); popupState.close()}}>Удалить
+                                                                    сообщение</MenuItem>
+                                                                <MenuItem onClick={popupState.close}>Заблокировать
+                                                                    автора</MenuItem>
+                                                            </Menu>
+                                                        </React.Fragment>
+                                                    )}
+                                                </PopupState>
+                                            </ListItem>
+                                                <Divider variant="inset" component="li"/></>
+                                        )}
 
                                     </List>
 
@@ -303,6 +338,8 @@ function RequestControlPanel() {
                                             <SendIcon/>
                                         </IconButton>
                                     </Row>
+
+
                                 </TabPanel>
                                 <TabPanel value={value} index={4}>
                                     <Card>
@@ -338,6 +375,28 @@ function RequestControlPanel() {
                                             </Row>
                                         </Card.Body>
                                     </Card>
+
+                                    <br/>
+                                    <Card>
+                                        <Card.Body style={{textAlign: "left"}}>
+                                            <Row>
+                                                <Col sm={2}>
+                                                    <DropdownSimple text={'Статус'} options={[
+                                                        {key: 1, text: 'Модерация', value: 1},
+                                                        {key: 2, text: 'Проверенно', value: 2},
+                                                        {key: 3, text: 'Исполнение', value: 3},
+                                                        {key: 0, text: 'Закрыто', value: 0},
+                                                    ]} onChange={(e, data) => {
+                                                        console.log(data.value);
+                                                        console.log("agree");
+                                                        patchOrder({"status": Statuses.at(data.value)}, orderId).then(r => console.log(r));
+                                                    }}/>
+                                                </Col>
+                                                <Col>При необходимости можно перевести статус обращения в любое положение.<br/>Внимание! При установке статуса "Проверенно", сообщение будет сразу отправленно представителю администрации на рассмотрение!!!</Col>
+                                            </Row>
+                                        </Card.Body>
+                                    </Card>
+
                                 </TabPanel>
                             </div>
 
