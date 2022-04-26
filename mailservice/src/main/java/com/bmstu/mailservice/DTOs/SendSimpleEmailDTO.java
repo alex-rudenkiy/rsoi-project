@@ -1,4 +1,4 @@
-package com.bstu.diplommailservice.DTOs;
+package com.bmstu.mailservice.DTOs;
 
 import lombok.Data;
 

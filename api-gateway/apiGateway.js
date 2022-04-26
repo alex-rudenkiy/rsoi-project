@@ -9,6 +9,142 @@ var Minio = require('minio')
 var crypto = require("crypto");
 const cors = require('cors');
 const {parse, stringify, toJSON, fromJSON} = require('flatted');
+const fs = require('fs')
+const util = require('util')
+const { writeFileSync, readFileSync } = require("fs");
+const signer = require('node-signpdf')
+const PDFDocument = require('pdf-lib').PDFDocument
+
+
+
+
+
+PDFDocument.load(readFileSync("./pdfTemplateA.pdf")).then(async pdfDoc => {
+    // Get the form containing all the fields
+    const form = pdfDoc.getForm()
+
+// Get all fields in the PDF by their names
+    const field1 = form.getTextField('myfield1')
+    const field2 = form.getTextField('myfield2')
+    const field3 = form.getTextField('myfield3')
+
+// Fill in the basic info fields
+    field1.setText('Mario')
+    field2.setText('24 years')
+    field3.setText('24 yrs')
+
+
+
+
+    const pdfBytes = await pdfDoc.save()
+
+
+
+
+    fs.writeFile('letter.pdf', pdfBytes, () => {
+        console.log('PDF created!')
+        const signedPdf = signer.default.sign(
+            fs.readFileSync('letter.pdf'),
+            fs.readFileSync('client-identity.p12'),
+        );
+    })
+
+
+ /*   const pages = doc.getPages();
+    const form = pages.at(0).doc.getForm();
+    const fields = form.acroForm.getAllFields()
+    fields.forEach(field => {
+        const type = field.constructor.name
+        const name = field.getName()
+        console.log(`${type}: ${name}`)
+    })
+
+    pages[0].drawText('You can modify PDFs too!');
+
+    const pdfBytes = await doc.save()
+    fs.writeFile('letter.pdf', pdfBytes, () => {
+        console.log('PDF created!')
+    })*/
+})
+
+/*
+
+
+
+
+
+/!*!// Pipe its output somewhere, like to a file or HTTP response
+// See below for browser usage
+
+// Embed a font, set the font size, and render some text
+doc
+    .font('fonts/PalatinoBold.ttf')
+    .fontSize(25)
+    .text('Some text with an embedded font!', 100, 100);
+
+
+// Add another page
+doc
+    .addPage()
+    .fontSize(25)
+    .text('Here is some vector graphics...', 100, 100);
+
+// Draw a triangle
+doc
+    .save()
+    .moveTo(100, 150)
+    .lineTo(100, 250)
+    .lineTo(200, 250)
+    .fill('#FF3300');
+
+// Apply some transforms and render an SVG path with the 'even-odd' fill rule
+doc
+    .scale(0.6)
+    .translate(470, -380)
+    .path('M 250,75 L 323,301 131,161 369,161 177,301 z')
+    .fill('red', 'even-odd')
+    .restore();
+
+// Add some text with annotations
+doc
+    .addPage()
+    .fillColor('blue')
+    .text('Here is a link!', 100, 100)
+    .underline(100, 100, 160, 27, { color: '#0000FF' })
+    .link(100, 100, 160, 27, 'http://google.com/');
+
+// Finalize PDF file
+doc.end();*!/
+
+const data = {
+    "FIO": "Alice Alley",
+    "Text3": "Glue",
+    "date": "01/01/1990"
+}
+
+
+
+/!*
+
+async function createPdf(input, output) {
+    const readFile = util.promisify(fs.readFile)
+    function getStuff() {
+        return readFile(input)
+    }
+    const file = await getStuff()
+    const pdfDoc = await PDFDocument.load(file)
+    const form = pdfDoc.getForm()
+    Object.keys(data).forEach((element) => {
+        const field = form.getTextField(element)
+        field.setText(data[element])
+    })
+    const pdfBytes = await pdfDoc.save()
+    fs.writeFile(output, pdfBytes, () => {
+        console.log('PDF created!')
+    })
+}
+createPdf("pdfTemplate.pdf", "output.pdf");*!/
+
 
 var redis = require('redis');
 var redisClient = redis.createClient();
@@ -108,7 +244,7 @@ async function getTokenPayload(token) {
 }
 
 app.use(express.json())
-/*
+/!*
 app.use((req, res, next) => {
     if (req.headers.authorization) {
         jwt.verify(
@@ -132,7 +268,7 @@ app.use((req, res, next) => {
 
     next()
 })
-*/
+*!/
 
 // app.get("/token",function (request, response) {
 //     response.send("<h1>token</h1>");
@@ -601,7 +737,7 @@ app.post('/file', async (req, res) => {
                     console.log('File uploaded successfully.')
                 });
 
-                /*                //move photo to uploads directory
+                /!*                //move photo to uploads directory
                                 photo.mv('./uploads/' + photo.name);
 
                                 //push file details
@@ -609,7 +745,7 @@ app.post('/file', async (req, res) => {
                                     name: photo.name,
                                     mimetype: photo.mimetype,
                                     size: photo.size
-                                });*/
+                                });*!/
             });
 
             console.log(data);
@@ -626,4 +762,4 @@ app.post('/file', async (req, res) => {
 });
 
 
-app.listen(8888);
+app.listen(8888);*/

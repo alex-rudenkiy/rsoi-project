@@ -1,6 +1,6 @@
-package com.bstu.diplommailservice;
+package com.bmstu.mailservice;
 
-import com.bstu.diplommailservice.DTOs.SendEmailDTO;
+import com.bmstu.mailservice.DTOs.SendEmailDTO;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 
 @Controller
@@ -38,13 +36,13 @@ public class AttachmentEmailExampleController {
         helper.setSubject(d.getSubject());
         helper.setText(d.getContent());
 
-        int i=0;
+        int i = 0;
         for (String mf : d.getAttachments()) {
             String[] attachFilename = mf.split("[.]");
 
             //InputStream b = new ByteArrayInputStream(IOUtils.toByteArray(new URL(mf).openStream()));
             ByteArrayResource br = new ByteArrayResource(IOUtils.toByteArray(new URL(mf).openStream()));
-            helper.addAttachment(String.format("Attachment_%d.%s", i++, attachFilename[attachFilename.length-1]), br);
+            helper.addAttachment(String.format("Attachment_%d.%s", i++, attachFilename[attachFilename.length - 1]), br);
         }
 
         emailSender.send(message);

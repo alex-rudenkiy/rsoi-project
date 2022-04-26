@@ -1,6 +1,6 @@
-package com.bstu.diplommailservice;
+package com.bmstu.mailservice;
 
-import com.bstu.diplommailservice.DTOs.SendEmailDTO;
+import com.bmstu.mailservice.DTOs.SendEmailDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -14,7 +14,6 @@ public class SimpleEmailExampleController {
 
     @Autowired
     public JavaMailSender emailSender;
-
 
 
     @ResponseBody

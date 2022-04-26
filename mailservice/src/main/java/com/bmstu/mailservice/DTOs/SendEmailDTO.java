@@ -1,4 +1,4 @@
-package com.bstu.diplommailservice.DTOs;
+package com.bmstu.mailservice.DTOs;
 
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;

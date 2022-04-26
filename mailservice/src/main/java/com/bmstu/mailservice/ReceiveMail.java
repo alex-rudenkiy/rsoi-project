@@ -1,4 +1,4 @@
-package com.bstu.diplommailservice;
+package com.bmstu.mailservice;
 
 import com.google.common.collect.Sets;
 import com.sun.mail.pop3.POP3Store;
@@ -12,7 +12,7 @@ import java.util.*;
 
 @Component
 public class ReceiveMail {
-    public void receiveEmail(String pop3Host, int port, String storeType,String user,String password) {
+    public void receiveEmail(String pop3Host, int port, String storeType, String user, String password) {
         try {
             Properties properties = new Properties();
             properties.put("mail.pop3.ssl.enable", "true");
@@ -22,8 +22,7 @@ public class ReceiveMail {
             emailStore.connect(pop3Host, port, user, password);
 
 
-
-            Runnable r = ()->{
+            Runnable r = () -> {
                 int i = 0;
                 Set<Message> oldMessages = null;
 
@@ -66,9 +65,9 @@ public class ReceiveMail {
                         }*/
 
                         Set<Message> newMessages = new HashSet<>(Arrays.asList(emailFolder.getMessages()));
-                        Set<Message> deltaMessages = Sets.difference(newMessages,oldMessages);
+                        Set<Message> deltaMessages = Sets.difference(newMessages, oldMessages);
                         oldMessages = newMessages;
-                        System.out.println("deltaMessages.size = "+deltaMessages.size()+" "+((Message)(newMessages.toArray()[0])).getSubject());
+                        System.out.println("deltaMessages.size = " + deltaMessages.size() + " " + ((Message) (newMessages.toArray()[0])).getSubject());
 
                         /*Object[] al = newMessages.toArray();
                         for (int j = 0; j < al.length; j++) {
@@ -85,7 +84,7 @@ public class ReceiveMail {
                     }
 
 
-                    System.out.println("hi "+i++);
+                    System.out.println("hi " + i++);
 
                 }
             };
@@ -94,11 +93,10 @@ public class ReceiveMail {
 
             emailStore.close();
 
-        } catch (MessagingException e) {e.printStackTrace();}
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
-
-
-
 
 
 }
