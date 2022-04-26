@@ -28,18 +28,18 @@ app.use(fileUpload({
 }));
 
 const corsOptions = {
-    origin: ['http://localhost:3000'],
+    origin: [process.env.frontend_service_url],
     credentials: true,
 }
 app.use(cors(corsOptions))
 
 
-app.set('port', 8888);
+app.set('port', process.env.apigateway_port);
 const TOKEN_SECRET = '1a2b-3c4d-5e6f-7g8h'
 
 const services = {
-    'appeals': 'http://localhost:7180',
-    'users': 'http://localhost:7181'
+    'appeals': process.env.appeals_service_url,
+    'users': process.env.users_service_url
 }
 
 const config = {
@@ -61,8 +61,8 @@ const config = {
 // Instantiate the minio client with the endpoint
 // and access keys as shown below.
 var minioClient = new Minio.Client({
-    endPoint: 'localhost',
-    port: 9000,
+    endPoint: process.env.minio_service_endPoint,
+    port: process.env.minio_service_port,
     useSSL: false,
     accessKey: 'minio-root-user',
     secretKey: 'minio-root-password'
