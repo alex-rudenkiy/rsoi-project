@@ -15,6 +15,7 @@
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@material-ui/x-grid-data-generator": "^4.0.0-alpha.26",
     "@pmmmwh/react-refresh-webpack-plugin": "0.4.3",
+    "@semantic-ui-react/css-patch": "^1.0.0",
     "@storybook/react": "^6.1.17",
     "@svgr/webpack": "5.5.0",
     "@testing-library/jest-dom": "^5.11.9",
@@ -112,7 +113,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js",
+    "postinstall": "semantic-ui-css-patch"
   },
   "eslintConfig": {
     "extends": [
