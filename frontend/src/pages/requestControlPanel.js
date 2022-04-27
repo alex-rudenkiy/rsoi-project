@@ -1,13 +1,7 @@
-import logo from '../resources/easylogo.svg';
 import React, {useEffect, useState} from "react";
 import {Button, Col, Container, Image, ListGroup, Row} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
-import CustomizedTabs from "../components/menuTabs";
-import Navbar from "react-bootstrap/Navbar";
-import Nav from "react-bootstrap/Nav";
-import NavDropdown from "react-bootstrap/NavDropdown";
-import Form from "react-bootstrap/Form";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import PropTypes from "prop-types";
@@ -16,12 +10,9 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Card from "react-bootstrap/Card";
 import {Icon, Step} from 'semantic-ui-react'
-import Table from "react-bootstrap/Table";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import Avatar from "@material-ui/core/Avatar";
-import avatar from "../resources/avatar.jpg";
 import ListItemText from "@material-ui/core/ListItemText";
 import PopupState, {bindMenu, bindTrigger} from "material-ui-popup-state";
 import IconButton from "@material-ui/core/IconButton";
@@ -31,8 +22,6 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Divider from "@material-ui/core/Divider";
 import TextField from "@material-ui/core/TextField";
 import SendIcon from "@material-ui/icons/Send";
-import FolderList from "../components/FolderList";
-import {Link} from "react-router-dom";
 import HeaderNav from "../components/headerNav";
 import {
     BrowserRouter as Router,
@@ -43,9 +32,6 @@ import {
 import useBackendApi from "../logic/BackendApiHook";
 import {UserAvatar} from "../components/UserAvatar";
 import GalleryList from "../components/Gallery";
-import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
-import Paper from "@material-ui/core/Paper";
-import InputBase from "@material-ui/core/InputBase";
 import OrderTextBox from "../components/OrderTextBox";
 import DropdownSimple from "../components/DropdownSimple";
 

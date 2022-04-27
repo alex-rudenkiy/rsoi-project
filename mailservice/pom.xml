@@ -8,10 +8,10 @@
         <version>2.5.0-SNAPSHOT</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.bstu</groupId>
-    <artifactId>diplommailservice</artifactId>
+    <groupId>com.bmstu</groupId>
+    <artifactId>mailservice</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>diplommailservice</name>
+    <name>mailservice</name>
     <description>Demo project for Spring Boot</description>
     <properties>
         <java.version>11</java.version>

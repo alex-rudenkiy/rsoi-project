@@ -1,42 +1,24 @@
-import logo from '../resources/easylogo.svg';
 import React, {useEffect} from "react";
 import {Button, Col, Image, Row} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
-import Navbar from "react-bootstrap/Navbar";
-import Nav from "react-bootstrap/Nav";
-import NavDropdown from "react-bootstrap/NavDropdown";
 import FormControl from "@material-ui/core/FormControl";
-import Form from "react-bootstrap/Form";
-import col from "react-bootstrap/Col";
 import graffityImg from '../resources/graffity_image.png';
 import simg1 from "../resources/park.png";
 import simg2 from "../resources/vandalism.png";
 import simg3 from "../resources/park (1).png";
 import simg4 from "../resources/playing.png";
-import sponsorLogo1 from "../resources/sponsor1.png";
-import sponsorLogo2 from "../resources/sponsor2.png";
-import sponsorLogo3 from "../resources/sponsor3.png";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faVk, faTelegram, faDiscord} from '@fortawesome/free-brands-svg-icons'
 import {faMapMarker, faPhone} from "@fortawesome/free-solid-svg-icons";
 import {faEnvelope} from "@fortawesome/free-regular-svg-icons";
 import {faAt} from "@fortawesome/free-solid-svg-icons";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import Input from "@material-ui/core/Input";
-import SponsorLogo from "../components/SponsorLogo";
-import IconButton from "@material-ui/core/IconButton";
-import DeleteIcon from '@material-ui/icons/Delete';
 import {useHistory} from "react-router-dom";
 import HeaderNav from "../components/headerNav";
 import useBackendApi from "../logic/BackendApiHook";
-import CanvasDraw from "react-canvas-draw";
-import {ReactSketchCanvas} from "react-sketch-canvas";
 import ModalExampleModal from "../components/SematicModal";
-import axios from 'axios';
-import Cookie from 'js-cookie'
 
 function WelcomePage() {
 

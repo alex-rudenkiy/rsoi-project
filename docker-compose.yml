@@ -4,85 +4,24 @@ version: '3.7'
 networks:
   app-tier:
     driver: bridge
-    
-volumes:
-  grails-volume:
+
 
 services:
-  dbAppeals:
-    image: postgres:12.3
-    environment:
-      - POSTGRES_DB=database_appeal
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    volumes:
-      - ./initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
-      - postgres1:/var/lib/postgresql/data
-      #- ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      #- ./qwe.sql:/docker-entrypoint-initdb.d/init.sql
-      
-      #- ./init-database.sh:/docker-entrypoint-initdb.d/init-database.sh
-    #command: sh -c "sleep 5 && psql -h localhost -d postgres -U postgres -f /docker-entrypoint-initdb.d/init.sql"
-    #command: sh -c "gosu postgres postgres --single -jE < /docker-entrypoint-initdb.d/init.sql"
-    ports:
-      - 5432:5432
-    networks:
-      - app-tier
-      
-      
-  appeals:
-    image: micro/appeals
-    ports:
-      - '8080:8080'
-    environment:
-      - DB_HOST=dbAppeals
-      - DB_PORT=5432
-      - DB_NAME=database_appeal
+  reactFrontend:
+    image: micro/frontend
     build:
-        context: appeals
-        dockerfile: ../appeals/Dockerfile
-    #network_mode: host
-    networks:
-      - app-tier  
-    depends_on:
-      - dbAppeals    
-      
-  dbUsers:
-    image: postgres:12.3
-    environment:
-      - POSTGRES_DB=database_user
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    volumes:
-      - ./initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
-      - postgres2:/var/lib/postgresql/data
-      #- ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      #- ./qwe.sql:/docker-entrypoint-initdb.d/init.sql
-      
-      #- ./init-database.sh:/docker-entrypoint-initdb.d/init-database.sh
-    #command: sh -c "sleep 5 && psql -h localhost -d postgres -U postgres -f /docker-entrypoint-initdb.d/init.sql"
-    #command: sh -c "gosu postgres postgres --single -jE < /docker-entrypoint-initdb.d/init.sql"
+      context: frontend
+      dockerfile: ../frontend/Dockerfile
+    command: npm run start
     ports:
-      - 5433:5432
-    networks:
-      - app-tier      
+      - 8085:3000
+    volumes: 
+      - ./:/frontend
+      - /frontend/node_modules
 
-  users:
-    image: micro/users
-    ports:
-      - '8081:8080'
-    environment:
-      - DB_HOST=dbUsers
-      - DB_PORT=5432
-      - DB_NAME=database_user
-    build:
-        context: users
-        dockerfile: ../users/Dockerfile
-    #network_mode: host
+
     networks:
-      - app-tier  
-    depends_on:
-      - dbUsers   
+      - app-tier   
 volumes:
   postgres1:
   postgres2:

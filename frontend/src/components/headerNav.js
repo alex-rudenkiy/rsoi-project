@@ -1,5 +1,6 @@
 import Navbar from "react-bootstrap/Navbar";
-import logo from "../resources/easylogo.svg";
+
+import LogoIcon from '../resources/easylogo'
 import Nav from "react-bootstrap/Nav";
 import {Link} from "react-router-dom";
 import NavDropdown from "react-bootstrap/NavDropdown";
@@ -23,7 +24,7 @@ export default function HeaderNav(props) {
 
     return (
         <Navbar bg="none" expand="lg">
-            <Navbar.Brand href="#home"><img style={{width: "235px"}} src={logo}/></Navbar.Brand>
+            <Navbar.Brand href="#home"><img style={{width: "235px"}} src={LogoIcon}/></Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav"/>
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">

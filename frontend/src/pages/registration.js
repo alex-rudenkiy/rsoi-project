@@ -39,7 +39,6 @@ import okIcon from "../resources/ok_icon.svg";
 import IconButton from "@material-ui/core/IconButton";
 import RegistrationCarousel from "../components/RegistrationCarousel";
 import {useDropzone} from "react-dropzone";
-import ImageCropper from "../components/ImageCropper";
 import Modal from "react-bootstrap/Modal";
 import HeaderNav from "../components/headerNav";
 import useBackendApi from "../logic/BackendApiHook";
