@@ -75,8 +75,8 @@ const config = {
 // and access keys as shown below.
 console.log('==============>', process.env.minio_service_endPoint, ' ', process.env.minio_service_port);
 var minioClient = new Minio.Client({
-    endPoint: '0.0.0.0', //process.env.minio_service_endPoint
-    port: 9009,//Number(process.env.minio_service_port),
+    endPoint: process.env.minio_service_endPoint,
+    port: Number(process.env.minio_service_port),
     useSSL: false,
     accessKey: 'minio-root-user',
     secretKey: 'minio-root-password'

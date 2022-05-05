@@ -1,22 +1,151 @@
+# docker-compose build --parallel
+# docker-compose up -d --build
 version: '3.7'
-
 
 networks:
   app-tier:
     driver: bridge
+    
+volumes:
+  grails-volume:
+  postgres1:
+  postgres2:
 
 services:
-   
-  react-frontend:
-    container_name: hello-world
-    build:
-      context: myfixedapp
-      dockerfile: Dockerfile
-    volumes:
-      - '.:/app'
-      - '/app/node_modules'
+  s3:
+    image: minio/minio
     ports:
-      - 8086:80
+      - 9009:9000
+    volumes:
+      - ./storage/minio:/data
     environment:
-      - CHOKIDAR_USEPOLLING=true    
-    stdin_open: true
+      - MINIO_ACCESS_KEY=minio-root-user
+      - MINIO_SECRET_KEY=minio-root-password
+    command: server --address 0.0.0.0:9000 /data
+    networks:
+      - app-tier
+      
+      
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - 6379:6379
+    networks:
+      - app-tier
+      
+      
+  mailService:
+    image: micro/mailservice
+    environment:
+      - API_GATEWAY_IP=api_gateway
+      - API_GATEWAY_PORT=8084
+    build:
+      context: mailservice
+      dockerfile: ../mailservice/Dockerfile
+    volumes:
+      - /data/springboot-docker-compose-app
+    ports:
+      - 8082:8091
+    networks:
+      - app-tier
+   
+  reactFrontend:
+      image: micro/frontend
+      build:
+        context: myfixedapp
+        dockerfile: Dockerfile
+      volumes:
+        - '.:/app'
+        - '/app/node_modules'
+      ports:
+        - 8088:80
+      environment:
+        - CHOKIDAR_USEPOLLING=true    
+      stdin_open: true
+
+  apiGateway:
+    image: micro/gateway
+    environment:
+      - redis_service_endPoint=redis
+      - redis_service_port=6379
+      - minio_service_endPoint=s3
+      - minio_service_port=9009
+      - frontend_service_url=8088
+      - apigateway_port=8084
+      - appeals_service_url=appeals
+      - users_service_url=users
+
+    build:
+      context: api-gateway
+      dockerfile: ../api-gateway/Dockerfile
+    volumes:
+      - /data/springboot-docker-compose-app
+    ports:
+      - 8083:8091
+    networks:
+      - app-tier
+    depends_on:
+      - s3 
+      
+  dbAppeals:
+    image: postgres:12.3
+    environment:
+      - POSTGRES_DB=database_appeal
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      # - ./initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
+      - postgres1:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - app-tier
+      
+      
+  appeals:
+    image: micro/appeals
+    ports:
+      - '8091:8080'
+    environment:
+      - DB_HOST=dbAppeals
+      - DB_PORT=5432
+      - DB_NAME=database_appeal
+    build:
+        context: appeals
+        dockerfile: ../appeals/Dockerfile
+    networks:
+      - app-tier  
+    depends_on:
+      - dbAppeals    
+      
+  dbUsers:
+    image: postgres:12.3
+    environment:
+      - POSTGRES_DB=database_user
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      # - ./initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
+      - postgres2:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+    networks:
+      - app-tier      
+
+  users:
+    image: micro/users
+    ports:
+      - '8090:8080'
+    environment:
+      - DB_HOST=dbUsers
+      - DB_PORT=5432
+      - DB_NAME=database_user
+    build:
+        context: users
+        dockerfile: ../users/Dockerfile
+    networks:
+      - app-tier  
+    depends_on:
+      - dbUsers  
