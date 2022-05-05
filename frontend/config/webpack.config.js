@@ -45,8 +45,8 @@ const reactRefreshOverlayEntry = require.resolve(
 // makes for a smoother build process.
 const shouldInlineRuntimeChunk = process.env.INLINE_RUNTIME_CHUNK !== 'false';
 
-const emitErrorsAsWarnings = process.env.ESLINT_NO_DEV_ERRORS === 'true';
-const disableESLintPlugin = process.env.DISABLE_ESLINT_PLUGIN === 'true';
+const emitErrorsAsWarnings = true;//process.env.ESLINT_NO_DEV_ERRORS === 'true';
+const disableESLintPlugin = true;//process.env.DISABLE_ESLINT_PLUGIN === 'true';
 
 const imageInlineSizeLimit = parseInt(
   process.env.IMAGE_INLINE_SIZE_LIMIT || '10000'
@@ -718,7 +718,7 @@ module.exports = function (webpackEnv) {
           extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
           formatter: require.resolve('react-dev-utils/eslintFormatter'),
           eslintPath: require.resolve('eslint'),
-          emitWarning: isEnvDevelopment && emitErrorsAsWarnings,
+          emitWarning: true,//isEnvDevelopment && emitErrorsAsWarnings
           context: paths.appSrc,
           cache: true,
           cacheLocation: path.resolve(

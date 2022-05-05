@@ -20,6 +20,8 @@ import SettingsPage from "./pages/settings";
 import useBackendApi from './logic/BackendApiHook'
 import WebcamControl from "./pages/webcamControl";
 import OAuthRegisteredPage from "./pages/oAuthRegistered";
+import { Provider as BusProvider, useBus, useListener } from 'react-bus'
+import ReactMessageBox from "./components/ReactMessageBox";
 
 const theme = createMuiTheme({
     palette: {
@@ -33,11 +35,14 @@ const theme = createMuiTheme({
 
 ReactDOM.render(
     <React.StrictMode>
+        <BusProvider>
+
         {/*<ApiContext.Provider>*/}
             <ThemeProvider theme={theme}>
-
+                <ReactMessageBox/>
                 <Router>
                     <div>
+
                         <Route exact path="/">
                             <WelcomePage/>
                         </Route>
@@ -60,7 +65,7 @@ ReactDOM.render(
                         <Route path="/archive">
                             <ProblemsStorePage/>
                         </Route>
-                        <Route path="/settings">
+                        <Route path="/settings/:userId?">
                             <SettingsPage/>
                         </Route>
                         <Route path="/community">
@@ -69,14 +74,15 @@ ReactDOM.render(
                         <Route path="/smartcontrol">
                             <WebcamControl/>
                         </Route>
-
                         <Route path="/oauth/registered/:token">
                             <OAuthRegisteredPage/>
                         </Route>
                     </div>
                 </Router>
+
             </ThemeProvider>
         {/*</ApiContext.Provider>*/}
+        </BusProvider>
     </React.StrictMode>,
     document.getElementById('root')
 );

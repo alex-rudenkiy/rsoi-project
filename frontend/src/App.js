@@ -8,23 +8,18 @@ import Nav from "react-bootstrap/Nav";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import FormControl from "@material-ui/core/FormControl";
 import Form from "react-bootstrap/Form";
-import col from "react-bootstrap/Col";
 import graffityImg from "./resources/graffity_image.png";
 import simg1 from "./resources/park.png";
 import simg2 from "./resources/vandalism.png";
 import simg3 from "./resources/park (1).png";
 import simg4 from "./resources/playing.png";
 import sponsorLogo1 from "./resources/sponsor1.png";
-import sponsorLogo2 from "./resources/sponsor2.png";
-import sponsorLogo3 from "./resources/sponsor3.png";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faVk, faTelegram, faDiscord } from '@fortawesome/free-brands-svg-icons'
 import { faMapMarker, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
 import { faAt } from "@fortawesome/free-solid-svg-icons";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import Input from "@material-ui/core/Input";
 
 function App() {

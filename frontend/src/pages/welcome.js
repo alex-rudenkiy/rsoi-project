@@ -25,12 +25,7 @@ function WelcomePage() {
     const history = useHistory();
 
     const {
-        authentication, registration, fileUpload,
-        getUserInfo, checkAuth, logout, postOrder,
-        getOrderInfoById, getOrdersByOwnerId,
-        getCountOrdersByOwnerId, postComment, getAllOrders,
-        getLastCreated, addNewCamera, getCameraInfoById,
-        putCamMaskById, updateCameraInfoById, deleteCameraById
+        getOrderInfoById
     } = useBackendApi();
 
     const [openModal, setOpenModal] = React.useState(false)
@@ -76,10 +71,7 @@ function WelcomePage() {
 
     }, []);
 
-    const styles = {
-        border: "0.0625rem solid #9c9c9c",
-        borderRadius: "0.25rem",
-    };
+
     /*    var myCanvas = document.createElement('canvas');
         document.appendChild(myCanvas);
         //const MyPromise = require('some-promise-lib');
@@ -106,7 +98,7 @@ function WelcomePage() {
             }} onSubmit={(id) => {
                 console.log('onSubmit');
                 getOrderInfoById(id).then((res) => {
-                    if (res.id == id) {
+                    if (res.id === id) {
                         history.push(`/request/${res.id}`);
                     }
                 });

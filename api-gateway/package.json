@@ -18,6 +18,7 @@
     "pdffiller": "^0.0.11",
     "pdfkit": "^0.13.0",
     "redis": "^4.0.6",
+    "stream-buffers": "^3.0.2",
     "sugar": "^2.0.6"
   },
   "main": "apiGateway.js",

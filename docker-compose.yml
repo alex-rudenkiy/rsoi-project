@@ -5,23 +5,18 @@ networks:
   app-tier:
     driver: bridge
 
-
 services:
-  reactFrontend:
-    image: micro/frontend
+   
+  react-frontend:
+    container_name: hello-world
     build:
-      context: frontend
-      dockerfile: ../frontend/Dockerfile
-    command: npm run start
+      context: myfixedapp
+      dockerfile: Dockerfile
+    volumes:
+      - '.:/app'
+      - '/app/node_modules'
     ports:
-      - 8085:3000
-    volumes: 
-      - ./:/frontend
-      - /frontend/node_modules
-
-
-    networks:
-      - app-tier   
-volumes:
-  postgres1:
-  postgres2:
+      - 8086:80
+    environment:
+      - CHOKIDAR_USEPOLLING=true    
+    stdin_open: true

@@ -1,0 +1,9 @@
+img.swtchImg {
+    filter: grayscale(1);
+    opacity: .5;
+}
+
+img.swtchImg:hover {
+    filter: grayscale(0);
+    opacity: 1;
+}

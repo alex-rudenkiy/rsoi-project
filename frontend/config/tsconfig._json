@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "noEmitOnError": true,
+    "checkJs": false,
+    "outFile": "app.js"
+  }
+}

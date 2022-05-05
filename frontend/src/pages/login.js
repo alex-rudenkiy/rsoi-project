@@ -49,13 +49,21 @@ import ReactPlayer from 'react-player/lazy'
 import HeaderNav from "../components/headerNav";
 import {Link} from "react-router-dom";
 import useBackendApi from "../logic/BackendApiHook";
+import {useBus} from "react-bus";
+import ReactMessageBox from "../components/ReactMessageBox";
+import {toast} from "react-semantic-toasts";
 
 
 function LoginPage() {
     const { authentication, registration, fileUpload, getUserInfo, checkAuth } = useBackendApi();
     const [ textFieldsData, settextFieldsData ] = useState({"remember":false});
+    const bus = useBus();
 
-    useEffect(() => {checkAuth()},[])
+    useEffect(() => {
+        checkAuth();
+        // console.log('show');
+        // bus.emit('show', true);
+    },[])
 
     const EmbedsPage = () => {
         return (
@@ -66,6 +74,7 @@ function LoginPage() {
 
     return (
         <div className="App">
+
 {/*
             <RegistrationCarousel/>
 */}

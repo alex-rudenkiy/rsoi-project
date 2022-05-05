@@ -1,7 +1,9 @@
-import {useEffect, useState} from "react";
-import axios from 'axios';
 import * as React from "react";
+import axios from 'axios';
 import {useHistory} from "react-router-dom";
+import {toast} from "react-semantic-toasts";
+import * as Validator from 'validatorjs';
+import jwt from 'jwt-decode' // import dependency
 
 
 const useBackendApi = () => {
@@ -38,14 +40,16 @@ const useBackendApi = () => {
 
     function authentication(data) {
         console.log(data);
+
         axios.post(`${baseUrl}/token`, data)
             .then(res => {
-                if(res.data.length<5) return;
+                if (res.data.length < 5) return;
                 console.log(res.data);
                 localStorage.setItem("token", res.data);
                 let token = getLocalToken();
                 if (token === null) {
                     history.push('/login');
+
                 } else {
                     history.push('/profile');
                 }
@@ -67,7 +71,10 @@ const useBackendApi = () => {
 
     //login/oauth2/code/google
     async function oAuthAuthentication() {
-        let response = await fetch(`${baseUrl}/login/oauth2/code/get`, {credentials: 'include', mode: "cors"});
+        let response = await fetch(`${baseUrl}/login/oauth2/code/get`, {
+            credentials: 'include',
+            mode: "cors"
+        });
         let text = await response.json(); // прочитать тело ответа как текст
         //console.log(text);
 
@@ -79,15 +86,82 @@ const useBackendApi = () => {
             return null;
             //history.push('/login');
         }
-
-
     }
 
+    Validator.registerAsync('username_available', function (username, attribute, req, passes) {
+        // do your database/api checks here etc
+        // then call the `passes` method where appropriate:
+        // passes(); // if username is available
+        // passes(false, 'Username has already been taken.'); // if username is not available
+    });
+
+    function validAssert(data, rules) {
+        let validation = new Validator(data, rules);
+
+        if (!validation.check()) {
+            console.log();
+            toast({
+                    title: 'Внимание',
+                    description: < p > {
+                        Object.entries(validation.errors.errors).map(([key, value]) => value[0]).join(', ')
+                    } < /p>,
+                    size: 'tiny',
+                    type: 'warning'
+                },
+                () => console.log('toast closed'),
+                () => console.log('toast clicked'),
+                () => console.log('toast dismissed')
+            );
+        }
+
+        return validation.check();
+    }
+
+
+
     async function registration(data, redirect) {
-        let result = (await axios.post(`${baseUrl}/user`, data))
-        console.log("reg step1");
-        localStorage.setItem("token", result.data.token);
-        return result.data;
+        const rules = {
+            email: "required|email",
+            login: "required|min:3",
+            name: "required|min:3",
+            passwordHash: "required",
+            patronymic: "required|min:3",
+            surname: "required|min:3"
+        }
+
+        console.log(data);
+        if (validAssert(data, rules)) {
+            try {
+                let result = (await axios.post(`${baseUrl}/user`, {
+                    ...data,
+                    ...{
+                        mobilenumber: '0'
+                    }
+                }))
+                console.log("reg step1");
+                localStorage.setItem("token", result.data.token);
+                return result.data;
+            } catch (error) {
+                if (!error.response) {
+                    // network error
+                    toast({
+                        title: 'Внимание',
+                        description: < p > Ошибка сервера.Сервер не доступен! < /p>,
+                        size: 'tiny',
+                        type: 'error'
+                    });
+                } else {
+                    toast({
+                        title: 'Внимание',
+                        description: < p > {
+                            error.response.data.message
+                        } < /p>,
+                        size: 'tiny',
+                        type: 'warning'
+                    });
+                }
+            }
+        }
     }
 
 
@@ -108,23 +182,41 @@ const useBackendApi = () => {
 
         try {
             res = (await axios.get(`${baseUrl}/user`)).data;
-        }catch (e) {
+        } catch (e) {
             console.log('ERRRRORR!!');
         }
         return res;
     }
 
+    async function getAllRoles() {
+        let res;
+
+        try {
+            res = (await axios.get(`${baseUrl}/role`)).data;
+        } catch (e) {
+            console.log('ERRRRORR!!');
+        }
+        return res;
+    }
+
+    function getUserIdByToken() {
+        return jwt(getLocalToken()).id;
+    }
+
 
     async function getUserInfo(id, redirect) {
+        let res;
 
-        if (id === undefined) {
+        if (id === undefined || id === -1) {
             const t = getLocalToken();
             console.log("t=", t);
             try {
                 const r = (await axios.get(`${baseUrl}/token?jwt=${t}`)).data;
                 if (r.id === null && redirect) history.push('/login')
                 console.log(r);
-                return r;
+                res = (await axios.get(`${baseUrl}/user/${r.id}`)).data;
+                console.log(res);
+                return res;
             } catch (e) {
                 if (redirect)
                     history.push('/login');
@@ -137,11 +229,11 @@ const useBackendApi = () => {
 
 
         } else {
-            let res;
+
 
             try {
                 res = (await axios.get(`${baseUrl}/user/${id}`)).data;
-            }catch (e) {
+            } catch (e) {
                 console.log('ERRRRORR!!');
             }
             return res;
@@ -173,7 +265,8 @@ const useBackendApi = () => {
         }
 
         const result = await axios.post(`${baseUrl}/appeal`, {
-            ...data, ...{
+            ...data,
+            ...{
                 ownerToken: token,
                 title: `${data.category}. ${data.geoPosition.fullname}`
             }
@@ -201,6 +294,7 @@ const useBackendApi = () => {
                 token: token,
             }
         }
+
         const result = (await axios.get(`${baseUrl}/appeal/${id}`, cfg)).data;
 
         //const t = registration({ "name":data.name,"surname":data.surname, "patronymic":data.patronymic, "mobilenumber":data.mobilenumber });
@@ -208,14 +302,14 @@ const useBackendApi = () => {
         return result;
     }
 
-    async function updateUserInfo(data, redirect) {
+    async function updateUserInfo(id, data, redirect) {
         let token = await getLocalToken();
         const cfg = {
             headers: {
                 token: token,
             }
         }
-        return axios.put(`${baseUrl}/user`, data, cfg);
+        return axios.patch(`${baseUrl}/user/${id}`, data, cfg);
     }
 
     async function putCamMaskById(camid, maskFileFakeName) {
@@ -227,7 +321,9 @@ const useBackendApi = () => {
             }
         }
 
-        const result = (await axios.post(`${baseUrl}/mask/${camid}`, {maskFileFakeName: maskFileFakeName}, cfg)).data.value
+        const result = (await axios.post(`${baseUrl}/mask/${camid}`, {
+            maskFileFakeName: maskFileFakeName
+        }, cfg)).data.value
 
         return result;
     }
@@ -236,11 +332,10 @@ const useBackendApi = () => {
         let result = null;
         let cfg = {
             headers: {
-                token: "",
+                token: await getLocalToken(),
             }
         }
-
-        if (id == null) {
+        if (id == null || id === -1) {
             let token;
             token = await getLocalToken(id);
             cfg = {
@@ -249,10 +344,10 @@ const useBackendApi = () => {
                 }
             }
             console.log(result);
-            id = -1;
+            id = jwt(token).id;
             //const t = registration({ "name":data.name,"surname":data.surname, "patronymic":data.patronymic, "mobilenumber":data.mobilenumber });
         }
-        result = (await axios.get(`${baseUrl}/appeal?page=${pageN - 1}&size=${sizeN}&id=${id}`, cfg)).data;
+        result = (await axios.get(`${baseUrl}/appeal?page=${pageN - 1}&size=${sizeN}&filter=${JSON.stringify({authorid : id})}`, cfg)).data;
         return result;
     }
 
@@ -283,7 +378,10 @@ const useBackendApi = () => {
                 token: await getLocalToken(orderId),
             }
         }
-        const result = (await axios.post(`${baseUrl}/comment`, {appeal: orderId, content: content}, cfg)).data;
+        const result = (await axios.post(`${baseUrl}/comment`, {
+            appeal: orderId,
+            content: content
+        }, cfg)).data;
         return result;
     }
 
@@ -295,6 +393,18 @@ const useBackendApi = () => {
         }
         const result = await axios.delete(`${baseUrl}/moderator/comment/${commentId}`, cfg);
         console.log(result);
+        return result;
+    }
+
+    async function deleteUser(userId) {
+        const cfg = {
+            headers: {
+                token: getLocalToken(),
+            }
+        }
+        const result = await axios.delete(`${baseUrl}/moderator/user/${userId}`, cfg);
+        console.log(result);
+        logout();
         return result;
     }
 
@@ -371,14 +481,34 @@ const useBackendApi = () => {
     }
 
     return {
-        authentication, registration, fileUpload,
-        getUserInfo, checkAuth, logout, postOrder,
-        getOrderInfoById, getOrdersByOwnerId,
-        getCountOrdersByOwnerId, postComment, getAllOrders,
-        getLastCreated, addNewCamera, getCameraInfoById,
-        putCamMaskById, updateCameraInfoById, deleteCameraById,
-        getAllAppealCategory, updateUserInfo, updateUserPassword,
-        oAuthAuthentication, patchOrder, deleteComment, getAllUsers,
+        authentication,
+        registration,
+        fileUpload,
+        getUserInfo,
+        checkAuth,
+        logout,
+        postOrder,
+        getOrderInfoById,
+        getOrdersByOwnerId,
+        getCountOrdersByOwnerId,
+        postComment,
+        getAllOrders,
+        getLastCreated,
+        addNewCamera,
+        getCameraInfoById,
+        putCamMaskById,
+        updateCameraInfoById,
+        deleteCameraById,
+        getAllAppealCategory,
+        updateUserInfo,
+        updateUserPassword,
+        oAuthAuthentication,
+        patchOrder,
+        deleteComment,
+        getAllUsers,
+        deleteUser,
+        getUserIdByToken,
+        getAllRoles
     };
 }
 

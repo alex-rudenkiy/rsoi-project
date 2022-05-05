@@ -1,19 +1,22 @@
-# build env
-FROM node:13.12.0-alpine as build
+# Step 1
+
+FROM node:10-alpine as build-step
+
+RUN mkdir /app
+
 WORKDIR /app
-COPY package*.json .
+
+#COPY package.json /app
+
 #RUN npm install
-RUN npm ci
-#RUN npm install --dev @semantic-ui-react/css-patch
-RUN npm i react-scripts
-COPY . .
 
-RUN npm run build
-CMD [ "npm", "run", "start" ]
+#COPY . /app
+COPY ./build /app
+RUN npm install -g serve
+CMD ["cd", "frontend"]
+#CMD ["serve", "-l", "3456", "-s", "build"]
 
-# production env
-#FROM nginx:stable-alpine
-#COPY --from=build /app/build /usr/share/nginx/html
-#EXPOSE 80
-#CMD ["nginx", "-g", "daemon off;"]
- 
+
+#RUN serve -s build
+
+#RUN npm run build

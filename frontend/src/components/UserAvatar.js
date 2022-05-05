@@ -11,7 +11,11 @@ import Badge from "@material-ui/core/Badge";
 import {Link} from "react-router-dom";
 import {Button, Popup} from "semantic-ui-react";
 
-export function UserAvatar(props) {
+interface IUserInfo {
+    userInfo: any;
+}
+
+export function UserAvatar(props: IUserInfo) {
     const {authentication, registration, fileUpload, getUserInfo} = useBackendApi();
 
     const [userData, setUserData] = useState();
@@ -28,14 +32,15 @@ export function UserAvatar(props) {
             </div>
         ));*/
 
-    useEffect(() => {
+  /*  useEffect(() => {
         console.log("here we go");
         getUserInfo(props.userId).then((e) => console.log('e=',e));
 
         getUserInfo(props.userId).then((e) => setUserData(e.data));
 
-    }, []);
+    }, []);*/
 
+/*
     useEffect(() => () => {
         // Make sure to revoke the data uris to avoid memory leaks
         //files.forEach(file => URL.revokeObjectURL(file.preview));
@@ -43,6 +48,7 @@ export function UserAvatar(props) {
         //alert(`http:\\\\localhost:8888\\\\files\\\\preview\\\\${userData.avatarFileFakeUrl}`);
         //console.log(`http:\\\\localhost:8888\\\\file\\\\preview\\\\${userData.avatarFileFakeUrl}`);
     }, [userData]);
+*/
 
     return (
         <Badge
@@ -53,7 +59,7 @@ export function UserAvatar(props) {
             }}
             badgeContent={
                 <Row>
-                    {userData&&userData.socialLink&&props.withlinks&&userData.socialLink.map(s =>
+                    {/*{userInfo.socialLink&&props.withlinks&&userData.socialLink.map(s =>
                             <Popup content={`${s.socialType.endpoint.replace("%",s.payload)}`}
                                    trigger={ <IconButton style={{width: "1em", height: "1em", padding: "0"}} color="primary" aria-label="add to shopping cart"
                                    onClick={()=>window.open(`${s.socialType.endpoint.replace("%",s.payload)}`)}>
@@ -62,7 +68,7 @@ export function UserAvatar(props) {
 
                             </IconButton>
                             } />
-                        )}
+                        )}*/}
 
 {/*
                      <Popup content='Add users to your feed' trigger={<Button icon='add' />} />

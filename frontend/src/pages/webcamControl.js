@@ -1,90 +1,44 @@
-import logo from '../resources/logo.png';
 import React, {useEffect, useRef, useState} from "react";
-import {Carousel, Col, Image, Modal, Row} from 'react-bootstrap';
+import {Col, Image, Modal, Row} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
-import Navbar from "react-bootstrap/Navbar";
-import Nav from "react-bootstrap/Nav";
-import NavDropdown from "react-bootstrap/NavDropdown";
 import FormControl from "@material-ui/core/FormControl";
-import Form from "react-bootstrap/Form";
-import col from "react-bootstrap/Col";
-import graffityImg from '../resources/graffity_image.png';
-import simg1 from "../resources/park.png";
-import simg2 from "../resources/vandalism.png";
-import simg3 from "../resources/park (1).png";
-import simg4 from "../resources/playing.png";
-import avatar from "../resources/avatar.jpg";
-import sponsorLogo2 from "../resources/sponsor2.png";
-import sponsorLogo3 from "../resources/sponsor3.png";
-import notfounded from "../resources/urban-681.svg";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faVk, faTelegram, faDiscord } from '@fortawesome/free-brands-svg-icons'
-import { faMapMarker, faPhone } from "@fortawesome/free-solid-svg-icons";
-import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
-import { faAt } from "@fortawesome/free-solid-svg-icons";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faDiscord, faTelegram, faVk} from '@fortawesome/free-brands-svg-icons'
+import {faAt, faMapMarker, faPhone} from "@fortawesome/free-solid-svg-icons";
+import {faEnvelope} from "@fortawesome/free-regular-svg-icons";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import Input from "@material-ui/core/Input";
-import TopImagePreview from "../resources/topImagePreview.png";
 import Avatar from "@material-ui/core/Avatar";
-import Grid from "@material-ui/core/Grid";
-import Divider from "@material-ui/core/Divider";
-import ViewsIcon from "@material-ui/icons/Visibility";
-import MessageIcon from "@material-ui/icons/Message";
-import Pagination from "@material-ui/lab/Pagination";
-import Calendar from "react-responsive-carousel/lib/styles/carousel.css"
-import templateImage from "../resources/default-social-8-96d057f8e815a2ed90ed7e8808a2c7e3.png"
 import IconButton from "@material-ui/core/IconButton";
-import vkIcon from "../resources/vk_icon.svg";
-import googleIcon from "../resources/google_icon.svg";
-import okIcon from "../resources/ok_icon.svg";
-import Badge from "@material-ui/core/Badge";
 import HeaderNav from "../components/headerNav";
-import {UserAvatar} from "../components/UserAvatar";
 import useBackendApi from "../logic/BackendApiHook";
-import {useParams} from "react-router-dom";
 import ListItem from "@material-ui/core/ListItem";
 import AddIcon from '@material-ui/icons/Add';
-import {ExpandLess, ExpandMore, StarBorder} from "@material-ui/icons";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
 import List from "@material-ui/core/List";
-import Collapse from "@material-ui/core/Collapse";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListSubheader from "@material-ui/core/ListSubheader";
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
-import SendIcon from '@material-ui/icons/Send';
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import Checkbox from "@material-ui/core/Checkbox";
 import {ReactSketchCanvas} from "react-sketch-canvas";
 import TextField from "@material-ui/core/TextField";
-import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
 import {EditableOpenMap} from "../components/Openmap";
 import DeleteIcon from '@material-ui/icons/Delete';
-import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
 import Button from "@material-ui/core/Button";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Card from "@material-ui/core/Card";
-import {Dropdown, Header, Icon, Segment} from "semantic-ui-react";
+import {Dropdown, Header, Icon, Placeholder, Segment} from "semantic-ui-react";
 import {Alert, AlertTitle} from "@material-ui/lab";
-import { Placeholder } from 'semantic-ui-react'
 import SaveIcon from '@material-ui/icons/Save';
 import ControlledAccordions from "../components/ControlledAccordions";
-import VideocamOffIcon from '@material-ui/icons/VideocamOff';
 
 function WebcamControl() {
-    var Carousel = require('react-responsive-carousel').Carousel;
+    // require('react-responsive-carousel').Carousel;
     const {
-        authentication, registration, fileUpload,
-        getUserInfo, checkAuth, logout, postOrder,
-        getOrderInfoById, getOrdersByOwnerId,
-        getCountOrdersByOwnerId, postComment, getAllOrders,
-        getLastCreated, addNewCamera, getCameraInfoById,
+        getUserInfo, addNewCamera, getCameraInfoById,
         putCamMaskById, updateCameraInfoById, deleteCameraById
     } = useBackendApi();
     const [show, setShow] = useState(false);
@@ -250,7 +204,7 @@ function WebcamControl() {
 
     useEffect(async ()=>{
         const u = (await getUserInfo()).data;
-        var r = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/;
+
 
         setListUserCameras(u.selfCameras.map(c=>{
             const labelId = `checkbox-list-secondary-label-${c.id}`;
@@ -295,10 +249,7 @@ function WebcamControl() {
     },[forceRefresh]);
 
 
-    const styles = {
-        border: "0.0625rem solid #9c9c9c",
-        borderRadius: "0.25rem",
-    };
+
 
 
     return (

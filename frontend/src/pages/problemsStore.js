@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Button, Col, Container, Image, Jumbotron, Row} from 'react-bootstrap';
+import {Button, Col, Container, Image, Row} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
 import FormControl from "@material-ui/core/FormControl";
@@ -17,6 +17,7 @@ import {ExampleModalMap} from '../components/ExempleModalMap.js';
 import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
 import IconButton from "@material-ui/core/IconButton";
 //import { MDBContainer, MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter } from 'mdbreact';
+import { useBus } from 'react-bus'
 
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -29,24 +30,20 @@ import _ from "lodash";
 
 function ProblemsStorePage() {
     const {
-        authentication, registration, fileUpload,
-        getUserInfo, checkAuth, logout, postOrder,
-        getOrderInfoById, getOrdersByOwnerId,
-        getCountOrdersByOwnerId, postComment, getAllOrders,
-        getLastCreated, addNewCamera, getCameraInfoById,
-        putCamMaskById
+        getAllOrders,
+        getLastCreated
     } = useBackendApi();
 
-    const mdbreact = require('mdbreact');
-    const {MDBModal, MDBModalHeader, MDBModalBody, MDBBtn, MDBModalFooter} = mdbreact;
-    var Carousel = require('react-responsive-carousel').Carousel;
+    // require('mdbreact');
+
+    // require('react-responsive-carousel').Carousel;
     var Blur = require('react-blur').default;
-    const [modalOrderId, setModalOrderId] = useState();
+    const [, setModalOrderId] = useState();
     const [liveMarkers, setLiveMarkers] = useState();
     const [topAppealBanner, setTopAppealBanner] = useState();
     const [paginationParams, setPaginationParams] = useState({page:0, count:0});
     const [pageListOrders, setPageListOrders] = useState();
-
+    const bus = useBus()
     // useEffect(()=>{
     //     console.log("zmq go");
     //     // subber.js
@@ -61,12 +58,13 @@ function ProblemsStorePage() {
     //     });
     //
     // },[zmq]);
+    //modalOrderId
 
     useEffect(()=>{
         getAllOrders(paginationParams.page, 10).then(o=>{
             setPaginationParams({...paginationParams, ...{count:o.total}});
             setPageListOrders(o.content.map(e=>
-                <button type="button" className="list-group-item list-group-item-action" onClick={()=>setModalOrderId(e.id)}>
+                <button type="button" className="list-group-item list-group-item-action" onClick={()=>bus.emit('openAppealCardModal', {orderId: e.id})}>
                     <Row style={{marginLeft: "1em"}}>
                         <Image style={{maxWidth: "4em", maxHeight: "4em"}} src={e.attachments&&`http:\\\\localhost:8888\\file\\preview\\${e.attachments[0]}`}  fluid/>
                         <Col>
@@ -147,7 +145,7 @@ function ProblemsStorePage() {
                                 <Row className={"row pr-5 mt-3"} style={{color: "white"}}>
                                     <Button variant="btn btn-outline-primary w-25 btn-sm"
                                             style={{color: "white"}}
-                                            onClick={() => setModalOrderId(id)}>Открыть</Button>
+                                            onClick={()=>bus.emit('openAppealCardModal', {orderId: id})}>Открыть</Button>
                                 </Row>
 
                             </div>
@@ -167,7 +165,7 @@ function ProblemsStorePage() {
 
         getAllOrders().then(o => setLiveMarkers(o.map(e => {console.log(e);return <Marker position={[e.geoPosition.lat, e.geoPosition.lon]}
                                                                    eventHandlers={{
-                                                                       click: (c) => {
+                                                                       click: () => {
                                                                            console.log(e.id);
                                                                            setModalOrderId(e.id)
                                                                        },
@@ -186,10 +184,7 @@ function ProblemsStorePage() {
     return (
         <div className="App">
 
-
-            {
-                modalOrderId && <ModalOrder orderId={modalOrderId} selfClose={() => setModalOrderId(null)}/>
-            }
+            <ModalOrder/>
 
 
             <div>
