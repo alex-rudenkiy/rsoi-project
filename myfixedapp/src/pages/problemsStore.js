@@ -68,7 +68,7 @@ function ProblemsStorePage() {
             setPageListOrders(o.content.map(e =>
                 <button type="button" className="list-group-item list-group-item-action" onClick={() => bus.emit('openAppealCardModal', { orderId: e.id })}>
                     <Row style={{ marginLeft: "1em" }}>
-                        <Image style={{ maxWidth: "4em", maxHeight: "4em" }} src={e.attachments && `http:\\\\localhost:8888\\file\\preview\\${e.attachments[0]}`} fluid />
+                        <Image style={{ maxWidth: "4em", maxHeight: "4em" }} src={e.attachments && `http://${process.env.API_GATEWAY_IP}:${process.env.API_GATEWAY_PORT}/file/preview/${e.attachments[0]}`} fluid />
                         <Col>
                             <p className="text-left" style={{ marginBottom: "auto" }}>{e.title}</p>
                             <p className="text-left" style={{ color: "Silver", fontSize: "smaller" }}>
@@ -180,7 +180,7 @@ function ProblemsStorePage() {
         })));
         getLastCreated().then((c) => {
             //alert(c.attachments[0]);
-            setTopAppealBanner(createAppealBanner(c.id, `http://localhost:8888/file/preview/${c.attachments[0]}`, c.title, c.description, c.views, c.comments));
+            setTopAppealBanner(createAppealBanner(c.id, `http://${process.env.API_GATEWAY_IP}/file/preview/${c.attachments[0]}`, c.title, c.description, c.views, c.comments));
         });
 
     }, [])

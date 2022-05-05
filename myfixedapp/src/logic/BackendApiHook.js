@@ -182,7 +182,7 @@ const useBackendApi = () => {
         formData.append('fileType', data.fileType);
         //formData.append('token',data.token);
 
-        return fetch('http://localhost:8888/file/', {
+        return fetch(`${baseUrl}/file/`, {
             method: 'POST',
             body: formData
         })

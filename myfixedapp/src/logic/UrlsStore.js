@@ -2,7 +2,7 @@ import useBackendApi from "./BackendApiHook";
 
 const useUrlStore = () => {
     function getBackendUrl() {
-        return "http://localhost:8888";
+        return `http://${process.env.API_GATEWAY_IP}:${process.env.API_GATEWAY_PORT}`;
     }
     return {getBackendUrl}
 }

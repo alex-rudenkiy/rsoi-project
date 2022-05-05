@@ -90,8 +90,8 @@ export function UserAvatar(props: IUserInfo) {
             }
         >
             {props.clickable?<Link to={`/profile/${userData&&userData.id}`}>
-                <Avatar alt="Remy Sharp" src={userData&&`http:\\\\localhost:8888\\file\\preview\\${userData.avatarFileFakeUrl}`} style={props.style}/>
-            </Link>:<Avatar alt="Remy Sharp" src={userData&&`http:\\\\localhost:8888\\file\\preview\\${userData.avatarFileFakeUrl}`} style={props.style}/>}
+                <Avatar alt="Remy Sharp" src={userData&&`http://${process.env.API_GATEWAY_IP}:${process.env.API_GATEWAY_PORT}/file/preview/${userData.avatarFileFakeUrl}`} style={props.style}/>
+            </Link>:<Avatar alt="Remy Sharp" src={userData&&`http://${process.env.API_GATEWAY_IP}:${process.env.API_GATEWAY_PORT}/file/preview/${userData.avatarFileFakeUrl}`} style={props.style}/>}
 
         </Badge>
 

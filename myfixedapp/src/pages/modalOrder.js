@@ -117,7 +117,7 @@ function ModalOrder() {
                         <div
                             className="col-sm-8 pl-0"
                             style={{
-                                backgroundImage: `url(http://localhost:8888/file/preview/${orderInfo?.attachments[0]})`,
+                                backgroundImage: `url(http://${process.env.API_GATEWAY_IP}:${process.env.API_GATEWAY_PORT}/file/preview/${orderInfo?.attachments[0]})`,
                                 backgroundPosition: "center",
                                 backgroundRepeat: "no-repeat",
                                 backgroundSize: "cover",

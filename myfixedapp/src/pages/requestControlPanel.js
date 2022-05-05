@@ -285,7 +285,7 @@ function RequestControlPanel() {
                                         photos={
                                             order &&
                                             order.attachments.map((e) => ({
-                                                src: `http://localhost:8888/file/preview/${e}`,
+                                                src: `http://${process.env.API_GATEWAY_IP}:${process.env.API_GATEWAY_PORT}/file/preview/${e}`,
                                                 width: 4,
                                                 height: 3,
                                             }))
