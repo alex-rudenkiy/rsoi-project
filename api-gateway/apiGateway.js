@@ -23,7 +23,7 @@ console.log('redis url === ' + "redis://"+process.env.redis_service_endPoint + "
 var redisClient = redis.createClient({
 	//host: "redis", //process.env.redis_service_endPoint
     //port: 7489, //process.env.redis_service_port
-	url: 'redis://redis:7489'
+	url: "redis://"+process.env.redis_service_endPoint + ":" + process.env.redis_service_port
 });
 
 redisClient.connect();
@@ -881,7 +881,7 @@ app.post('/file', async (req, res) => {
                         'example': 5678,
                     }
 
-                    minioClient.putObject('filespace', data.at(data.length - 1), photo.data, photo.data.length, metaData, function (err, etag) {
+                    minioClient.putObject('filespace', data[data.length - 1], photo.data, photo.data.length, metaData, function (err, etag) {
                         if (err) return console.log(err)
                         console.log('File uploaded successfully.')
 
@@ -906,7 +906,7 @@ app.post('/file', async (req, res) => {
                     'example': 5678,
                 }
 
-                minioClient.putObject('filespace', data.at(data.length - 1), photo.data, photo.data.length, metaData, function (err, etag) {
+                minioClient.putObject('filespace', data[data.length - 1], photo.data, photo.data.length, metaData, function (err, etag) {
                     if (err) return console.log(err)
                     console.log('File uploaded successfully.')
 

@@ -92,13 +92,15 @@ function UserProfilePage() {
             console.log('u=',u);*/
     }, []);
 
-    useEffect(async () => {
+    useEffect(() => {
         console.log("let's go");
         //getUserInfo(undefined, true).then(e=>console.log("gg", e));
         try {
-            const c = await getCountOrdersByOwnerId();
-            setPagesCount(Math.ceil(c / pageSize));
-            setCountOrders(c);
+            getCountOrdersByOwnerId().then(c => {
+                setPagesCount(Math.ceil(c / pageSize));
+                setCountOrders(c);
+            })
+
         } catch (e) {}
     }, [currentPage]);
 

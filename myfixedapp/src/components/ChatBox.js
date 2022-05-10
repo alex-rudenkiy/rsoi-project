@@ -17,6 +17,7 @@ import { stringAvatar } from "../utils";
 
 interface IChatBox {
     orderInfo: any;
+    onDelete: any;
 }
 
 function ChatBox(props:IChatBox) {
@@ -85,6 +86,7 @@ function ChatBox(props:IChatBox) {
                                             onClick={() => {
                                                 deleteComment(e.id);
                                                 popupState.close();
+                                                props.onDelete();
                                             }}
                                         >
                                             Удалить сообщение

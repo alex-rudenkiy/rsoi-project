@@ -29,10 +29,11 @@ import DoneAllIcon from "@material-ui/icons/DoneAll";
 import DateRangeIcon from "@material-ui/icons/DateRange";
 import HeaderNav from "../components/headerNav";
 import useBackendApi from "../logic/BackendApiHook";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useBus} from "react-bus";
 import ModalEditor from "../components/ModalEditor";
 import { Footer } from "../components/footer";
+import {stringAvatar} from "../utils";
 
 function LeaderBoardPage() {
     // const mdbreact = require("mdbreact");
@@ -85,11 +86,10 @@ function LeaderBoardPage() {
                                         className="list-group-item list-group-item-action"
                                     >
                                         <Row style={{ marginLeft: "1em" }}>
-                                            <Avatar
-                                                alt="Remy Sharp"
-                                                src={avatar}
-                                                style={{ width: "2em", height: "2em", margin: "auto" }}
-                                            />
+
+                                            <Link to={`/profile/${u.id}`} style={{ width: "auto",  margin: "auto" }}>
+                                                <Avatar {...stringAvatar(u.login)}  />
+                                            </Link>
 
                                             <Col onClick={() => gotoProfile(u.id)}>
                                                 <p

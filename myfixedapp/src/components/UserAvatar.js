@@ -10,6 +10,7 @@ import avatar from "../resources/avatar.jpg";
 import Badge from "@material-ui/core/Badge";
 import {Link} from "react-router-dom";
 import {Button, Popup} from "semantic-ui-react";
+import useUrlStore from "../logic/UrlsStore";
 
 interface IUserInfo {
     userInfo: any;
@@ -20,6 +21,9 @@ export function UserAvatar(props: IUserInfo) {
 
     const [userData, setUserData] = useState();
     const [socialLinks, setSocialLinks] = useState();
+
+    const {getBackendUrl} = useUrlStore();
+    const baseUrl = getBackendUrl();
 
     /*    const thumbs = files.map(file => (
             <div style={thumb} key={file.name}>
@@ -90,8 +94,8 @@ export function UserAvatar(props: IUserInfo) {
             }
         >
             {props.clickable?<Link to={`/profile/${userData&&userData.id}`}>
-                <Avatar alt="Remy Sharp" src={userData&&`http://${process.env.API_GATEWAY_IP}:${process.env.API_GATEWAY_PORT}/file/preview/${userData.avatarFileFakeUrl}`} style={props.style}/>
-            </Link>:<Avatar alt="Remy Sharp" src={userData&&`http://${process.env.API_GATEWAY_IP}:${process.env.API_GATEWAY_PORT}/file/preview/${userData.avatarFileFakeUrl}`} style={props.style}/>}
+                <Avatar alt="Remy Sharp" src={userData&&`${baseUrl}/file/preview/${userData.avatarFileFakeUrl}`} style={props.style}/>
+            </Link>:<Avatar alt="Remy Sharp" src={userData&&`${baseUrl}/file/preview/${userData.avatarFileFakeUrl}`} style={props.style}/>}
 
         </Badge>
 

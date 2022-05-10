@@ -27,6 +27,7 @@ import { useListener } from "react-bus";
 import ChatBox from "../components/ChatBox";
 import {format} from "date-fns";
 import './fix.css';
+import useUrlStore from "../logic/UrlsStore";
 
 function ModalOrder() {
     const { getUserInfo, getOrderInfoById, postComment, deleteComment } = useBackendApi();
@@ -37,6 +38,9 @@ function ModalOrder() {
     const [forceRedraw, setForceRedraw] = useState(false);
     const [currentOrderId, setCurrentOrderId] = useState();
     const [isOpen, setIsOpen] = useState(false);
+
+    const {getBackendUrl} = useUrlStore();
+    const baseUrl = getBackendUrl();
 
     /*   useEffect(() => {
              orderInfo && getUserInfo(orderInfo.authorid).then(e=>setAuthorInfo(e));
@@ -117,7 +121,7 @@ function ModalOrder() {
                         <div
                             className="col-sm-8 pl-0"
                             style={{
-                                backgroundImage: `url(http://${process.env.API_GATEWAY_IP}:${process.env.API_GATEWAY_PORT}/file/preview/${orderInfo?.attachments[0]})`,
+                                backgroundImage: `url(${baseUrl}/file/preview/${orderInfo?.attachments[0]})`,
                                 backgroundPosition: "center",
                                 backgroundRepeat: "no-repeat",
                                 backgroundSize: "cover",

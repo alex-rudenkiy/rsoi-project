@@ -82,7 +82,7 @@ services:
       - gateway_port=8099
       - appeals_service_url=http://appeals:8080
       - users_service_url=http://users:8080
-      - email_service_url=http://mailService:7489
+      - email_service_url=http://mailService:8082
     #command: bash -c 'while !</dev/tcp/appeals/8090; do sleep 1; done; npm start'
     build:
       context: api-gateway

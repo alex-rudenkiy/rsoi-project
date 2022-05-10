@@ -1244,3 +1244,4 @@ api-gateway/uploads/DSC_0182.JPG
 api-gateway/uploads/DSC_0183.JPG
 mailservice/src/main/java/com/bmstu/mailservice/MailConfig.java
 mailservice/src/main/java/com/bmstu/mailservice/MailserviceApplication.java
+mailservice/src/main/java/com/bmstu/mailservice/MailConfig.java

@@ -118,11 +118,14 @@ function Previews(props) {
                 Accept: 'application/json',
                 'Content-Type': 'multipart/form-data',
             },
-        }).then(e => links.push(e.data.fileFakeName))
+        }).then(e => {
+            links.push(e.data.fileFakeName)
+            setFilesLinks(e.data.fileFakeName);
+            console.log(e.data.fileFakeName);
+            props.onUploaded(e.data.fileFakeName);
+        })
 
-        setFilesLinks(links[0]);
-        console.log(links[0]);
-        props.onUploaded(links[0]);
+
 
             /*    for (const file of files) {
                     URL.revokeObjectURL(file.preview);

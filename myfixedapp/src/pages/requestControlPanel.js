@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Button, Col, Row} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../App.css";
@@ -29,6 +29,8 @@ import {UserAvatar} from "../components/UserAvatar";
 import GalleryList from "../components/Gallery";
 import OrderTextBox from "../components/OrderTextBox";
 import DropdownSimple from "../components/DropdownSimple";
+import useUrlStore from "../logic/UrlsStore";
+import ChatBox from "../components/ChatBox";
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -144,19 +146,53 @@ function RequestControlPanel() {
         getOrderInfoById,
         patchOrder,
         deleteComment,
-        getUserInfo
+        getUserInfo,
+        postComment
     } = useBackendApi();
     const [order, setOrder] = React.useState();
     const [textFieldsData, setTextFieldsData] = useState({});
     const [currentUserInfo, setCurrentUserInfo] = useState({});
+    const [orderInfo, setOrderInfo] = useState();
+    const [currentOrderId, setCurrentOrderId] = useState();
 
-    useEffect(async () => {
+
+
+    const {getBackendUrl} = useUrlStore();
+    const baseUrl = getBackendUrl();
+
+    const commentTextRef = useRef();
+
+
+
+    const onOpenAppealCardModal = React.useCallback(async function () {
+        // alert('opened'+props.orderId);
+        const resp = await getOrderInfoById(orderId);
+
+        setCurrentOrderId(orderId);
+        console.log(resp);
+        setOrderInfo(resp);
+    }, []);
+
+
+    useEffect(() => {
         const oid = orderId;
-        setOrder(await getOrderInfoById(oid));
-        console.log(order);
+        getOrderInfoById(oid).then(data =>{
+            setOrder(data);
+            setOrderInfo(data);
 
-        setCurrentUserInfo(await getUserInfo());
-        console.log('user info ==== ', await getUserInfo())
+            console.log(order);
+
+            getUserInfo().then(data => {
+                console.log('user info ==== ', data)
+                console.log('==============>> ', data.role?.name)
+                setCurrentUserInfo(data);
+            });
+
+        });
+
+
+
+
     }, []);
 
     const handleChange = (event, newValue) => {
@@ -245,7 +281,7 @@ function RequestControlPanel() {
                             ></OrderTextBox>
                         )}
 
-                        {currentUserInfo.role?.name === "Moderator"&&
+                        {currentUserInfo?.role?.name === "Moderator"&&
                             <Button
                                 variant="primary"
                                 className={"w-100"}
@@ -285,7 +321,7 @@ function RequestControlPanel() {
                                         photos={
                                             order &&
                                             order.attachments.map((e) => ({
-                                                src: `http://${process.env.API_GATEWAY_IP}:${process.env.API_GATEWAY_PORT}/file/preview/${e}`,
+                                                src: `${baseUrl}/file/preview/${e}`,
                                                 width: 4,
                                                 height: 3,
                                             }))
@@ -293,7 +329,7 @@ function RequestControlPanel() {
                                     />
                                 </TabPanel>
                                 <TabPanel value={value} index={3}>
-                                    <List style={{ height: "30em", overflow: "auto" }}>
+                                    {/*<List style={{  overflow: "auto" }}>
                                         {order &&
                                             order?.comments.map((e) => (
                                                 <>
@@ -364,10 +400,33 @@ function RequestControlPanel() {
                                                     <Divider variant="inset" component="li" />
                                                 </>
                                             ))}
-                                    </List>
+                                    </List>*/}
 
                                     <Row className={"d-flex mt-3"}>
-                                        <TextField
+                                        <ChatBox orderInfo={orderInfo} onDelete={()=>onOpenAppealCardModal()}/>
+
+                                        <Row className={"d-flex mt-3"}>
+                                            <TextField
+                                                className={"flex-grow-1 ml-3"}
+                                                id="filled-basic"
+                                                label="Текст сообщения"
+                                                variant="filled"
+                                                inputRef={commentTextRef}
+                                            />
+                                            <IconButton
+                                                className={"mx-3"}
+                                                color="primary"
+                                                aria-label="upload picture"
+                                                component="span"
+                                                onClick={()=>{postComment(orderId, commentTextRef.current.value).then(() =>
+                                                    onOpenAppealCardModal());
+                                                }}
+                                            >
+                                                <SendIcon />
+                                            </IconButton>
+                                        </Row>
+
+                                        {/*<TextField
                                             className={"flex-grow-1 ml-3"}
                                             id="filled-basic"
                                             label="Текст сообщения"
@@ -380,63 +439,13 @@ function RequestControlPanel() {
                                             component="span"
                                         >
                                             <SendIcon />
-                                        </IconButton>
+                                        </IconButton>*/}
                                     </Row>
                                 </TabPanel>
                                 <TabPanel value={value} index={4}>
-                                    {/*<Card>
-                                        <Card.Body style={{ textAlign: "left" }}>
-                                            <Row>
-                                                <Col sm={2}>
-                                                    <Button variant="primary" className={"w-100"}>
-                                                        Закрыть заявление
-                                                    </Button>
-                                                </Col>
-                                                <Col>
-                                                    Закрыв ваше заявление, мы перестанем его поддерживать
-                                                    и вы больше не сможете в дальнейшем его продолжить.
-                                                </Col>
-                                            </Row>
-                                        </Card.Body>
-                                    </Card>
-                                    <br />
-                                    <Card>
-                                        <Card.Body style={{ textAlign: "left" }}>
-                                            <Row>
-                                                <Col sm={2}>
-                                                    <Button variant="primary" className={"w-100"}>
-                                                        Получить данные агента
-                                                    </Button>
-                                                </Col>
-                                                <Col>
-                                                    Данное действие позволит вам получить данные агента
-                                                    который следит за вашим делом.
-                                                </Col>
-                                            </Row>
-                                        </Card.Body>
-                                    </Card>
-                                    <br />
-                                    <Card>
-                                        <Card.Body style={{ textAlign: "left" }}>
-                                            <Row>
-                                                <Col sm={2}>
-                                                    <Button variant="primary" className={"w-100"}>
-                                                        Сменить агента
-                                                    </Button>
-                                                </Col>
-                                                <Col>
-                                                    Если агент вас по каким-то причинам не устраивает, то
-                                                    вы можете его сменить, но на этапе рассмотрения, это
-                                                    бессмысленно, так как скорость рассмотрения от агента
-                                                    ни как не зависит.
-                                                </Col>
-                                            </Row>
-                                        </Card.Body>
-                                    </Card>
 
-                                    <br />*/}
 
-                                    {(currentUserInfo.role?.name === "Moderator" || currentUserInfo.role?.name === "GovMan") &&
+                                    { (currentUserInfo?.role?.name === "Moderator" || currentUserInfo?.role?.name === "GovMan") &&
                                         <Card>
                                             <Card.Body style={{textAlign: "left"}}>
                                                 <Row>
