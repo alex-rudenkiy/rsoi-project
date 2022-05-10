@@ -22,20 +22,18 @@ export default function HeaderNav(props) {
     } = useBackendApi();
 
     const [logoutShow, setLogoutShow] = useState(false);
-/*
     useEffect(() => {
         getUserInfo().then((e) => {
             e && setLogoutShow(e.id > 0);
         });
     }, []);
-*/
 
     return (
         <Navbar bg="none" expand="lg" className={"mx-5"}>
             <Navbar.Brand href="#home">
 
                 {/*<img style={{ width: "235px" }} src={LogoIcon} />*/}
-                <LogoIcon></LogoIcon>
+                <LogoIcon/>
 
             </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -82,7 +80,7 @@ export default function HeaderNav(props) {
                             <Icon loading name='setting' />
 */}
 
-                            <Button variant="light" onClick={() => history.push("/settings")} >
+                            <Button variant="light" onClick={() => history("/settings")} >
                                 <SettingsIcon />
                                 Настройки
                             </Button>

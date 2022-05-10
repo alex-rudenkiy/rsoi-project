@@ -36,9 +36,9 @@ const useBackendApi = () => {
         let token = getLocalToken();
         return (token !== null);
         /*if(token === null){
-            history.push('/login');
+            history('/login');
         }else{
-            history.push('/profile');
+            history('/profile');
         }*/
     }
 
@@ -53,10 +53,10 @@ const useBackendApi = () => {
                 localStorage.setItem("token", res.data);
                 let token = getLocalToken();
                 if (token === null) {
-                    history.push('/login');
+                    history('/login');
 
                 } else {
-                    history.push('/profile');
+                    history('/profile');
                 }
             }).catch(e => {
 
@@ -64,9 +64,9 @@ const useBackendApi = () => {
                 localStorage.setItem("token", e.response.data);
                 let token = getLocalToken();
                 if (token === null) {
-                    history.push('/login');
+                    history('/login');
                 } else {
-                    history.push('/profile');
+                    history('/profile');
                 }
                 //console.log('unauthorized, logging out ...');
             }
@@ -86,10 +86,10 @@ const useBackendApi = () => {
         if (text.name === "oauthToken") {
             localStorage.setItem("token", text.value);
             return text.value;
-            //history.push('/profile');
+            //history('/profile');
         } else {
             return null;
-            //history.push('/login');
+            //history('/login');
         }
     }
 
@@ -109,7 +109,7 @@ const useBackendApi = () => {
 
             /*            toast({
                                 title: 'Внимание',
-                                description: < p > {
+                                description: < p >AppealCategory {
                                     Object.entries(validation.errors.errors).map(([key, value]) => value[0]).join(', ')
                                 } < /p>,
                                 size: 'tiny',
@@ -223,14 +223,14 @@ const useBackendApi = () => {
             console.log("t=", t);
             try {
                 const r = (await axios.get(`${baseUrl}/token?jwt=${t}`)).data;
-                if (r.id === null && redirect) history.push('/login')
+                if (r.id === null && redirect) history('/login')
                 console.log(r);
                 res = (await axios.get(`${baseUrl}/user/${r.id}`)).data;
                 console.log(res);
                 return res;
             } catch (e) {
                 if (redirect)
-                    history.push('/login');
+                    history('/login');
             }
 
             /*
@@ -253,7 +253,7 @@ const useBackendApi = () => {
 
     function logout() {
         localStorage.removeItem("token");
-        history.push('/login');
+        history('/login');
     }
 
     async function postOrder(data, temporal) {

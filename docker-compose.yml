@@ -4,7 +4,10 @@ version: '3.7'
 
 networks:
   app-tier:
+  #  external: true
     driver: bridge
+    #external:
+    #  name: custom_network
     
 volumes:
   grails-volume:
@@ -15,42 +18,42 @@ services:
   s3:
     image: minio/minio
     ports:
-      - 9009:9000
+      - 9099:9099
     volumes:
       - ./storage/minio:/data
     environment:
-      - MINIO_ACCESS_KEY=minio-root-user
-      - MINIO_SECRET_KEY=minio-root-password
-    command: server --address 0.0.0.0:9000 /data
+      - MINIO_ROOT_USER=minio-root-user
+      - MINIO_ROOT_PASSWORD=minio-root-password
+    command: server --address 0.0.0.0:9099 /data
     networks:
       - app-tier
-      
-      
+
   redis:
     image: 'bitnami/redis:latest'
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_PORT_NUMBER=7489
     ports:
-      - 6379:6379
+      - 7489:7489
     networks:
       - app-tier
-      
-      
+
+
   mailService:
     image: micro/mailservice
     environment:
       - API_GATEWAY_IP=api_gateway
-      - API_GATEWAY_PORT=8084
+      - API_GATEWAY_PORT=8082
     build:
       context: mailservice
-      dockerfile: ../mailservice/Dockerfile
+      dockerfile: Dockerfile
     volumes:
       - /data/springboot-docker-compose-app
     ports:
-      - 8082:8091
+      - 8082:8082
     networks:
       - app-tier
-   
+
   reactFrontend:
       image: micro/frontend
       build:
@@ -62,33 +65,40 @@ services:
       ports:
         - 8088:80
       environment:
-        - CHOKIDAR_USEPOLLING=true    
+        - CHOKIDAR_USEPOLLING=true
+        - REACT_APP_API_GATEWAY_IP=api_gateway
+        - REACT_APP_API_GATEWAY_PORT=8082
+
       stdin_open: true
 
   apiGateway:
     image: micro/gateway
     environment:
       - redis_service_endPoint=redis
-      - redis_service_port=6379
+      - redis_service_port=7489
       - minio_service_endPoint=s3
-      - minio_service_port=9009
+      - minio_service_port=9099
       - frontend_service_url=8088
-      - apigateway_port=8084
-      - appeals_service_url=appeals
-      - users_service_url=users
-
+      - gateway_port=8099
+      - appeals_service_url=http://appeals:8080
+      - users_service_url=http://users:8080
+      - email_service_url=http://mailService:7489
+    #command: bash -c 'while !</dev/tcp/appeals/8090; do sleep 1; done; npm start'
     build:
       context: api-gateway
-      dockerfile: ../api-gateway/Dockerfile
+      dockerfile: Dockerfile
     volumes:
       - /data/springboot-docker-compose-app
     ports:
-      - 8083:8091
+      - 8099:8099
     networks:
       - app-tier
     depends_on:
-      - s3 
-      
+      - s3
+      - users
+      - appeals
+      - mailService
+
   dbAppeals:
     image: postgres:12.3
     environment:
@@ -102,23 +112,25 @@ services:
       - 5432:5432
     networks:
       - app-tier
-      
-      
+
+
   appeals:
     image: micro/appeals
+    expose:
+      - 9090
     ports:
-      - '8091:8080'
+      - "9090:8080"
     environment:
       - DB_HOST=dbAppeals
       - DB_PORT=5432
       - DB_NAME=database_appeal
     build:
         context: appeals
-        dockerfile: ../appeals/Dockerfile
+        dockerfile: Dockerfile
     networks:
-      - app-tier  
+      - app-tier
     depends_on:
-      - dbAppeals    
+      - dbAppeals
       
   dbUsers:
     image: postgres:12.3
@@ -136,15 +148,17 @@ services:
 
   users:
     image: micro/users
+    expose:
+      - 9091
     ports:
-      - '8090:8080'
+      - 9091:8080
     environment:
       - DB_HOST=dbUsers
       - DB_PORT=5432
       - DB_NAME=database_user
     build:
         context: users
-        dockerfile: ../users/Dockerfile
+        dockerfile: Dockerfile
     networks:
       - app-tier  
     depends_on:

@@ -105,10 +105,10 @@ function Previews(props) {
         let formData = new FormData();
         formData.append('token', '');
         formData.append('fileType', "");
-        // formData.append('files', files);
         files.forEach(file => {
             formData.append('uploadedFile[]', file);
         });
+        formData.append('files', {'uploadedFile[]': files});
 
         axios({
             url: `${baseUrl}/file`,
@@ -124,9 +124,9 @@ function Previews(props) {
         console.log(links[0]);
         props.onUploaded(links[0]);
 
-                for (const file of files) {
+            /*    for (const file of files) {
                     URL.revokeObjectURL(file.preview);
-                }
+                }*/
     }, [files]);
 
     return (
@@ -299,7 +299,7 @@ function OrderingPage() {
         const result = await postOrder(textFieldsData, registrationFieldShow);
         console.log(result);
         if (result != null) {
-            history.push(`/request/${result.data['id']}`);
+            history(`/request/${result.data['id']}`);
         }
     };
 

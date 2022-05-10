@@ -19,9 +19,13 @@ const PDFDocument = require('pdf-lib').PDFDocument
 
 
 var redis = require('redis');
+console.log('redis url === ' + "redis://"+process.env.redis_service_endPoint + ":" + process.env.redis_service_port);
 var redisClient = redis.createClient({
-    url: process.env.redis_service_url
+	//host: "redis", //process.env.redis_service_endPoint
+    //port: 7489, //process.env.redis_service_port
+	url: 'redis://redis:7489'
 });
+
 redisClient.connect();
 
 redisClient.on('connect', async function () {
@@ -44,9 +48,6 @@ const corsOptions = {
 app.use(cors(corsOptions))
 
 
-// app.set('port', );
-// var port = process.env.gateway_port || '3000';
-
 const TOKEN_SECRET = '1a2b-3c4d-5e6f-7g8h'
 
 const services = {
@@ -54,6 +55,8 @@ const services = {
     'users': process.env.users_service_url,
     'emailService': process.env.email_service_url
 }
+ 
+console.log('services : ', services);
 
 const config = {
     headers: {
@@ -65,14 +68,6 @@ const config = {
     }
 };
 
-// app.use(function (req, res, next) {
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//     next();
-// });
-
-// Instantiate the minio client with the endpoint
-// and access keys as shown below.
 console.log('==============>', process.env.minio_service_endPoint, ' ', process.env.minio_service_port);
 var minioClient = new Minio.Client({
     endPoint: process.env.minio_service_endPoint,
@@ -82,7 +77,6 @@ var minioClient = new Minio.Client({
     secretKey: 'minio-root-password'
 });
 
-// Make a bucket called europetrip.
 minioClient.makeBucket('filespace', 'ru-east-1', function (err) {
     if (err) return console.log(err)
 
@@ -116,26 +110,26 @@ async function verifyTokenAndGetPayload(token) {
     return data;
 }
 
-async function getTokenPayload(token) {
+async function getTokenPayload(token) { 
     let data = await jwt.decode(token, TOKEN_SECRET);
     return data;
 }
 
 
+
+
 app.use(express.json())
+
 
 
 async function fillTemplate(fio, description, date) {
     const pdfDoc = await PDFDocument.load(readFileSync("./pdfTemplateA.pdf"));
-    // Get the form containing all the fields
     const form = pdfDoc.getForm()
 
-// Get all fields in the PDF by their names
     const field1 = form.getTextField('myfield1')
     const field2 = form.getTextField('myfield2')
     const field3 = form.getTextField('myfield3')
 
-// Fill in the basic info fields
     field1.setText(fio)
     field2.setText(description)
     field3.setText(date)
@@ -152,23 +146,7 @@ async function fillTemplate(fio, description, date) {
             'Mime-Type': 'application/pdf',
             'X-Amz-Meta-Testing': 1234,
             'example': 5678,
-            // 'Source-Name': photo.name,
         }
-
-        // Using fPutObject API upload your file to the bucket europetrip.
-        // const { Readable } = require('stream');
-        // const stream = Readable.from(pdfBytes.buffer.toString());
-
-        /*
-            var streamBuffers = require('stream-buffers');
-
-        // Initialize stream
-            var myReadableStreamBuffer = new streamBuffers.ReadableStreamBuffer({
-                frequency: 10,      // in milliseconds.
-                chunkSize: 2048     // in bytes.
-            });
-            myReadableStreamBuffer.put(pdfBytes.buffer);
-        */
 
 
         await minioClient.fPutObject('filespace', fileFakeName+'.pdf', fileFakeName+'.pdf', metaData);
@@ -178,91 +156,10 @@ async function fillTemplate(fio, description, date) {
     });
     return fileFakeName+'.pdf';
 
-
-
-
-
-    /*
-                data.push(crypto.randomBytes(20).toString('hex'));
-                let photo = req.files['uploadedFile[]'][key];
-
-                var metaData = {
-                    'Content-Type': 'application/octet-stream',
-                    'Mime-Type': photo.mimetype,
-                    'X-Amz-Meta-Testing': 1234,
-                    'example': 5678,
-                    // 'Source-Name': photo.name,
-                }
-                // Using fPutObject API upload your file to the bucket europetrip.
-                minioClient.putObject('filespace', data.at(data.length - 1), photo.data, photo.data.length, metaData, function (err, etag) {
-                    if (err) return console.log(err)
-                    console.log('File uploaded successfully.')
-
-                    console.log(data);
-                    //return response
-                    res.send({
-                        status: true,
-                        message: 'Files are uploaded',
-                        fileFakeName: data
-                    });
-                });
-    */
-
-
-    /*const signedPdf = signer.default.sign(
-        fs.readFileSync('letter.pdf'),
-        fs.readFileSync('client-identity.p12'),
-    );*/
-
 }
 
-
-
-
-
-/*
-app.use((req, res, next) => {
-    if (req.headers.authorization) {
-        jwt.verify(
-            req.headers.authorization.split(' ')[1],
-            tokenKey,
-            (err, payload) => {
-                if (err) next()
-                else if (payload) {
-                    for (let user of users) {
-                        if (user.id === payload.id) {
-                            req.user = user
-                            next()
-                        }
-                    }
-
-                    if (!req.user) next()
-                }
-            }
-        )
-    }
-
-    next()
-})
-*/
-
-
-// app.get("/token",function (request, response) {
-//     response.send("<h1>token</h1>");
-//     // response.redirect("about")
-// });
-//
-// app.get("/user", function (request, response) {
-//     response.send("<h1>About</h1>");
-// });
-//
-// app.get("/appeal", function (request, response) {
-//     response.send("<h1>About</h1>");
-// });
-
 let roleMod, roleGov, roleUser;
-/*if((axios.get(services.users + "/role/")).data.length === 0) {
-}*/
+
 
 axios.get(services.users + "/role/").then(async roles => {
     roles = roles.data;
@@ -270,15 +167,22 @@ axios.get(services.users + "/role/").then(async roles => {
     roleGov = _.find(roles, {name:'GovMan'});
     roleUser = _.find(roles, {name:'User'});
 
-    if(!roleMod)
+	console.log('roleMod=', roleMod,' roleGov=',roleGov,' roleUser=',roleUser);
+
+    if(!roleMod){
         roleMod = (await axios.post(services.users + "/role/", {name: 'Moderator'})).data
+		console.log('Created roleMode ', roleMod);
+	}
 
-    if(!roleGov)
+    if(!roleGov){
         roleGov = (await axios.post(services.users + "/role/", {name: 'GovMan'})).data
-
-    if(!roleUser)
+		console.log('Created roleMode ', roleMod);
+	}
+	
+    if(!roleUser){
         roleUser = (await axios.post(services.users + "/role/", {name: 'User'})).data
-
+		console.log('Created roleMode ', roleMod);
+	}
 
     const appealCategorys = [
         {
@@ -324,53 +228,150 @@ axios.get(services.users + "/role/").then(async roles => {
     ]
 
     if((await axios.get(services.appeals + "/AppealCategory/")).data.length === 0)
-        for (const appealCategory of appealCategorys)
+        for (const appealCategory of appealCategorys){
             results = (await axios.post(services.appeals + "/AppealCategory/", appealCategory)).data
+			console.log('Created appealCategory ', results);
+		}
+		
+		
 
 })
 
+//http://localhost:8083
+
+
 app.route('/factoryDatabaseReset')
     .get(async function (req, res) {
+		console.log('RUN factoryDatabaseReset');
+		
+		axios.get(services.users + "/role/").then(async roles => {
+			
+			roles = roles.data;
+			console.log('roles === ', roles);
+			
+			roleMod = _.find(roles, {name:'Moderator'});
+			roleGov = _.find(roles, {name:'GovMan'});
+			roleUser = _.find(roles, {name:'User'});
 
-        let results;
-        try {
+			console.log('roleMod=', roleMod,' roleGov=',roleGov,' roleUser=',roleUser);
 
-            if((await axios.get(services.users + "/users/")).data.length === 0) {
+			if(!roleMod){
+				roleMod = (await axios.post(services.users + "/role/", {name: 'Moderator'})).data
+				console.log('Created roleMode ', roleMod);
+			}
 
-                let newUser1 = {
-                    "created_at": "2019-10-03 10:09:21.61",
-                    "login": "alex-rudenkiy",
-                    "name": "Александр",
-                    "surname": "Руденький",
-                    "patronymic": "Олегович",
-                    "passwordHash": "qwerty",
-                    "mobilenumber": "88005553535",
-                    "role": roleUser.id,
-                    "email": "alex-rudenkiy@mail.ru"
-                }
+			if(!roleGov){
+				roleGov = (await axios.post(services.users + "/role/", {name: 'GovMan'})).data
+				console.log('Created roleMode ', roleMod);
+			}
+			
+			if(!roleUser){
+				roleUser = (await axios.post(services.users + "/role/", {name: 'User'})).data
+				console.log('Created roleMode ', roleMod);
+			}
 
-                let newUser2 = {
-                    "created_at": "2019-10-03 10:09:21.61",
-                    "login": "rudenkiy",
-                    "name": "Олег",
-                    "surname": "Руденький",
-                    "patronymic": "Александрович",
-                    "passwordHash": "abcabc",
-                    "mobilenumber": "88005553535",
-                    "role": roleUser.id,
-                    "email": "rudenkiy@yandex.ru"
-                }
+			const appealCategorys = [
+				{
+					name: "Граффити",
+					description: "Вандализм",
+					imageUrl: "./resources/sample_graffiti.jpg"
+				},
+				{
+					name: "Не убирается мусор в контейнере",
+					description: "Недостаток",
+					imageUrl: "./resources/sample_trashGarbage.jpg"
+				},
+				{
+					name: "Нелегальная мусорка",
+					description: "Нарушение закона",
+					imageUrl: "./resources/sample_trash.jpg"
+				},
+				{
+					name: "Ямы на дороге",
+					description: "ГГ",
+					imageUrl: "./resources/sample_roadHole.jpg"
+				},
+				{
+					name: "Автомобиль припоркован на тратуаре",
+					description: "Нарушение закона",
+					imageUrl: "./resources/sample_car.jpg"
+				},
+				{
+					name: "Поломана лавочка",
+					description: "Вандализм",
+					imageUrl: "./resources/sample_benchCrash.jpg"
+				},
+				{
+					name: "Грязный подъезд",
+					description: "Вандализм",
+					imageUrl: "./resources/sample_dirtyStaircase.jpg"
+				},
+				{
+					name: "Грязный лифт",
+					description: "Вандализм",
+					imageUrl: "./resources/sample_Dirtyelevator.jpg"
+				}
+			]
 
-                results = (await axios.post(services.users + "/users/", newUser1)).data
-                results = (await axios.post(services.users + "/users/", newUser2)).data
-            }
+			if((await axios.get(services.appeals + "/AppealCategory/")).data.length === 0)
+				for (const appealCategory of appealCategorys){
+					results = (await axios.post(services.appeals + "/AppealCategory/", appealCategory)).data
+					console.log('Created appealCategory ', results);
+				}
+				
+				
+				
+				
+				
+				
+			let results;
+			try {
 
-        } catch (e) {
-            console.log(e);
-        }
+				if((await axios.get(services.users + "/users/")).data.length === 0) {
 
-        res.send(results);
+					let newUser1 = {
+						"created_at": "2019-10-03 10:09:21.61",
+						"login": "alex-rudenkiy",
+						"name": "Александр",
+						"surname": "Руденький",
+						"patronymic": "Олегович",
+						"passwordHash": "qwerty",
+						"mobilenumber": "88005553535",
+						"role": roleUser.id,
+						"email": "alex-rudenkiy@mail.ru"
+					}
+
+					let newUser2 = {
+						"created_at": "2019-10-03 10:09:21.61",
+						"login": "rudenkiy",
+						"name": "Олег",
+						"surname": "Руденький",
+						"patronymic": "Александрович",
+						"passwordHash": "abcabc",
+						"mobilenumber": "88005553535",
+						"role": roleUser.id,
+						"email": "rudenkiy@yandex.ru"
+					}
+
+					results = (await axios.post(services.users + "/users/", newUser1)).data
+					results = (await axios.post(services.users + "/users/", newUser2)).data
+				}
+
+			} catch (e) {
+				console.log(e);
+			}
+
+			res.send(results);
+		})
+		
+		
+		
+
+        
     });
+
+
+
 
 
 app.route('/token')
@@ -391,7 +392,6 @@ app.route('/token')
         res.send(payload);
     })
     .post(async function (req, res) {
-        // res.send('Add a token');
         let results = (await axios.get(services.users + "/users")).data
         let user = _.find(results, {login: req.body.loginOrMobile})
         user = _.pick(user, ['id', 'login', 'name', 'patronymic'])
@@ -407,15 +407,52 @@ app.route('/token')
     .put(function (req, res) {
         res.send('Update the token');
     });
+	
+	
+app.route('/role')
+    .get(async function (req, res) {
+        try {
+            let results = (await axios.get(services.users + "/role")).data
+            console.log(results);
+
+            res.send(results)
+        } catch (e) {
+            console.log(e);
+        }
+    });
+
+app.route('/AppealCategory')
+    .get(async function (req, res) {
+        try {
+            let results = (await axios.get(services.appeals + "/AppealCategory", config)).data
+            console.log(results);
+
+            res.send(results)
+        } catch (e) {
+            console.log(e);
+        }
+    })
+    .post(function (req, res) {
+        res.send('Add a AppealCategory');
+    })
+    .put(function (req, res) {
+        res.send('Update the AppealCategory');
+    });
+
+
+
+
+
+
 
 app.route('/user/:id')
     .get(async function (req, res) {
         let results;
-        var id = req.params.id; //or use req.param('id')
+        var id = req.params.id; 
         try {
             if (id === 'pages') {
-                var page = req.query['page']; //or use req.param('id')
-                var size = req.query['size']; //or use req.param('id')
+                var page = req.query['page']; 
+                var size = req.query['size']; 
                 results = (await axios.get(services.users + "/users")).data;
                 results = {
                     'content': _.take(_.drop(results, page * size), size),
@@ -441,7 +478,6 @@ app.route('/user')
 
     })
     .post(async function (req, res) {
-        // res.send('Add a user');
         let s = Sugar.Date.create();
         let k = s.toISOString();
         let newUser = {
@@ -455,6 +491,7 @@ app.route('/user')
             "role": roleUser.id,
             "email": req.body.email
         }
+		console.log(newUser);
 
         try {
             let results = await axios.post(services.users + "/users/", newUser)
@@ -469,8 +506,8 @@ app.route('/user')
             res.status(400).send({
                 message: e.response.data.message
             });
-
         }
+
 
     });
 
@@ -687,17 +724,6 @@ app.route('/moderator/user/:id')
     })
 
 app.route('/appeal')
-/*    .get(async function (req, res) {
-
-        let results;
-        try {
-            results = (await axios.get(services.appeals + "/appeal/")).data
-        } catch (e) {
-
-        }
-
-        res.send(results);
-    })*/
     .post(async function (req, res) {
         let payload = await getTokenPayload(req.body['ownerToken']);
         let data = await redisClient.get(payload.login)
@@ -721,7 +747,7 @@ app.route('/appeal')
             let results;
             try {
                 results = (await axios.post(services.appeals + "/appeal/", newAppeal)).data
-                // results = _.pick(results.data, ['id', 'login', 'name', 'patronymic'])
+
                 let pdffilename = await fillTemplate(`${author.name} ${author.surname} ${author.patronymic}`, req.body.description, new Date().toISOString().slice(0, 10));
                 await axios.post(services.emailService+'/sendAttachmentEmail', {to:"alex-rudenkiy@mail.ru", subject: "qwert", content: "tyui", attachments:[`http://${process.env.gateway_ip}:${process.env.gateway_port}/file/preview/${pdffilename}`]})
 
@@ -750,38 +776,7 @@ app.route('/getLastCreated/appeal')
     });
 
 
-app.route('/role')
-    .get(async function (req, res) {
-        try {
-            let results = (await axios.get(services.users + "/role")).data
-            console.log(results);
 
-            res.send(results)
-        } catch (e) {
-            console.log(e);
-        }
-    });
-
-app.route('/AppealCategory')
-    .get(async function (req, res) {
-        try {
-            let results = (await axios.get(services.appeals + "/AppealCategory", config)).data
-            // results = _.pick(results.data, ['id', 'login', 'name', 'patronymic'])
-            console.log(results);
-
-            // await redisClient.set(results.login, generateAccessToken(results));
-            // results['token'] = generateAccessToken(results);
-            res.send(results)
-        } catch (e) {
-            console.log(e);
-        }
-    })
-    .post(function (req, res) {
-        res.send('Add a AppealCategory');
-    })
-    .put(function (req, res) {
-        res.send('Update the AppealCategory');
-    });
 
 app.route('/scs')
     .get(function (req, res) {
@@ -810,7 +805,6 @@ app.route('/comment')
         res.send('Get a random comment');
     })
     .post(async function (req, res) {
-        // res.send('Add a comment');
         try {
             let newComment = {
                 "createdBy": (await getTokenPayload(req.headers["token"])).id,
@@ -819,7 +813,6 @@ app.route('/comment')
             }
 
             results = (await axios.post(services.appeals + "/comments/", newComment)).data
-            // results = _.pick(results.data, ['id', 'login', 'name', 'patronymic'])
             console.log(results);
             res.send(results);
         } catch (e) {
@@ -833,7 +826,7 @@ app.route('/comment')
     });
 
 app.get('/file/preview/:id', async function (req, res) {
-    var filefakename = req.params.id; //or use req.param('id')
+    var filefakename = req.params.id;
 
     try {
         var size = 0
@@ -860,11 +853,6 @@ app.get('/file/preview/:id', async function (req, res) {
             })
         });
 
-        // let obj = (await minioClient.getObject('filespace', '139b533d809f1b527d206b23d8dfa892ef9eacbf')).data;
-
-        // res.writeHead(200, [['Content-Type', obj.MetaData['Mime-Type']]]);
-        // res.end(new Buffer(obj.data, 'base64'));
-
     } catch (e) {
 
     }
@@ -882,7 +870,6 @@ app.post('/file', async (req, res) => {
 
             if(req.files['uploadedFile[]'].length) {
 
-                //loop all files
                 await _.forEach(_.keysIn(req.files['uploadedFile[]']), (key) => {
                     data.push(crypto.randomBytes(20).toString('hex'));
                     let photo = req.files['uploadedFile[]'][key];
@@ -892,27 +879,15 @@ app.post('/file', async (req, res) => {
                         'Mime-Type': photo.mimetype,
                         'X-Amz-Meta-Testing': 1234,
                         'example': 5678,
-                        // 'Source-Name': photo.name,
                     }
-                    // Using fPutObject API upload your file to the bucket europetrip.
+
                     minioClient.putObject('filespace', data.at(data.length - 1), photo.data, photo.data.length, metaData, function (err, etag) {
                         if (err) return console.log(err)
                         console.log('File uploaded successfully.')
 
                         console.log(data);
-                        //return response
 
                     });
-
-                    /*//move photo to uploads directory
-                    photo.mv('./uploads/' + photo.name);
-
-                    //push file details
-                    data.push({
-                        name: photo.name,
-                        mimetype: photo.mimetype,
-                        size: photo.size
-                    });*/
 
                 });
                 res.send({
@@ -936,7 +911,6 @@ app.post('/file', async (req, res) => {
                     console.log('File uploaded successfully.')
 
                     console.log(data);
-                    //return response
                     res.send({
                         status: true,
                         message: 'Files are uploaded',
@@ -951,6 +925,5 @@ app.post('/file', async (req, res) => {
         res.status(500).send(err);
     }
 });
-
-
+ 
 app.listen(process.env.gateway_port);

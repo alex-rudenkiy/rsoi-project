@@ -21,6 +21,7 @@ import {stringAvatar} from "../utils";
 import * as semantic from 'semantic-ui-react'
 import useUrlStore from "../logic/UrlsStore";
 import {Footer} from "../components/footer";
+// import "fomantic-ui-css/semantic.min.css";
 
 function UserProfilePage() {
     const {
@@ -118,7 +119,7 @@ function UserProfilePage() {
                                                 Выявленно недостатков
                                             </p>
                                         </div>
-                                        <div className="col-sm">
+{/*                                        <div className="col-sm">
                                             <h5 style={{ color: "#276dd5" }}>{0}</h5>
                                             <p style={{ lineHeight: "1em", color: "#6c6c6c" }}>
                                                 Устраненил недостатков
@@ -129,7 +130,7 @@ function UserProfilePage() {
                                             <p style={{ lineHeight: "1em", color: "#6c6c6c" }}>
                                                 Место в общем рейтинге
                                             </p>
-                                        </div>
+                                        </div>*/}
                                     </div>
                                 </div>
                             </div>
@@ -146,7 +147,7 @@ function UserProfilePage() {
                                 <h5 className={"my-0"} style={{ color: "#bfb8b8" }}>{`@${
                                     userInfo && userInfo.login
                                 }`}</h5>
-                                <semantic.Button className={"my-1"} size='mini' onClick={() => history.push(`/settings/${userId === -1 ? getUserIdByToken() : userId}`)}>Редактировать</semantic.Button>
+                                <button className={"mini ui primary button my-1"}  onClick={() => history(`/settings/${userId === -1 ? getUserIdByToken() : userId}`)}>Редактировать</button>
                             </div>
                         </div>
                     </div>

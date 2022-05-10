@@ -132,7 +132,7 @@ function LeaderBoardPage() {
                                                             <MenuItem
                                                                 onClick={() => {
                                                                     popupState.close();
-                                                                    history.push(`/settings/${u.id}`);
+                                                                    history(`/settings/${u.id}`);
                                                                 }}
                                                             >
                                                                 Редактировать

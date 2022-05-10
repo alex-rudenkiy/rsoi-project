@@ -7,6 +7,8 @@ COPY . /app
 # create unnecessary build files or artifacts.
 RUN grails dependency-report
 
+
+EXPOSE 8080
 # Set Default Behavior
 ENTRYPOINT ["grails"]
 CMD ["run"]
