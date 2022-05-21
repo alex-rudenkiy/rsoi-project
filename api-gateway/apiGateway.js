@@ -148,7 +148,6 @@ async function fillTemplate(fio, description, date) {
             'example': 5678,
         }
 
-
         await minioClient.fPutObject('filespace', fileFakeName+'.pdf', fileFakeName+'.pdf', metaData);
         console.log('File uploaded successfully.')
         console.log(pdfBytes);
@@ -396,8 +395,7 @@ app.route('/token')
         let user = _.find(results, {login: req.body.loginOrMobile})
         user = _.pick(user, ['id', 'login', 'name', 'patronymic'])
         if (Object.keys(user).length === 0) {
-            res.send();
-            return;
+            return res.status(204).send({message: "К сожалению пользователя с таким логином или паролем не существует!"});
         }
         console.log(generateAccessToken(user));
         await redisClient.set(user.login, generateAccessToken(user));
@@ -507,8 +505,6 @@ app.route('/user')
                 message: e.response.data.message
             });
         }
-
-
     });
 
 app.route('/user/:id').patch(async (req, res)=>{
@@ -749,7 +745,22 @@ app.route('/appeal')
                 results = (await axios.post(services.appeals + "/appeal/", newAppeal)).data
 
                 let pdffilename = await fillTemplate(`${author.name} ${author.surname} ${author.patronymic}`, req.body.description, new Date().toISOString().slice(0, 10));
-                await axios.post(services.emailService+'/sendAttachmentEmail', {to:"alex-rudenkiy@mail.ru", subject: "qwert", content: "tyui", attachments:[`http://${process.env.gateway_ip}:${process.env.gateway_port}/file/preview/${pdffilename}`]})
+
+
+                let govmans = (await axios.get(services.users + "/users/")).data;
+                govmans =  _.filter(govmans, {role: {id: roleGov.id}});
+                for (const govman of govmans) {
+                    let res = await axios.post(services.emailService + '/sendAttachmentEmail', {
+                        to: govman.email,
+                        subject: req.body.title,
+                        content: req.body.description,
+                        attachments: [`http://${process.env.gateway_ip}:${process.env.gateway_port}/file/preview/${pdffilename}`]
+                    })
+                }
+
+
+
+
 
 
                 console.log(results);
