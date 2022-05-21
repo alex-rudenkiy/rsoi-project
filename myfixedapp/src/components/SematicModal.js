@@ -5,6 +5,7 @@ import { Alert, AlertTitle } from "@material-ui/lab";
 import useBackendApi from "../logic/BackendApiHook";
 import {useNavigate} from "react-router-dom";
 import {useListener} from "react-bus";
+import {useBus} from "react-bus";
 
 function ModalExampleModal() {
     const {
@@ -13,6 +14,7 @@ function ModalExampleModal() {
     const history = useNavigate();
     const [isOpen, setIsOpen] = React.useState(false)
     const [id, setId] = useState("");
+    const bus = useBus();
 
     const onOpenModal = React.useCallback(function (id) {
         // alert('clicked');
@@ -25,25 +27,26 @@ function ModalExampleModal() {
 
     const onSubmit= useCallback((id) => {
         console.log('onSubmit');
-/*        getOrderInfoById(id).then((res) => {
-            if (res.id === id) {
+        getOrderInfoById(id).then((res) => {
+            if (Number(res.id) === Number(id)) {
                 history(`/request/${res.id}`);
+            }else{
+                alert('К глубокому сожалению такого обращения не существует!');
             }
-        });*/
+        })
     }, []);
 
     return (
         <Modal
-            open={true}
-            // className="semanticModal"
-            // onClose={() => setIsOpen(false)}
-            // open={isOpen}
-            // dimmer={"inverted"}
-            // style={{height: 'auto'}}
+            className="semanticModal"
+            onClose={() => setIsOpen(false)}
+            open={isOpen}
+            dimmer={"inverted"}
+            style={{height: 'auto'}}
         >
             <Modal.Header>Поиск обращения</Modal.Header>
-            <Modal.Content image>
-              {/*  <Image size='medium' src='/images/avatar/large/rachel.png' wrapped />
+            <Modal.Content image style={{    display: "block"}}>
+                {/*<Image size='medium' src='/images/avatar/large/rachel.png' wrapped />*/}
                 <Modal.Description>
                     <Header>Укажите номер обращения</Header>
                     <p>
@@ -56,10 +59,10 @@ function ModalExampleModal() {
                         <AlertTitle>Подсказка</AlertTitle>
                         <p>Если вы его не записали уникальный номер своего обращения, то <strong style={{color:"#4e96ce"}}>создавать его заного не надо</strong>, просто заполните форму ниже и мы вам поможем его найти.</p>
                     </Alert>
-                </Modal.Description>*/}
+                </Modal.Description>
             </Modal.Content>
             <Modal.Actions>
-             {/*   <Button color='black' onClick={() => setIsOpen(false)}>
+                <Button color='black' onClick={() => setIsOpen(false)}>
                     Закрыть
                 </Button>
                 <Button
@@ -68,7 +71,7 @@ function ModalExampleModal() {
                     icon='checkmark'
                     onClick={() => onSubmit(id)}
                     positive
-                />*/}
+                />
             </Modal.Actions>
         </Modal>
 
