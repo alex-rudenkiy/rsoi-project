@@ -22,15 +22,21 @@ function SettingsPage() {
         getUserIdByToken,
         getAllRoles,
     } = useBackendApi();
-    const { userId = -1 } = useParams();
+    let userId = useParams()['*'];
+    if(!userId>0) {
+        userId = -1;
+    }
+
     const [activeItem, setActiveItem] = useState("Основные данные");
+    const [currentUserInfo, setCurrentUserInfo] = useState({});
     const [userInfo, setUserInfo] = useState({});
     const [rolesDict, setRolesDict] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
-            let result = await getUserInfo(userId);
+            setCurrentUserInfo(await getUserInfo(-1));
 
+            let result = await getUserInfo(userId);
             setUserInfo(result);
 
             let out = [];
@@ -189,32 +195,34 @@ function SettingsPage() {
                                             </Col>
                                         </Form.Group>
 
-                                        <Form.Group as={Row} controlId="formPlaintextStatus">
-                                            <Form.Label column sm="2">
-                                                Роль
-                                            </Form.Label>
-                                            <Col sm="10">
-                                                <div>
-                                                    <DropdownSimple
-                                                        text={userInfo.role?.name}
-                                                        options={ rolesDict }
-                                                        onChange={(e, data) => {
-                                                            console.log(data.value); //userInfo.role?.id
-                                                            console.log("agree");
-                                                            setUserInfo({
-                                                                ...userInfo,
-                                                                ...{ role: { id: data.value } },
-                                                            });
-                                                        }}
-                                                        style={{
-                                                            position: "fixed",
-                                                            display: "block",
-                                                            zIndex: "1",
-                                                        }}
-                                                    />
-                                                </div>
-                                            </Col>
-                                        </Form.Group>
+                                        {currentUserInfo?.role?.name === "Moderator" &&
+                                            <Form.Group as={Row} controlId="formPlaintextStatus">
+                                                <Form.Label column sm="2">
+                                                    Роль
+                                                </Form.Label>
+                                                <Col sm="10">
+                                                    <div>
+                                                        <DropdownSimple
+                                                            text={userInfo.role?.name}
+                                                            options={rolesDict}
+                                                            onChange={(e, data) => {
+                                                                console.log(data.value); //userInfo.role?.id
+                                                                console.log("agree");
+                                                                setUserInfo({
+                                                                    ...userInfo,
+                                                                    ...{role: {id: data.value}},
+                                                                });
+                                                            }}
+                                                            style={{
+                                                                position: "fixed",
+                                                                display: "block",
+                                                                zIndex: "1",
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </Col>
+                                            </Form.Group>
+                                        }
 
                                         <Button
                                             className={"mt-5"}

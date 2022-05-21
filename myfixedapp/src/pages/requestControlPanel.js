@@ -23,7 +23,7 @@ import Divider from "@material-ui/core/Divider";
 import TextField from "@material-ui/core/TextField";
 import SendIcon from "@material-ui/icons/Send";
 import HeaderNav from "../components/headerNav";
-import {useParams,} from "react-router-dom";
+import {useNavigate, useParams,} from "react-router-dom";
 import useBackendApi from "../logic/BackendApiHook";
 import {UserAvatar} from "../components/UserAvatar";
 import GalleryList from "../components/Gallery";
@@ -139,7 +139,13 @@ function getStatusRusStr(status) {
 }
 
 function RequestControlPanel() {
-    let { orderId } = useParams();
+    const history = useNavigate();
+
+    let orderId = useParams()['*'];
+    if(!orderId>0) {
+        history("/welcome");
+    }
+
     const classes = useStyles();
     const [value, setValue] = React.useState(0);
     const {

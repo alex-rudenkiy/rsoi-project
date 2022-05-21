@@ -38,15 +38,15 @@ root.render(
                 <ToastDemo/>
                 <BrowserRouter>
                     <Routes>
-                        <Route exact path="/" element={<WelcomePage />} />
-                        <Route path="/profile/:userId" element={<UserProfilePage />} />
+                        <Route path="/profile/*" element={<UserProfilePage />} />
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/registration" element={<RegistrationPage />} />
                         <Route path="/makeRequest" element={<OrderingPage />} />
-                        <Route path="/request/:orderId" element={<RequestControlPanel />} />
+                        <Route path="/request/*" element={<RequestControlPanel />} />
                         <Route path="/archive" element={<ProblemsStorePage />} />
-                        <Route path="/settings/:userId" element={<SettingsPage />} />
+                        <Route path="/settings/*" element={<SettingsPage />} />
                         <Route path="/community" element={<LeaderBoardPage />} />
+                        <Route path="/" element={<WelcomePage />}  />
 
 
 
