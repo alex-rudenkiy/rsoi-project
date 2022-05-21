@@ -2,9 +2,8 @@ import * as React from "react";
 import axios from 'axios';
 import * as Validator from 'validatorjs';
 import jwt from 'jwt-decode' // import dependency
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import useUrlStore from './UrlsStore';
-import toast from "bootstrap/js/src/toast";
 import {useBus} from "react-bus";
 // import {toast} from "react-semantic-toasts";
 
@@ -48,9 +47,15 @@ const useBackendApi = () => {
 
         axios.post(`${baseUrl}/token`, data)
             .then(res => {
+                if (res.status === 204){
+                    bus.emit('openToast', {msg: "К сожалению пользователь с таким логином или паролем не существует!"});
+                    return;
+                }
+
                 if (res.data.length < 5) return;
                 console.log(res.data);
                 localStorage.setItem("token", res.data);
+
                 let token = getLocalToken();
                 if (token === null) {
                     history('/login');
@@ -358,7 +363,7 @@ const useBackendApi = () => {
             id = jwt(token).id;
             //const t = registration({ "name":data.name,"surname":data.surname, "patronymic":data.patronymic, "mobilenumber":data.mobilenumber });
         }
-        result = (await axios.get(`${baseUrl}/appeal?page=${pageN - 1}&size=${sizeN}&filter=${JSON.stringify({authorid : id})}`, cfg)).data;
+        result = (await axios.get(`${baseUrl}/appeal?page=${pageN - 1}&size=${sizeN}&filter=${JSON.stringify({authorid: Number(id)})}`, cfg)).data;
         return result;
     }
 
