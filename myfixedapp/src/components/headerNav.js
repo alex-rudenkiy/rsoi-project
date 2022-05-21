@@ -30,12 +30,15 @@ export default function HeaderNav(props) {
 
     return (
         <Navbar bg="none" expand="lg" className={"mx-5"}>
-            <Navbar.Brand href="#home">
+            <Link to="/" style={{ color: "inherit" }}>
+                <Navbar.Brand>
 
-                {/*<img style={{ width: "235px" }} src={LogoIcon} />*/}
-                <LogoIcon/>
+                    {/*<img style={{ width: "235px" }} src={LogoIcon} />*/}
+                    <LogoIcon/>
 
-            </Navbar.Brand>
+                </Navbar.Brand>
+
+            </Link>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto w-100">
@@ -75,7 +78,7 @@ export default function HeaderNav(props) {
                             </Button>
                         </Link>
                     ) : (
-                        <div>
+                        <div style={{display: "flex"}}>
                             {/*
                             <Icon loading name='setting' />
 */}
@@ -86,7 +89,10 @@ export default function HeaderNav(props) {
                             </Button>
 
                             <Link to="/login" style={{ color: "inherit" }}>
-                                <Button variant="btn btn-outline-primary" onClick={logout} style={{width: "max-content"}}>
+                                <Button variant="btn btn-outline-primary" onClick={logout} style={{    width: "max-content",
+                                    height: "100%",
+                                    paddingLeft: "1.5em",
+                                    paddingRight: "1.5em"}}>
                                     Выйти
                                 </Button>
                             </Link>
