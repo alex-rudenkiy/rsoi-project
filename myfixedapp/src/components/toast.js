@@ -38,7 +38,7 @@ export function ToastDemo() {
     })*/
 
     return (
-        <div className="py-2">
+        <div className="py-2" style={{zIndex:"3"}}>
             <div className=" position-absolute top-0 end-0 m-4" style={{zIndex:"2"}} role="alert" ref={toastRef}>
                 {/*<div className="toast-header">
                     <strong className="me-auto">Bootstrap 5</strong>
@@ -48,7 +48,7 @@ export function ToastDemo() {
                 <div className="toast-body">
                     {msg}
                 </div>*/}
-                <Toast show={isOpen} autohide={true}  onClose={()=>setIsOpen(false)}>
+                <Toast show={isOpen} autohide={true} onClose={()=>setIsOpen(false)}>
                     <Toast.Header>
 {/*                        <img
                             src="holder.js/20x20?text=%20"

@@ -10,3 +10,6 @@
     right:auto;
 }
 
+.modals.dimmer .ui.scrolling.modal:not([class*="overlay fullscreen"])::after{
+    content: none;
+}

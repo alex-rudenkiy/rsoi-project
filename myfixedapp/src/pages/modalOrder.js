@@ -28,6 +28,7 @@ import ChatBox from "../components/ChatBox";
 import {format} from "date-fns";
 import './fix.css';
 import useUrlStore from "../logic/UrlsStore";
+import Button from "@material-ui/core/Button";
 
 function ModalOrder() {
     const { getUserInfo, getOrderInfoById, postComment, deleteComment } = useBackendApi();
@@ -61,7 +62,7 @@ function ModalOrder() {
     //
     return (
         <div>
-            <MDBModal overflowScroll={true} isOpen={isOpen} size="lg">
+            <MDBModal style={{display: "inline-table"}} overflowScroll={true} isOpen={isOpen} size="lg">
                 <MDBModalHeader style={{ display: "content" }}>
                     <div style={{ display: "flex", width: "100%", alignItems: 'center' }}>
                         <h5 className="font-weight-light text-left flex-grow-1 mb-0">{`Заявка №${orderInfo?.id} (от ${orderInfo !== undefined ? format(new Date(orderInfo?.createdAt), 'dd.MM.yyyy') : ""})`}</h5>
@@ -113,10 +114,13 @@ function ModalOrder() {
                     </div>
                 </MDBModalHeader>
 
-                <MDBModalBody style={{ border: "none", padding: "0px" }}>
+                <MDBModalBody style={{ display: "inline-table", border: "none", padding: "0px", width: "70em" }}>
                     <div
-                        className="row"
-                        style={{ display: "inline-flex", width: "100%" }}
+                        style={{    width: "100%",
+                            height: "100%",
+                            display: "flex",
+                            marginLeft: "-0.5px",
+                            marginTop: "-1px" }}
                     >
                         <div
                             className="col-sm-8 pl-0"
@@ -127,7 +131,7 @@ function ModalOrder() {
                                 backgroundSize: "cover",
                             }}
                         ></div>
-                        <div className="col-sm-4 pt-4 pl-4 pr-4 pb-4">
+                        <div style={{    paddingLeft: "1em"}} className="col-sm-4 pt-4 pl-4 pr-4 pb-4">
 
                             {
                                 orderInfo?.status === "closed" ? <Alert
@@ -143,21 +147,7 @@ function ModalOrder() {
 
 
                             {orderInfo?.author &&
-                                <div className="row ml-1">
-                                    {/*<Avatar
-                                        alt="Remy Sharp"
-                                        src={avatar}
-                                        style={{width: "1.0em", height: "1.0em"}}
-                                    />{" "}
-
-
-
-
-                                    <UserAvatar
-                                        userId={orderInfo?.authorid}
-                                        clickable
-                                        style={{width: "1.5em", height: "1.5em"}}
-                                    />*/}
+                                <div className="ml-1" style={{display: "flex"}}>
                                     <Link to={`/profile/${orderInfo?.author.id}`}>
                                         <Avatar {...stringAvatar(orderInfo?.author.login)} />
                                     </Link>
@@ -184,7 +174,7 @@ function ModalOrder() {
 
                             <p
                                 style={{ textAlign: "left" }}
-                                className={"mt-3 mb-3"}
+                                className={"mt-3"}
                             >{`Комментарии (${orderInfo?.comments.length})`}</p>
 
 
@@ -193,7 +183,7 @@ function ModalOrder() {
 
                             <ChatBox orderInfo={orderInfo}></ChatBox>
 
-                            <Row className={"d-flex mt-3"}>
+                            <div className={"d-flex"}>
                                 <TextField
                                     className={"flex-grow-1 ml-3"}
                                     id="filled-basic"
@@ -201,6 +191,8 @@ function ModalOrder() {
                                     variant="filled"
                                     inputRef={commentTextRef}
                                 />
+
+
                                 <IconButton
                                     className={"mx-3"}
                                     color="primary"
@@ -208,9 +200,10 @@ function ModalOrder() {
                                     component="span"
                                     onClick={()=>{postComment(currentOrderId, commentTextRef.current.value).then(() => onOpenAppealCardModal({orderId: currentOrderId}));}}
                                 >
+
                                     <SendIcon />
                                 </IconButton>
-                            </Row>
+                            </div>
 
 
                         </div>

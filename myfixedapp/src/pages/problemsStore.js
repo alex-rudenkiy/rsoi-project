@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Image, Row } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
+import '../components/fix.css';
 import FormControl from "@material-ui/core/FormControl";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faVk, faTelegram, faDiscord } from '@fortawesome/free-brands-svg-icons'
@@ -119,14 +120,52 @@ function ProblemsStorePage() {
                 {/*<img className="card-img" src={templateImage} alt="Card image"/>*/}
                 <Blur img={imgUrl}
                     blurRadius={45} enableStyles style={{
-                        width: "89em",
+                        // width: "1364px",
                         height: "20em",
-                        position: "absolute",
-                        transform: "translate(-3em, -1em)",
+
                     }}>
                     The content.
                 </Blur>
+                <div className="card-img-overlay">
+                    <div className="pl-5" style={{    display: "flex",
+                        justifyContent: "space-around",
+                        alignItems: "center"}}>
+                        <div>
+                                <h2 className="font-weight-light text-left mb-0"
+                                    style={{ color: "white" }}>Заявление №{id}</h2>
 
+                            <div style={{     display: "flex"}}><p style={{ color: "white" }}>статус: &nbsp; </p>
+                                <p style={{ color: "#68a5ff", fontWeight: "bold" }}>на рассмотрении </p>
+                            </div>
+
+                            <div style={{ display: "flex"}}>
+                                <p style={{ color: "white" }}><ViewsIcon fontSize={'small'} />{comments?.length} &nbsp;
+                                    <MessageIcon fontSize={'small'} />{views.length}</p>
+                            </div>
+
+                            <div  style={{ display: "flex"}}>
+                                <p className={"text-break"}
+                                   style={{ textAlign: "justify", color: "white" }}>{description}</p>
+                            </div>
+
+
+                            <div className={"pr-5 mt-3"} style={{ display: "flex", color: "white" }}>
+                                <Button variant="btn btn-outline-primary btn-sm"
+                                        style={{ color: "white", paddingLeft: "2em", paddingRight: "2em" }}
+                                        onClick={() => bus.emit('openAppealCardModal', { orderId: id })}>Открыть</Button>
+                            </div>
+
+
+                        </div>
+                        <div>
+                            <Image style={{ maxWidth: "18em", maxHeight: "17em" }}
+                                   src={imgUrl}
+                                   fluid />
+                        </div>
+                    </div>
+                </div>
+
+{/*
                 <div className="card-img-overlay">
                     <div className="row pl-5">
                         <div className="col-8">
@@ -135,8 +174,8 @@ function ProblemsStorePage() {
                                     style={{ color: "white" }}>Заявление №{id}</h2>
                             </Row>
                             <Row>
-                                <p style={{ color: "white" }}>статус: &nbsp; </p><p
-                                    style={{ color: "#68a5ff", fontWeight: "bold" }}>на рассмотрении </p>
+                                <p style={{ color: "white" }}>статус: &nbsp; </p>
+                                <p style={{ color: "#68a5ff", fontWeight: "bold" }}>на рассмотрении </p>
                             </Row>
                             <Row>
                                 <p style={{ color: "white" }}><ViewsIcon fontSize={'small'} />{comments?.length} &nbsp;
@@ -162,6 +201,7 @@ function ProblemsStorePage() {
                         </div>
                     </div>
                 </div>
+*/}
             </div>
         </Container>
         );
