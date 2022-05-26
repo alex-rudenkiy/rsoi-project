@@ -11,9 +11,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./mailservice
+#     defaults:
+#       run:
+#         working-directory: ./mailservice
     steps:
       - uses: actions/checkout@v2
       
@@ -26,12 +26,12 @@ jobs:
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: Build with Maven
-        run: mvn clean package spring-boot:repackage
+        run: cd ./mailservice && mvn clean package spring-boot:repackage
 
-  dockercompose:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Build the stack
-        run: docker-compose up -d
-      - name: Test
-        run: docker run --network container:webapp-frontend appropriate/curl -s --retry 10 --retry-connrefused http://localhost:5000/
+#   dockercompose:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Build the stack
+#         run: docker-compose up -d
+#       - name: Test
+#         run: docker run --network container:webapp-frontend appropriate/curl -s --retry 10 --retry-connrefused http://localhost:5000/
