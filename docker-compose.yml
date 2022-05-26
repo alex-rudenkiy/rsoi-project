@@ -4,10 +4,7 @@ version: '3.7'
 
 networks:
   app-tier:
-  #  external: true
     driver: bridge
-    #external:
-    #  name: custom_network
     
 volumes:
   grails-volume:
@@ -15,124 +12,145 @@ volumes:
   postgres2:
 
 services:
-  s3:
-    image: minio/minio
-    ports:
-      - 9999:9999
-    volumes:
-      - ./storage/minio:/data
-    environment:
-      - MINIO_ROOT_USER=minio-root-user
-      - MINIO_ROOT_PASSWORD=minio-root-password
-    command: server --address 0.0.0.0:9999 /data
-    networks:
-      - app-tier
+  # s3:
+  #   image: minio/minio
+  #   ports:
+  #     - 9999:9999
+  #   volumes:
+  #     - ./storage/minio:/data
+  #   environment:
+  #     - MINIO_ROOT_USER=minio-root-user
+  #     - MINIO_ROOT_PASSWORD=minio-root-password
+  #   command: server --address 0.0.0.0:9999 /data
+  #   networks:
+  #     - app-tier
 
-  redis:
-    image: 'bitnami/redis:latest'
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-      - REDIS_PORT_NUMBER=7489
-    ports:
-      - 7489:7489
-    networks:
-      - app-tier
+  # redis:
+  #   image: 'bitnami/redis:latest'
+  #   environment:
+  #     - ALLOW_EMPTY_PASSWORD=yes
+  #     - REDIS_PORT_NUMBER=7489
+  #   ports:
+  #     - 8989:7489
+  #   networks:
+  #     - app-tier
 
-  mailService:
-    image: micro/mailservice
-    environment:
-      - API_GATEWAY_IP=api_gateway
-      - API_GATEWAY_PORT=8082
-      - EMAIL_SMTP_HOST=smtp.gmail.com
-      - EMAIL_SMTP_PORT=587
-      - EMAIL_USERNAME=alexrudenkiy2014@gmail.com
-      - EMAIL_PASSWORD=:)
-    build:
-      context: mailservice
-      dockerfile: Dockerfile
-    volumes:
-      - /data/springboot-docker-compose-app
-    ports:
-      - 8091:8091
-    networks:
-      - app-tier
+  # mailService:
+  #   image: micro/mailservice
+  #   environment:
+  #     - API_GATEWAY_IP=api_gateway
+  #     - API_GATEWAY_PORT=8082
+  #     - EMAIL_SMTP_HOST=smtp.gmail.com
+  #     - EMAIL_SMTP_PORT=587
+  #     - EMAIL_USERNAME=alexrudenkiy2014@gmail.com
+  #     - EMAIL_PASSWORD=Alise19992014
+  #   build:
+  #     context: mailservice
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - /data/springboot-docker-compose-app
+  #   ports:
+  #     - 8091:8091
+  #   networks:
+  #     - app-tier
 
-  reactFrontend:
-      image: micro/frontend
-      build:
-        context: myfixedapp
-        dockerfile: Dockerfile
-      volumes:
-        - '.:/app'
-        - '/app/node_modules'
-      ports:
-        - 8088:80
-      environment:
-        - CHOKIDAR_USEPOLLING=true
-        - REACT_APP_API_GATEWAY_IP=api_gateway
-        - REACT_APP_API_GATEWAY_PORT=8082
+  # reactFrontend:
+  #     image: micro/frontend
+  #     build:
+  #       context: myfixedapp
+  #       dockerfile: Dockerfile
+  #     volumes:
+  #       - '.:/app'
+  #       - '/app/node_modules'
+  #     ports:
+  #       - 8088:80
+  #     environment:
+  #       - CHOKIDAR_USEPOLLING=true
+  #       - REACT_APP_API_GATEWAY_IP=api_gateway
+  #       - REACT_APP_API_GATEWAY_PORT=8082
 
-      stdin_open: true
+  #     stdin_open: true
 
-  apiGateway:
-    image: micro/gateway
-    environment:
-      - redis_service_endPoint=redis
-      - redis_service_port=7489
-      - minio_service_endPoint=s3
-      - minio_service_port=9999
-      - frontend_service_url=8088
-      - gateway_port=8099
-      - appeals_service_url=http://appeals:8080
-      - users_service_url=http://users:8080
-      - email_service_url=http://mailService:8082
-    command: bash -c 'while !</dev/tcp/appeals/8080; do sleep 1; done; while !</dev/tcp/users/8080; do sleep 1; done; node apiGateway.js'
-    build:
-      context: api-gateway
-      dockerfile: Dockerfile
-    volumes:
-      - /data/springboot-docker-compose-app
-    ports:
-      - 8099:8099
-    networks:
-      - app-tier
-    depends_on:
-      - s3
-      - users
-      - appeals
+  # fileMicroservice:
+  #   image: micro/fileservice
+  #   environment:
+  #     - fileservice_port=19776
+  #     - minio_service_endPoint=s3
+  #     - minio_service_port=9999
+  #   build:
+  #     context: file-service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 19776:19776
+  #   networks:
+  #     - app-tier
+  #   depends_on:
+  #     - s3
+  #   restart: always
 
-  dbAppeals:
-    image: postgres:12.3
-    environment:
-      - POSTGRES_DB=database_appeal
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    volumes:
-      # - ./initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
-      - postgres1:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
-    networks:
-      - app-tier
+  # apiGateway:
+  #   image: micro/gateway
+  #   environment:
+  #     - redis_service_endPoint=redis
+  #     - redis_service_port=7489
+  #     - minio_service_endPoint=s3
+  #     - minio_service_port=9999
+  #     - frontend_service_url=8088
+  #     - gateway_port=8099
+  #     - appeals_service_url=http://appeals:8080
+  #     - users_service_url=http://users:8080
+  #     - email_service_url=http://mailService:8091
+  #     - file_service_internal_url=http://fileMicroservice:19776
+  #     - file_service_external_url=http://localhost:19776
+  #   command: bash -c 'while !</dev/tcp/appeals/8080; do sleep 1; done; while !</dev/tcp/users/8080; do sleep 1; done; node apiGateway.js'
+  #   build:
+  #     context: api-gateway
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - /data/springboot-docker-compose-app
+  #   ports:
+  #     - 8099:8099
+  #   networks:
+  #     - app-tier
+  #   depends_on:
+  #     - s3
+  #     - users
+  #     - appeals
+  #   restart: always
+
+  # dbAppeals:
+  #   image: postgres:12.3
+  #   environment:
+  #     - POSTGRES_DB=database_appeal
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #   volumes:
+  #     - postgres1:/var/lib/postgresql/data
+  #   ports:
+  #     - 8432:5432
+  #   networks:
+  #     - app-tier
+  #   restart: always
 
 
-  appeals:
-    image: micro/appeals
-    expose:
-      - 9990
-    ports:
-      - "9990:8080"
-    environment:
-      - DB_HOST=dbAppeals
-      - DB_PORT=5432
-      - DB_NAME=database_appeal
-    build:
-        context: appeals
-        dockerfile: Dockerfile
-    networks:
-      - app-tier
-    depends_on:
-      - dbAppeals
+  # appeals:
+  #   image: micro/appeals
+  #   expose:
+  #     - 9990
+  #   ports:
+  #     - "9990:8080"
+  #   environment:
+  #     - DB_HOST=dbAppeals
+  #     - DB_PORT=5432
+  #     - DB_NAME=database_appeal
+  #   build:
+  #       context: appeals
+  #       dockerfile: Dockerfile
+  #   networks:
+  #     - app-tier
+  #   depends_on:
+  #     - dbAppeals
+  #   restart: always
       
   dbUsers:
     image: postgres:12.3
@@ -141,10 +159,9 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     volumes:
-      # - ./initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
       - postgres2:/var/lib/postgresql/data
     ports:
-      - 5433:5432
+      - 8433:5432
     networks:
       - app-tier      
 
