@@ -25,9 +25,21 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-      - uses: webfactory/ssh-agent@v0.5.4
-        with:
-            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+#       - uses: webfactory/ssh-agent@v0.5.4
+#         with:
+#             ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Create SSH key
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_PRIVATE_KEY" > ../private.key
+          sudo chmod 600 ../private.key
+          echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+        shell: bash
+        env:
+          SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
+          SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
+          SSH_KEY_PATH: ${{ github.workspace }}/../private.key
+
             
       - name: Build with Maven
         working-directory: ./mailservice
