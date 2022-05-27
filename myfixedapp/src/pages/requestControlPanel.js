@@ -281,7 +281,9 @@ function RequestControlPanel() {
                                         value={1}
                                         label={`Приложения (${order && order?.attachments.length})`}
                                     />
+{/*
                                     <AntTab value={2} label="Документы (--)" />
+*/}
                                     <AntTab
                                         value={3}
                                         label={`Комментарии (${order && order?.comments.length})`}
