@@ -97,6 +97,8 @@ function LoginPage() {
                                 {/*<DividerWithText> или </DividerWithText>*/}
                                 </div>
 
+
+{/*
                                 <Row className="d-flex justify-content-center">
                                     <IconButton style={{width:"2.5em", height:"2.5em"}} color="primary" aria-label="add to shopping cart"
                                                 onClick={event =>  window.location.href=`${baseUrl}/oauth2/authorization/google`}
@@ -126,6 +128,8 @@ function LoginPage() {
                                         <Image src={okIcon} style={{width:"1.8em", height:"1.8em"}}/>
                                     </IconButton>
                                 </Row>
+*/}
+
 
 {/*                                <div className="pt-5" style={{display: "flex"}}>
                                     <FormControlLabel

@@ -72,6 +72,7 @@ function UserProfilePage() {
 
             getOrdersByOwnerId(currentPage, pageSize, userId).then((orders) => {
                 console.log("getOrdersByOwnerId ====> ", orders);
+                setCountOrders(orders.length);
                 setUserOrdersView(
                     orders.map((e) => (
                         <button
@@ -127,7 +128,6 @@ function UserProfilePage() {
         try {
             getCountOrdersByOwnerId().then(c => {
                 setPagesCount(Math.ceil(c / pageSize));
-                setCountOrders(c);
             })
 
         } catch (e) {}

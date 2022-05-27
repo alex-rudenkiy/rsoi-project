@@ -21,6 +21,7 @@ import {SelectableHorizontalGallery} from "../components/SelectableGallery";
 import useBackendApi from "../logic/BackendApiHook";
 import {useNavigate} from "react-router-dom";
 import useUrlStore from "../logic/UrlsStore";
+import {useBus} from "react-bus";
 
 const thumbsContainer = {
     display: 'flex',
@@ -55,6 +56,7 @@ const img = {
 
 
 function Previews(props) {
+    const bus = useBus();
 
     const [files, setFiles] = useState([]);
     const [thumbs, setThumbs] = useState([]);
@@ -67,6 +69,7 @@ function Previews(props) {
     const {getRootProps, getInputProps} = useDropzone({
         accept: 'image/*',
         onDrop: acceptedFiles => {
+            bus.emit('openToast', {msg: "Внимание! Подождите пока загрузятся картинки!", style: 'warning'});
             setFiles(acceptedFiles.map(
                     file => Object.assign(file, {
                             preview: URL.createObjectURL(file)
@@ -122,6 +125,7 @@ function Previews(props) {
             setFilesLinks(e.data.fileFakeName);
             console.log(e.data.fileFakeName);
             props.onUploaded(e.data.fileFakeName);
+
         })
 
 
@@ -309,6 +313,7 @@ function OrderingPage() {
             history(`/request/${result.data['id']}`);
         }
     };
+    const bus = useBus();
 
     return (
 
@@ -417,7 +422,10 @@ function OrderingPage() {
                         <h5 className="font-weight-light text-left"><ImageOutlinedIcon/> Приложения </h5>
 
 
-                        <Previews onUploaded={(links)=>setTextFieldsData({...textFieldsData, ...{"attachments": links}})}/>
+                        <Previews onUploaded={(links)=>{
+                            setTextFieldsData({...textFieldsData, ...{"attachments": links}});
+                            links && bus.emit('openToast', {msg: 'Успех. Картинки загружены. Можете отправлять обращение!', style: 'success'});
+                        }}/>
 
 
 

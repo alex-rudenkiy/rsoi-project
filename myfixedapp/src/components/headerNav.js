@@ -83,7 +83,7 @@ export default function HeaderNav(props) {
                             </Button>
                         </Link>
                     ) : (
-                        <div style={{display: "flex"}}>
+                        <div style={{display: "flex", justifyContent: "center"}}>
                             {/*
                             <Icon loading name='setting' />
 */}

@@ -388,6 +388,7 @@ function RequestControlPanel() {
                                                 label="Текст сообщения"
                                                 variant="filled"
                                                 inputRef={commentTextRef}
+                                                style={{width: "auto"}}
                                             />
                                             <IconButton
                                                 className={"mx-3"}
@@ -397,6 +398,7 @@ function RequestControlPanel() {
                                                 onClick={()=>{postComment(orderId, commentTextRef.current.value).then(() =>
                                                     onOpenAppealCardModal());
                                                 }}
+                                                style={{width: "auto"}}
                                             >
                                                 <SendIcon />
                                             </IconButton>

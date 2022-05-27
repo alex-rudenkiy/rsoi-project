@@ -59,6 +59,7 @@ function ProblemsStorePage() {
                             </p>
                         </Col>
 
+{/*
                         <PopupState variant="popover" popupId="demo-popup-menu" style={{ float: "right" }}>
                             {(popupState) => (
                                 <React.Fragment>
@@ -85,6 +86,7 @@ function ProblemsStorePage() {
                                 </React.Fragment>
                             )}
                         </PopupState>
+*/}
 
                     </Row>
                 </button>
