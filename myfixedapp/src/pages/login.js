@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {Button, Col, Image, Row} from 'react-bootstrap';
+import React, {useCallback, useEffect, useState} from "react";
+import {Image, Row} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
 import {AccountCircle} from "@material-ui/icons";
@@ -17,15 +17,12 @@ import 'video-react/dist/video-react.css'; // import css
 import HeaderNav from "../components/headerNav";
 import {Link} from "react-router-dom";
 import useBackendApi from "../logic/BackendApiHook";
-import {useBus} from "react-bus";
 import useUrlStore from "../logic/UrlsStore";
 
 
 function LoginPage() {
-    const { authentication, registration, fileUpload, getUserInfo, checkAuth } = useBackendApi();
+    const { authentication, checkAuth } = useBackendApi();
     const [ textFieldsData, settextFieldsData ] = useState({"remember":false});
-    const bus = useBus();
-
     const {getBackendUrl} = useUrlStore();
     const baseUrl = getBackendUrl();
 
@@ -33,14 +30,14 @@ function LoginPage() {
         checkAuth();
         // console.log('show');
         // bus.emit('show', true);
-    },[])
+    },[checkAuth])
 
-    const EmbedsPage = () => {
-        return (
-            null
 
-        )
-    }
+    const handleSubmit = useCallback((e) => {
+        console.log('handleSubmit');
+        e.preventDefault();
+    }, [])
+
 
     return (
         <div className="App">
@@ -77,7 +74,7 @@ function LoginPage() {
                                 <h2 className="font-weight-light" > Авторизация </h2>
 
                                 <div className="mt-5" >
-                                    <TextField id="input-with-icon-grid" label={<p><AccountCircle /> &nbsp; Почта/логин</p>} variant="filled" type = "text" fullWidth onChange={e=>{settextFieldsData({...textFieldsData,...{"loginOrMobile":e.target.value}})}}/>
+                                    <TextField id="input-with-icon-grid" label={<p><AccountCircle /> &nbsp; Логин</p>} variant="filled" type = "text" fullWidth onChange={e=>{settextFieldsData({...textFieldsData,...{"loginOrMobile":e.target.value}})}}/>
                                     <TextField id="input-with-icon-grid" label={<p><KeyIcon /> &nbsp; Пароль</p>} variant="filled" type="password" fullWidth onChange={e=>{settextFieldsData({...textFieldsData,...{"password":e.target.value}})}}/>
                                 </div>
 
@@ -147,15 +144,16 @@ function LoginPage() {
 
                                 </div>*/}
 
+                                <form onSubmit={(e)=>handleSubmit(e)}>
 
-                                <div class="d-flex bd-highlight mt-4">
+                                <div className="d-flex bd-highlight mt-4">
 
                                     <button type="button" className="btn btn-outline-primary p-2 w-100 bd-highlight" onClick={()=>authentication(textFieldsData)} style={{}}>Войти</button>
                                         {/*authentication(textFieldsData)*/}
 
                                     <Link to="/registration" style={{color:'inherit'}}><button type="button" className="btn btn-none p-2 flex-shrink-1 bd-highlight" style={{float:"right", color:"#a7a7a7"}}>зарегистрироваться</button></Link>
                                 </div>
-
+                                </form>
 
                             </div>
                         </div>

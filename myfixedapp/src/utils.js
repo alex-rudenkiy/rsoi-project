@@ -28,3 +28,25 @@ export function stringAvatar(name) {
     };
 }
 
+export function getStatusRusStr(status) {
+    let result = "неизвестно";
+
+    switch (status) {
+        case "closed":
+            result = "закрыто";
+            break;
+
+        case "check":
+            result = "на модерации";
+            break;
+
+        case "accepted":
+            result = "на рассмотрении";
+            break;
+
+        case "working":
+            result = "в работе";
+            break;
+    }
+    return result;
+}

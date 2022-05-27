@@ -33,4 +33,7 @@ class Appeal {
         categoris nullable: false
     }
 
+    static mapping = {
+        description    sqlType: 'longText'
+    }
 }

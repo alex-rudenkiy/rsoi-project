@@ -51,7 +51,10 @@ export function SelectableHorizontalGallery(props) {
     const classes = useStyles();
     const [selected, setSelected] = useState([]);
 
-    useEffect(() => {   props.onChange(selected);                     console.log(selected);},[selected])
+    useEffect(() => {
+        props.onChange(selected);
+        console.log(selected);
+        },[selected])
     
     return (
         <div className={classes.root}>

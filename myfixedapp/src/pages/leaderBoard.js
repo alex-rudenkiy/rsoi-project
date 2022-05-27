@@ -43,11 +43,21 @@ function LeaderBoardPage() {
     console.log(zvezdi);
 
     const {
-        getAllUsers,
+        getAllUsers, getUserInfo
     } = useBackendApi();
 
 
     const [users, setUsers] = useState();
+    const [currentUserInfo, setCurrentUserInfo] = useState({});
+
+    useEffect(() => {
+        getUserInfo().then(data => {
+            console.log('user info ==== ', data)
+            console.log('==============>> ', data.role?.name)
+            setCurrentUserInfo(data);
+        });
+
+    }, []);
 
     const updateUsers = useCallback(() => {
         getAllUsers().then(result => setUsers(result));
@@ -75,7 +85,7 @@ function LeaderBoardPage() {
                 <section className="container pb-5 pt-5 main-content pl-sm-5">
                     <div className="container pl-sm-5">
                         <Row>
-                            <h5 className="font-weight-light text-left">Общий рейтинг</h5>
+                            <h5 className="font-weight-light text-left">Общий список участников:</h5>
                         </Row>
 
                         <div className="list-group pt-3">
@@ -106,57 +116,60 @@ function LeaderBoardPage() {
                                                 </p>
                                             </Col>
 
-                                            <PopupState
-                                                variant="popover"
-                                                popupId="demo-popup-menu"
-                                                style={{ float: "right" }}
-                                            >
-                                                {(popupState) => (
-                                                    <React.Fragment>
-                                                        <IconButton
-                                                            aria-label="more"
-                                                            aria-controls="long-menu"
-                                                            aria-haspopup="true"
-                                                            style={{
-                                                                width: "1.5em",
-                                                                height: "1.5em",
-                                                                marginRight: "1em",
-                                                                marginTop: "0em",
-                                                            }}
-                                                            {...bindTrigger(popupState)}
-                                                        >
-                                                            <MoreVertIcon />
-                                                        </IconButton>
+                                            {currentUserInfo?.role?.name === "Moderator" &&
+                                                <PopupState
+                                                    variant="popover"
+                                                    popupId="demo-popup-menu"
+                                                    style={{float: "right"}}
+                                                >
+                                                    {(popupState) => (
+                                                        <React.Fragment>
+                                                            <IconButton
+                                                                aria-label="more"
+                                                                aria-controls="long-menu"
+                                                                aria-haspopup="true"
+                                                                style={{
+                                                                    width: "1.5em",
+                                                                    height: "1.5em",
+                                                                    marginRight: "1em",
+                                                                    marginTop: "0em",
+                                                                }}
+                                                                {...bindTrigger(popupState)}
+                                                            >
+                                                                <MoreVertIcon/>
+                                                            </IconButton>
 
-                                                        <Menu {...bindMenu(popupState)}>
-                                                            <MenuItem
-                                                                onClick={() => {
-                                                                    popupState.close();
-                                                                    history(`/settings/${u.id}`);
-                                                                }}
-                                                            >
-                                                                Редактировать
-                                                            </MenuItem>
-                                                            <MenuItem
-                                                                onClick={() => {
-                                                                    popupState.close();
-                                                                    bus.emit("openModal", { data: 456 });
-                                                                }}
-                                                            >
-                                                                Заблокировать пользователя
-                                                            </MenuItem>
-                                                            <MenuItem
-                                                                onClick={() => {
-                                                                    popupState.close();
-                                                                    bus.emit("openModal", { data: 789 });
-                                                                }}
-                                                            >
-                                                                Удалить пользователя
-                                                            </MenuItem>
-                                                        </Menu>
-                                                    </React.Fragment>
-                                                )}
-                                            </PopupState>
+                                                            <Menu {...bindMenu(popupState)}>
+                                                                <MenuItem
+                                                                    onClick={() => {
+                                                                        popupState.close();
+                                                                        history(`/settings/${u.id}`);
+                                                                    }}
+                                                                >
+                                                                    Редактировать
+                                                                </MenuItem>
+                                                                {/*<MenuItem
+                                                                    onClick={() => {
+                                                                        popupState.close();
+                                                                        bus.emit("openModal", {data: 456});
+                                                                    }}
+                                                                >
+                                                                    Заблокировать пользователя
+                                                                </MenuItem>
+                                                                <MenuItem
+                                                                    onClick={() => {
+                                                                        popupState.close();
+                                                                        bus.emit("openModal", {data: 789});
+                                                                    }}
+                                                                >
+                                                                    Удалить пользователя
+                                                                </MenuItem>*/}
+                                                            </Menu>
+                                                        </React.Fragment>
+                                                    )}
+                                                </PopupState>
+                                            }
+
                                         </Row>
                                     </button>
                                 ))}

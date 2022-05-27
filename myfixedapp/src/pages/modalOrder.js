@@ -31,7 +31,7 @@ import useUrlStore from "../logic/UrlsStore";
 import Button from "@material-ui/core/Button";
 
 function ModalOrder() {
-    const { getUserInfo, getOrderInfoById, postComment, deleteComment } = useBackendApi();
+    const { getUserInfo, getOrderInfoById, postComment, deleteComment, checkAuth } = useBackendApi();
     const [orderInfo, setOrderInfo] = useState();
     const [authorInfo, setAuthorInfo] = useState();
     const [commentText, setCommentText] = useState("");
@@ -183,27 +183,31 @@ function ModalOrder() {
 
                             <ChatBox orderInfo={orderInfo}></ChatBox>
 
-                            <div className={"d-flex"}>
-                                <TextField
-                                    className={"flex-grow-1 ml-3"}
-                                    id="filled-basic"
-                                    label="Текст сообщения"
-                                    variant="filled"
-                                    inputRef={commentTextRef}
-                                />
+                            {checkAuth() &&
+                                <div className={"d-flex"}>
+                                    <TextField
+                                        className={"flex-grow-1 ml-3"}
+                                        id="filled-basic"
+                                        label="Текст сообщения"
+                                        variant="filled"
+                                        inputRef={commentTextRef}
+                                    />
 
 
-                                <IconButton
-                                    className={"mx-3"}
-                                    color="primary"
-                                    aria-label="upload picture"
-                                    component="span"
-                                    onClick={()=>{postComment(currentOrderId, commentTextRef.current.value).then(() => onOpenAppealCardModal({orderId: currentOrderId}));}}
-                                >
+                                    <IconButton
+                                        className={"mx-3"}
+                                        color="primary"
+                                        aria-label="upload picture"
+                                        component="span"
+                                        onClick={() => {
+                                            postComment(currentOrderId, commentTextRef.current.value).then(() => onOpenAppealCardModal({orderId: currentOrderId}));
+                                        }}
+                                    >
 
-                                    <SendIcon />
-                                </IconButton>
-                            </div>
+                                        <SendIcon/>
+                                    </IconButton>
+                                </div>
+                            }
 
 
                         </div>

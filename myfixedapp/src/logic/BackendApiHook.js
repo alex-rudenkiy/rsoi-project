@@ -65,7 +65,7 @@ const useBackendApi = () => {
                 }
             }).catch(e => {
 
-            if (e && e.response && e.response.status == 424) {
+            if (e && e.response && e.response.status === 424) {
                 localStorage.setItem("token", e.response.data);
                 let token = getLocalToken();
                 if (token === null) {
@@ -74,6 +74,10 @@ const useBackendApi = () => {
                     history('/profile');
                 }
                 //console.log('unauthorized, logging out ...');
+            }else if (!e.response.data) {
+                bus.emit('openToast', {msg: 'Ошибка сервера.Сервер не доступен!', style: 'error'});
+            } else {
+                bus.emit('openToast', {msg: e.response.data.message, style: 'warning'});
             }
 
         })
@@ -111,26 +115,12 @@ const useBackendApi = () => {
         if (!validation.check()) {
             console.log();
             bus.emit('openToast', {msg: Object.entries(validation.errors.errors).map(([key, value]) => value[0]).join(', ')});
-
-            /*            toast({
-                                title: 'Внимание',
-                                description: < p >AppealCategory {
-                                    Object.entries(validation.errors.errors).map(([key, value]) => value[0]).join(', ')
-                                } < /p>,
-                                size: 'tiny',
-                                type: 'warning'
-                            },
-                            () => console.log('toast closed'),
-                            () => console.log('toast clicked'),
-                            () => console.log('toast dismissed')
-                        );*/
         }
 
         return validation.check();
     }
 
     const bus = useBus();
-
 
     async function registration(data, redirect) {
         const rules = {
@@ -219,12 +209,27 @@ const useBackendApi = () => {
         return jwt(getLocalToken()).id;
     }
 
+    async function checkTokenValidity() {
+        const t = getLocalToken();
+        if(t===null) return false;
+        console.log("t=", t);
+        try {
+            const r = (await axios.get(`${baseUrl}/token?jwt=${t}`)).data;
+            if (r.id === null) clearSession();
+            console.log(r);
+        } catch (e) {
+            clearSession();
+        }
+    }
 
     async function getUserInfo(id, redirect) {
+        await checkTokenValidity();
+
         let res;
 
         if (id === undefined || id === -1) {
             const t = getLocalToken();
+            if(t===null) return;
             console.log("t=", t);
             try {
                 const r = (await axios.get(`${baseUrl}/token?jwt=${t}`)).data;
@@ -256,39 +261,72 @@ const useBackendApi = () => {
         }
     }
 
+    function clearSession() {
+        localStorage.removeItem("token");
+    }
+
     function logout() {
         localStorage.removeItem("token");
         history('/login');
     }
 
     async function postOrder(data, temporal) {
-        let token;
-        if (temporal) {
-            token = await registration({
-                ...data,
-                ...{
-                    passwordHash: "",
-                    avatarFileFakeUrl: "",
-                    login: "",
-                    description: "",
-                    socialLink: [],
-                    temporal: true,
-                    enabled: false
-                }
-            });
-        } else {
-            token = getLocalToken();
+        console.log(data);
+        const rules = {
+            description: "required|min:10",
+            attachments: "required",
+            category: "required",
+            status: "required",
+            geoPosition: "required",
         }
 
-        const result = await axios.post(`${baseUrl}/appeal`, {
-            ...data,
-            ...{
-                ownerToken: token,
-                title: `${data.category}. ${data.geoPosition.fullname}`
+        console.log(data);
+        if (validAssert(data, rules)) {
+
+            let token;
+            console.log(data);
+            if (temporal) {
+                token = await registration({
+                    ...data,
+                    ...{
+                        passwordHash: "",
+                        avatarFileFakeUrl: "",
+                        login: "",
+                        description: "",
+                        socialLink: [],
+                        temporal: true,
+                        enabled: false
+                    }
+                });
+            } else {
+                token = getLocalToken();
             }
-        });
-        console.log(result);
-        return result;
+
+            let result = undefined;
+            try {
+                result = await axios.post(`${baseUrl}/appeal`, {
+                    ...data,
+                    ...{
+                        ownerToken: token,
+                        title: `${data.category}. ${data.geoPosition.fullname.display_name}`
+                    }
+                });
+                console.log(result);
+            }catch (error) {
+                if (error.response.status === 502) { // сработал retry механизм
+                    bus.emit('openToast', {msg: 'Уважаемый пользователь, в связи с повышенной нагрузкой на сервер ваше сообщение поставленно в очередь, со временем оно будет обязательно обработанно!', style: 'success'});
+                    history('/');
+                } else if (!error.response.data) {
+                    bus.emit('openToast', {msg: 'Ошибка сервера.Сервер не доступен!', style: 'error'});
+                } else {
+                    bus.emit('openToast', {msg: error.response.data.message, style: 'warning'});
+                }
+            }
+            return result;
+        }
+
+
+
     }
 
     async function patchOrder(data, appealId) {
@@ -325,7 +363,20 @@ const useBackendApi = () => {
                 token: token,
             }
         }
-        return axios.patch(`${baseUrl}/user/${id}`, data, cfg);
+
+        let result;
+        try {
+            result = (await axios.patch(`${baseUrl}/user/${id}`, data, cfg)).data;
+            bus.emit('openToast', {msg: "Изменения по идее должны быть сохранены!", style: 'success'});
+        }catch (error) {
+            if (!error.response.data) {
+                bus.emit('openToast', {msg: 'Ошибка сервера.Сервер не доступен!', style: 'error'});
+            } else {
+                bus.emit('openToast', {msg: error.response.data.message, style: 'warning'});
+            }
+        }
+
+        return result;
     }
 
     async function putCamMaskById(camid, maskFileFakeName) {
@@ -478,7 +529,7 @@ const useBackendApi = () => {
     async function updateUserPassword(data) {
         const cfg = {
             headers: {
-                token: await getLocalToken(),
+                token: getLocalToken(),
             }
         }
         const result = (await axios.put(`${baseUrl}/userPassword`, data, cfg));

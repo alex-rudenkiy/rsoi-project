@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import { BrowserRouter, Route, Routes} from "react-router-dom";
-import { Provider as BusProvider, useBus, useListener } from 'react-bus'
+import { Provider as BusProvider} from 'react-bus'
 import blue from "@material-ui/core/colors/blue";
 import WelcomePage from "./pages/welcome";
 import UserProfilePage from "./pages/userProfile";
@@ -17,6 +17,7 @@ import ProblemsStorePage from "./pages/problemsStore";
 import OrderingPage from "./pages/ordering";
 import SettingsPage from "./pages/settings";
 import LeaderBoardPage from "./pages/leaderBoard";
+import {ToastProvider} from "react-toast-notifications";
 
 
 const theme = createTheme({
@@ -31,7 +32,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>
         <BusProvider>
-
+            <ToastProvider>
             {/*<ApiContext.Provider>*/}
             <ThemeProvider theme={theme}>
                 {/*<ReactMessageBox/>*/}
@@ -75,6 +76,7 @@ root.render(
                 </BrowserRouter>
             </ThemeProvider>
             {/*</ApiContext.Provider>*/}
+            </ToastProvider>
         </BusProvider>
     </React.StrictMode>
 );

@@ -62,7 +62,7 @@ export function EditableOpenMap(props) {
     return (
         <div>
 
-            <MapContainer center={[50.5952, 36.5800]} zoom={13} scrollWheelZoom={true}>
+            <MapContainer center={[55.75196340001187, 37.62089011005137]} zoom={13} scrollWheelZoom={true}>
                 <TileLayer
                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

@@ -15,5 +15,7 @@ RUN npm install
 # копируем исходный код
 COPY . .
 
+RUN ls
+
 EXPOSE 8080
 CMD [ "node", "apiGateway.js" ]

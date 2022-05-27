@@ -10,27 +10,18 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Card from "react-bootstrap/Card";
 import {Icon, Step} from "semantic-ui-react";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemText from "@material-ui/core/ListItemText";
-import PopupState, {bindMenu, bindTrigger} from "material-ui-popup-state";
 import IconButton from "@material-ui/core/IconButton";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import Divider from "@material-ui/core/Divider";
 import TextField from "@material-ui/core/TextField";
 import SendIcon from "@material-ui/icons/Send";
 import HeaderNav from "../components/headerNav";
 import {useNavigate, useParams,} from "react-router-dom";
 import useBackendApi from "../logic/BackendApiHook";
-import {UserAvatar} from "../components/UserAvatar";
 import GalleryList from "../components/Gallery";
 import OrderTextBox from "../components/OrderTextBox";
 import DropdownSimple from "../components/DropdownSimple";
 import useUrlStore from "../logic/UrlsStore";
 import ChatBox from "../components/ChatBox";
+import {getStatusRusStr} from "../utils";
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -114,29 +105,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Statuses = ["closed", "check", "accepted", "working"];
-
-function getStatusRusStr(status) {
-    let result = "неизвестно";
-
-    switch (status) {
-        case "closed":
-            result = "закрыто";
-            break;
-
-        case "check":
-            result = "на модерации";
-            break;
-
-        case "accepted":
-            result = "на рассмотрении";
-            break;
-
-        case "working":
-            result = "в работе";
-            break;
-    }
-    return result;
-}
 
 function RequestControlPanel() {
     const history = useNavigate();
@@ -318,7 +286,9 @@ function RequestControlPanel() {
                                         value={3}
                                         label={`Комментарии (${order && order?.comments.length})`}
                                     />
-                                    <AntTab value={4} label="Действия" />
+                                    {(currentUserInfo?.role?.name === "Moderator" || currentUserInfo?.role?.name === "GovMan") &&
+                                        <AntTab value={4} label="Действия"/>
+                                    }
                                 </AntTabs>
                                 <Typography className={classes.padding} />
 

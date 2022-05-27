@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from "react";
-import {Button, Col, Image, Row} from 'react-bootstrap';
+import React, {useCallback, useEffect, useRef, useState} from "react";
+import {Button} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
 import * as _ from 'lodash';
 
 import TextField from "@material-ui/core/TextField";
-import {Reveal, Step} from 'semantic-ui-react'
+import {Reveal} from 'semantic-ui-react'
 import Paper from "@material-ui/core/Paper";
 import InputBase from "@material-ui/core/InputBase";
 import CallIcon from '@material-ui/icons/Call';
@@ -21,7 +21,6 @@ import {SelectableHorizontalGallery} from "../components/SelectableGallery";
 import useBackendApi from "../logic/BackendApiHook";
 import {useNavigate} from "react-router-dom";
 import useUrlStore from "../logic/UrlsStore";
-import {default as axios} from "axios";
 
 const thumbsContainer = {
     display: 'flex',
@@ -56,18 +55,11 @@ const img = {
 
 
 function Previews(props) {
-    const history = useNavigate();
 
     const [files, setFiles] = useState([]);
+    const [thumbs, setThumbs] = useState([]);
     const [filesLinks, setFilesLinks] = useState([]);
-    const {        authentication, registration, fileUpload,
-        getUserInfo, checkAuth, logout, postOrder,
-        getOrderInfoById, getOrdersByOwnerId,
-        getCountOrdersByOwnerId, postComment, getAllOrders,
-        getLastCreated, addNewCamera, getCameraInfoById,
-        putCamMaskById, updateCameraInfoById, deleteCameraById,
-        getAllAppealCategory
-    } = useBackendApi();
+
 
     const {getBackendUrl} = useUrlStore();
     const baseUrl = getBackendUrl();
@@ -76,25 +68,32 @@ function Previews(props) {
         accept: 'image/*',
         onDrop: acceptedFiles => {
             setFiles(acceptedFiles.map(
-                file => Object.assign(file, {
-                        preview: URL.createObjectURL(file)
-                    }
-                )
+                    file => Object.assign(file, {
+                            preview: URL.createObjectURL(file)
+                        }
+                    )
                 )
             );
         }
     });
 
-    const thumbs = files.map(file => (
-        <div style={thumb} key={file.name}>
-            <div style={thumbInner}>
-                <img
-                    src={file.preview}
-                    style={img}
-                />
+    useEffect(()=>{
+        setThumbs(files.map(file => (
+            <div style={thumb} key={file.name}>
+                <div style={thumbInner}>
+                    <img
+                        src={file.preview}
+                        style={img}
+                    />
+                </div>
             </div>
-        </div>
-    ));
+        )));
+    }, [files]);
+
+    useEffect(()=>{
+        console.log('');
+    }, [filesLinks])
+
 
     useEffect(() => {
         const axios = require('axios').default;
@@ -130,7 +129,7 @@ function Previews(props) {
             /*    for (const file of files) {
                     URL.revokeObjectURL(file.preview);
                 }*/
-    }, [files]);
+    }, [baseUrl, files]);
 
     return (
         <section className="container">
@@ -238,23 +237,23 @@ function OrderingPage() {
         getAllAppealCategory
     } = useBackendApi();
 
+    const descriptionTextBoxRef = useRef();
 
 
-    const [changedAddress, setChangedAddress] = useState("");
     const [registrationFieldShow, setRegistrationFieldShow] = useState(true);
     const [textFieldsData, setTextFieldsData] = useState({});
     const [selectableHorizontalGallery,setSelectableHorizontalGallery] = useState();
     const [tileData, setTileData] = useState({});
     const history = useNavigate();
 
-    const updateFieldsData = function (e, olddata, setter) {
+    const updateFieldsData = useCallback((e)=> {
         let s = "";
 
         s = _.map(e,'id').concat();
         console.log(textFieldsData);
         setTextFieldsData({...textFieldsData, ...{"category": s, "status": "opened"}});
         console.log("joined : ", s);
-    };
+    }, [textFieldsData]);
 
     useEffect(() => {
         getUserInfo().then(e => {
@@ -262,11 +261,11 @@ function OrderingPage() {
             e && setRegistrationFieldShow(!(e.id > 0));
 
         }).catch(
-            c => {
+            () => {
                 setRegistrationFieldShow(true)
             }
         );
-    }, []);
+    }, [getUserInfo]);
 
     useEffect(()=>{
         //setTileData(
@@ -280,26 +279,31 @@ function OrderingPage() {
                     author: c.mergedOrganization?.name
                 });
             });
-            setSelectableHorizontalGallery(<SelectableHorizontalGallery tileData={result} onChange={(t,d)=>updateFieldsData(t, textFieldsData, setTextFieldsData)}/>);
+            setSelectableHorizontalGallery(<SelectableHorizontalGallery tileData={result} onChange={(t)=>{
+                updateFieldsData(t);
+            }}/>);
 
         });
+    },[updateFieldsData]);
+
+
+    const onChangingAddress = useCallback((display_name, address, lat, lon)=>{
+        setTextFieldsData({...textFieldsData, ...{"geoPosition": {
+                    "fullname":display_name,
+                    "lat":lat,
+                    "lon":lon}}})
     },[textFieldsData]);
 
     useEffect(()=>{
-
-        setTextFieldsData({...textFieldsData, ...{"geoPosition": {
-            "fullname":changedAddress.display_name,
-                    "lat":changedAddress.lat,
-                    "lon":changedAddress.lon}}})
-
-    },[changedAddress]);
+        console.log(textFieldsData);
+    }, [textFieldsData]);
 
 
 
 
     let handleAgree = async () => {
         console.log("agree");
-        const result = await postOrder(textFieldsData, registrationFieldShow);
+        const result = await postOrder({ ...textFieldsData, ...{"description":descriptionTextBoxRef.current.value}}, registrationFieldShow);
         console.log(result);
         if (result != null) {
             history(`/request/${result.data['id']}`);
@@ -360,8 +364,7 @@ function OrderingPage() {
 
                             <div className="flex-fill">
 
-                                <h5 className="font-weight-light text-left"><EditOutlinedIcon/> Подробное описание
-                                    проблемы </h5>
+                                <h5 className="font-weight-light text-left"><EditOutlinedIcon/> Подробное описание проблемы </h5>
 
                                 <Paper className={"p-3"} style={{minHeight: "20em"}}>
 
@@ -369,7 +372,8 @@ function OrderingPage() {
                                         placeholder="Проблему описывать здесь"
                                         fullWidth
                                         multiline
-                                        onChange={(e)=>setTextFieldsData({...textFieldsData, ...{"description": e.target.value}})}
+                                        inputRef={descriptionTextBoxRef}
+                                        onClick={()=>{console.log(descriptionTextBoxRef.current.value)}}
                                     />
 
                                 </Paper>
@@ -382,11 +386,11 @@ function OrderingPage() {
                 <section className="pb-5 pt-5">
                     <div className="container pl-sm-5">
                         <h5 className="font-weight-light text-left"><ImageOutlinedIcon/> Местоположение недостатка </h5>
-                        <p className={'text-left'}>{changedAddress.display_name}</p>
+                        <p className={'text-left'}>{textFieldsData["geoPosition"]?.fullname?.display_name}</p>
 
                         <div data-content="The default theme's basic popup removes the pointing arrow."
                              data-variation="basic">
-                            <EditableOpenMap setChangedAddress={setChangedAddress}/>
+                            <EditableOpenMap setChangedAddress={onChangingAddress}/>
                         </div>
                         <Alert className={'mt-2 text-left'} variant={'warning'}>
                             <i className="exclamation icon"></i> Постарайтесь указать позицию происшествия как

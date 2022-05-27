@@ -64,8 +64,7 @@ function WelcomePage() {
                                         нарушение</Button>
                                 </Row>
                                 <Row className={"row pr-5"} style={{marginTop: "1em"}}>
-                                    <Button variant="btn btn-outline-primary w-100" onClick={handleClick2}>Проверить
-                                        статус заявления</Button>
+                                    <Button variant="btn btn-outline-primary w-100" onClick={handleClick2}>Проверить статус заявления</Button>
                                 </Row>
                             </Col>
 
@@ -78,7 +77,7 @@ function WelcomePage() {
 
 
 
-                <Footer></Footer>
+                <Footer/>
 
 
 

@@ -14,7 +14,6 @@ function ModalExampleModal() {
     const history = useNavigate();
     const [isOpen, setIsOpen] = React.useState(false)
     const [id, setId] = useState("");
-    const bus = useBus();
 
     const onOpenModal = React.useCallback(function (id) {
         // alert('clicked');
@@ -34,7 +33,7 @@ function ModalExampleModal() {
                 alert('К глубокому сожалению такого обращения не существует!');
             }
         })
-    }, []);
+    }, [getOrderInfoById, history]);
 
     return (
         <Modal

@@ -77,12 +77,12 @@ function SettingsPage() {
                                         className={"text-left"}
                                     />
 
-                                    <Menu.Item
+  {/*                                  <Menu.Item
                                         name="Безопасность"
                                         active={activeItem === "Безопасность"}
                                         onClick={handleItemClick}
                                         className={"text-left"}
-                                    />
+                                    />*/}
                                     <br />
                                     <Menu.Item
                                         name="Удалить аккаунт"
@@ -194,6 +194,29 @@ function SettingsPage() {
                                                 />
                                             </Col>
                                         </Form.Group>
+
+                                        {(userId === -1 || currentUserInfo?.role?.name === "Moderator") &&
+                                            <Form.Group as={Row} controlId="formPlaintextEmail">
+                                                <Form.Label column sm="2">
+                                                    Пароль
+                                                </Form.Label>
+
+                                                <Col sm="10">
+                                                    <Form.Control
+                                                        plaintext
+                                                        defaultValue={"*********"}
+                                                        style={{display: "flex", width: "16em"}}
+                                                        onChange={(e) =>
+                                                            setUserInfo({
+                                                                ...userInfo,
+                                                                ...{passwordHash: e.target.value},
+                                                            })
+                                                        }
+                                                    />
+                                                </Col>
+                                            </Form.Group>
+                                        }
+
 
                                         {currentUserInfo?.role?.name === "Moderator" &&
                                             <Form.Group as={Row} controlId="formPlaintextStatus">
@@ -334,7 +357,7 @@ function SettingsPage() {
                                             <Button
                                                 variant="contained"
                                                 disableElevation
-                                                onClick={() => deleteUser(userId)}
+                                                onClick={() => deleteUser(userId === -1 ? getUserIdByToken(): userId)}
                                             >
                                                 Да
                                             </Button>

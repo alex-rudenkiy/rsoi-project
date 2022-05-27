@@ -22,9 +22,12 @@ export default function HeaderNav(props) {
     } = useBackendApi();
 
     const [logoutShow, setLogoutShow] = useState(false);
+    const [userInfo, setUserInfo] = useState();
+
     useEffect(() => {
         getUserInfo().then((e) => {
             e && setLogoutShow(e.id > 0);
+            setUserInfo(e);
         });
     }, []);
 
@@ -47,21 +50,23 @@ export default function HeaderNav(props) {
                             Участники сообщества
                         </Link>
                     </Nav.Link>
-                    <Nav.Link>
-                        <Link to="/makeRequest" style={{ color: "inherit" }}>
-                            Создать обращение
-                        </Link>
-                    </Nav.Link>
+                    {
+                        userInfo && <Nav.Link>
+                            <Link to="/makeRequest" style={{ color: "inherit" }}>
+                                Создать обращение
+                            </Link>
+                        </Nav.Link>
+                    }
                     <Nav.Link>
                         <Link to="/archive" style={{ color: "inherit" }}>
                             Архив проблем
                         </Link>
                     </Nav.Link>
-                    <Nav.Link activeKey={false}>
+{/*                    <Nav.Link activeKey={false}>
                         <Link to="/smartcontrol" style={{ color: "inherit" }}>
                             Активный контроль
                         </Link>
-                    </Nav.Link>
+                    </Nav.Link>*/}
                     {/*<NavDropdown title="Помощь" id="basic-nav-dropdown">
                         <NavDropdown.Item href="#action/3.1"></NavDropdown.Item>
                         <NavDropdown.Item href="#action/3.2"></NavDropdown.Item>

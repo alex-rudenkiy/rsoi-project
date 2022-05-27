@@ -1,25 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import { Button, Col, Container, Image, Row } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
 import '../components/fix.css';
-import FormControl from "@material-ui/core/FormControl";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faVk, faTelegram, faDiscord } from '@fortawesome/free-brands-svg-icons'
-import { faMapMarker, faPhone } from "@fortawesome/free-solid-svg-icons";
-import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
-import { faAt } from "@fortawesome/free-solid-svg-icons";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import Input from "@material-ui/core/Input";
-import ViewsIcon from '@material-ui/icons/Visibility';
 import MessageIcon from '@material-ui/icons/Message';
 import Pagination from '@material-ui/lab/Pagination';
-import { ExampleModalMap } from '../components/ExempleModalMap.js';
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import IconButton from "@material-ui/core/IconButton";
-import { MDBContainer, MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter } from 'mdbreact';
 import { useBus } from 'react-bus'
-
+import TodayIcon from '@material-ui/icons/Today';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
@@ -27,10 +16,12 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import HeaderNav from "../components/headerNav";
 import ModalOrder from "./modalOrder";
 import useBackendApi from "../logic/BackendApiHook";
-import _ from "lodash";
-import Portal from '@material-ui/core/Portal';
 import { Footer } from "../components/footer";
 import useUrlStore from "../logic/UrlsStore";
+import moment from 'moment';
+import {getStatusRusStr} from "../utils";
+import Badge from "@material-ui/core/Badge";
+
 
 function ProblemsStorePage() {
     const {
@@ -41,7 +32,7 @@ function ProblemsStorePage() {
     // require('mdbreact');
 
     // require('react-responsive-carousel').Carousel;
-    var Blur = require('react-blur').default;
+    const Blur = require('react-blur').default;
     const [, setModalOrderId] = useState();
     const [liveMarkers, setLiveMarkers] = useState();
     const [topAppealBanner, setTopAppealBanner] = useState();
@@ -51,33 +42,20 @@ function ProblemsStorePage() {
 
     const {getBackendUrl} = useUrlStore();
     const baseUrl = getBackendUrl();
-    // useEffect(()=>{
-    //     console.log("zmq go");
-    //     // subber.js
-    //     var sock = zmq.socket('sub');
-    //
-    //     sock.connect('tcp://127.0.0.1:3000');
-    //     sock.subscribe('kitty cats');
-    //     console.log('Subscriber connected to port 3000');
-    //
-    //     sock.on('message', function(topic, message) {
-    //         console.log('received a message related to:', topic, 'containing message:', message);
-    //     });
-    //
-    // },[zmq]);
-    //modalOrderId
 
-    useEffect(() => {
+
+    const loadAllOrders = useCallback(()=>{
         getAllOrders(paginationParams.page, 10).then(o => {
             setPaginationParams({ ...paginationParams, ...{ count: o.total } });
-            setPageListOrders(o.content.map(e =>
-                <button type="button" className="list-group-item list-group-item-action" onClick={() => bus.emit('openAppealCardModal', { orderId: e.id })}>
+            setPageListOrders(o.map(e =>
+                <button key={e.id} type="button" className="list-group-item list-group-item-action" onClick={() => bus.emit('openAppealCardModal', { orderId: e.id })}>
                     <Row style={{ marginLeft: "1em" }}>
                         <Image style={{ maxWidth: "4em", maxHeight: "4em" }} src={e.attachments && `${baseUrl}/file/preview/${e.attachments[0]}`} fluid />
                         <Col>
                             <p className="text-left" style={{ marginBottom: "auto" }}>{e.title}</p>
                             <p className="text-left" style={{ color: "Silver", fontSize: "smaller" }}>
-                                <ViewsIcon fontSize={"small"} />{_.isEmpty(e.views) ? 0 : e.views.length} &nbsp; <MessageIcon fontSize={"small"} />{_.isEmpty(e.comments) ? 0 : e.comments.length}
+                                <TodayIcon fontSize={"small"} />{moment(e.createdAt).format("YYYY MMM DD HH:mm").toString()} &nbsp;
+                                <MessageIcon fontSize={"small"} />{e.comments.length}
                             </p>
                         </Col>
 
@@ -112,16 +90,23 @@ function ProblemsStorePage() {
                 </button>
             ));
         });
-    }, [paginationParams.page]);
+    
+    }, [baseUrl, bus, getAllOrders, paginationParams])
 
-    const createAppealBanner = (id, imgUrl, title, description, comments, views) => {
+    useEffect(()=>{
+        loadAllOrders();
+        },[]);
+
+
+    const createAppealBanner = (id, imgUrl, title, description, comments, views, createdAt, status) => {
         return (<Container style={{ height: "20em", overflow: "hidden" }}>
             <div className="card text-white">
                 {/*<img className="card-img" src={templateImage} alt="Card image"/>*/}
                 <Blur img={imgUrl}
                     blurRadius={45} enableStyles style={{
                         // width: "1364px",
-                        height: "20em",
+                        height: "20em",width: "100%",
+
 
                     }}>
                     The content.
@@ -135,17 +120,27 @@ function ProblemsStorePage() {
                                     style={{ color: "white" }}>Заявление №{id}</h2>
 
                             <div style={{     display: "flex"}}><p style={{ color: "white" }}>статус: &nbsp; </p>
-                                <p style={{ color: "#68a5ff", fontWeight: "bold" }}>на рассмотрении </p>
+                                <p style={{ color: "#68a5ff", fontWeight: "bold" }}>{status}</p>
                             </div>
 
                             <div style={{ display: "flex"}}>
-                                <p style={{ color: "white" }}><ViewsIcon fontSize={'small'} />{comments?.length} &nbsp;
-                                    <MessageIcon fontSize={'small'} />{views.length}</p>
+                                <p style={{ color: "white" }}>
+                                    <TodayIcon fontSize={"small"} />{moment(createdAt).format("YYYY MMM DD HH:mm").toString()} &nbsp;
+                                    <MessageIcon fontSize={'small'} />{views.length}
+                                </p>
                             </div>
 
                             <div  style={{ display: "flex"}}>
                                 <p className={"text-break"}
-                                   style={{ textAlign: "justify", color: "white" }}>{description}</p>
+                                   style={{ textAlign: "justify", color: "white",
+                                       overflow: "hidden",
+                                       textOverflow: "ellipsis",
+                                       display: "-webkit-box",
+                                       webkitLineClamp: "4",
+                                       webkitBoxOrient: "vertical",
+                                       maxWidth: "40em"
+
+                                   }}>{description}</p>
                             </div>
 
 
@@ -207,27 +202,43 @@ function ProblemsStorePage() {
         );
     };
 
-    useEffect(() => {
+
+    useEffect(()=>{
+        getLastCreated().then((c) => {
+            //alert(c.attachments[0]);
+            setTopAppealBanner(createAppealBanner(c.id, `${baseUrl}/file/preview/${c.attachments[0]}`, c.title, c.description, c.views, c.comments, c.createdAt, getStatusRusStr(c.status)));
+        });
+    },[]);
+
+    const updateMarkers = useCallback(()=>{
 
         getAllOrders().then(o => setLiveMarkers(o.map(e => {
             console.log(e); return <Marker position={[e.geoPosition.lat, e.geoPosition.lon]}
-                eventHandlers={{
-                    click: () => {
-                        console.log(e.id);
-                        setModalOrderId(e.id)
-                    },
-                }}>
-                <Popup>
+                                           eventHandlers={{
+                                               click: () => {
+                                                   console.log(e.id);
+                                                   setModalOrderId(e.id);
+                                                   bus.emit('openAppealCardModal', { orderId: e.id });
+                                               },
+                                           }}>
+                {/*<Popup>
                     A pretty CSS3 popup. <br /> Easily customizable.
-                </Popup>
+                </Popup>*/}
             </Marker>
         })));
-        getLastCreated().then((c) => {
-            //alert(c.attachments[0]);
-            setTopAppealBanner(createAppealBanner(c.id, `${baseUrl}/file/preview/${c.attachments[0]}`, c.title, c.description, c.views, c.comments));
-        });
+    },[]);
 
-    }, [])
+    useEffect(
+        () => {
+            console.log('markers updating');
+
+            let timer = setTimeout(() => {
+                updateMarkers();
+            }, 10000);
+        }
+    );
+
+
 
     return (
         <div className="App">
@@ -235,45 +246,50 @@ function ProblemsStorePage() {
             <ModalOrder />
 
 
-            <div>
-                <HeaderNav />
 
 
+            <header className="masthead">
+                <HeaderNav/>
+            </header>
+
+
+            <section className="container pb-5 pt-5 main-content pl-sm-5">
                 <section className="pb-0 pt-0">
 
                     {topAppealBanner}
 
                 </section>
 
-
-
                 <section className="pb-5 pt-2">
                     <div className="container pl-sm-5">
-                        <Row>
-                            <h5 className="font-weight-light text-left">Живая карта проблем <span
-                                className="badge badge-danger">онлайн</span></h5>
+                            <div style={{marginRight: "auto", marginTop: "1em"}}>
+                                <Badge color="secondary" badgeContent={"онлайн"}>
+                                    <h5 className="font-weight-light text-left">
+                                        Живая карта проблем
+                                    </h5>
+                                </Badge>
+                            </div>
 
-                        </Row>
 
-                        {/* <ExampleModalMap/> */}
+
+                         {/*<ExampleModalMap/> */}
 
                         <Container fluid style={{overflow: "hidden"}}>
-                  
-                        <MapContainer center={[50.5952, 36.5800]} zoom={13} className={"mt-4"} scrollWheelZoom={true}>
+
+                        <MapContainer center={[55.75196340001187, 37.62089011005137]} zoom={13} className={"mt-4"} scrollWheelZoom={true}>
                                 <TileLayer
-                                    attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                 />
-                                <Marker position={[50.5952, 36.5800]}>
+                                <Marker position={[55.75196340001187, 37.62089011005137]}>
                                     <Popup>
                                         A pretty CSS3 popup. <br /> Easily customizable.
                                     </Popup>
                                 </Marker>
-                                {liveMarkers}
+                            {liveMarkers}
                             </MapContainer>
                     </Container>
-                            
-                     
+
+
                     </div>
                 </section>
 
@@ -298,14 +314,11 @@ function ProblemsStorePage() {
                     </div>
 
                 </section>
+            </section>
+
+            <Footer/>
 
 
-                <Footer></Footer>
-
-
-
-
-            </div>
         </div>
     );
 }

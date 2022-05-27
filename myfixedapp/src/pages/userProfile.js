@@ -23,6 +23,8 @@ import useUrlStore from "../logic/UrlsStore";
 import {Footer} from "../components/footer";
 import {isNumber} from "lodash";
 import {useBus} from "react-bus";
+import TodayIcon from "@material-ui/icons/Today";
+import moment from "moment";
 // import "fomantic-ui-css/semantic.min.css";
 
 function UserProfilePage() {
@@ -44,6 +46,8 @@ function UserProfilePage() {
 
     const history = useNavigate();
 
+
+    const [currentUserInfo, setCurrentUserInfo] = useState();
     const [userInfo, setUserInfo] = useState();
     const [userOrdersView, setUserOrdersView] = useState(null);
 
@@ -59,6 +63,10 @@ function UserProfilePage() {
     console.log("userId", userId);
 
     useEffect(() => {
+        getUserInfo(undefined).then((uinfo)=>{
+            setCurrentUserInfo(uinfo)
+        })
+
         getUserInfo(userId === -1 ? undefined : userId).then((uinfo) => {
             setUserInfo(uinfo);
 
@@ -94,8 +102,8 @@ function UserProfilePage() {
                                         className="text-left"
                                         style={{ color: "Silver", fontSize: "smaller" }}
                                     >
-                                        <ViewsIcon fontSize={"small"} />
-                                        {e.views && e.views.length}&nbsp;
+                                        <TodayIcon fontSize={"small"} />
+                                        {moment(e.createdAt).format("YYYY MMM DD HH:mm").toString()} &nbsp;
                                         <MessageIcon fontSize={"small"} />
                                         {e.comments && e.comments.length}
                                     </p>
@@ -179,7 +187,7 @@ function UserProfilePage() {
                                     userInfo && userInfo.login
                                 }`}</h5>
 
-                                {userInfo?.role?.name === "Moderator" &&
+                                {currentUserInfo?.role?.name === "Moderator" &&
                                     <button className={"mini ui primary button my-1"}
                                             onClick={() => history(`/settings/${userId === -1 ? getUserIdByToken() : userId}`)}>Редактировать</button>
                                 }
@@ -192,7 +200,7 @@ function UserProfilePage() {
                     <div className="container pl-sm-5 text-left">
                         <p>Зафиксированые недостатки</p>
 
-                        {userOrdersView != null ? (
+                        {userOrdersView && userOrdersView.length > 0 ? (
                             <div className="list-group">
                                 {userOrdersView}
                                 <div className={"pt-4"} style={{ alignSelf: "center" }}>
