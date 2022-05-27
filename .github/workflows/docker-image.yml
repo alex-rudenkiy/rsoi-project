@@ -52,9 +52,9 @@ jobs:
 
 
             
-#       - name: Build with Maven
-#         working-directory: ./mailservice
-#         run: mvn clean package spring-boot:repackage
+      - name: Build with Maven
+        working-directory: ./mailservice
+        run: mvn clean package spring-boot:repackage
         
 
       - name: Build the stack
