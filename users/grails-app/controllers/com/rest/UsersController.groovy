@@ -1,6 +1,8 @@
 package com.rest
 
 import grails.validation.ValidationException
+import org.grails.datastore.mapping.query.Query.In
+
 import static org.springframework.http.HttpStatus.CREATED
 import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.NO_CONTENT
@@ -18,8 +20,9 @@ class UsersController {
     static responseFormats = ['json', 'xml']
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
-    def index(Integer max) {
+    def index(Integer max, Integer offset) {
         params.max = Math.min(max ?: 10, 100)
+        params.offset = offset
         respond usersService.list(params), model:[usersCount: usersService.count()]
     }
 
