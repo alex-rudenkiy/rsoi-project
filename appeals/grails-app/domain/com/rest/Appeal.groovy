@@ -34,6 +34,6 @@ class Appeal {
     }
 
     static mapping = {
-        description    sqlType: 'longText'
+        description    type: 'text'
     }
 }
