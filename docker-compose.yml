@@ -36,14 +36,14 @@ services:
       - app-tier
 
   mailService:
-    image: micro/mailservice
+    image: alexrudenkiy/rsoi-project:mailservice
     environment:
       - API_GATEWAY_IP=api_gateway
       - API_GATEWAY_PORT=8082
       - EMAIL_SMTP_HOST=smtp.gmail.com
-      - EMAIL_SMTP_PORT=587
+      - EMAIL_SMTP_PORT=465
       - EMAIL_USERNAME=alexrudenkiy2014@gmail.com
-      - EMAIL_PASSWORD=Alise19992014
+      - EMAIL_PASSWORD=:)
     build:
       context: mailservice
       dockerfile: Dockerfile
@@ -55,7 +55,7 @@ services:
       - app-tier
 
   reactFrontend:
-      image: micro/frontend
+      image: alexrudenkiy/rsoi-project:frontend
       build:
         context: myfixedapp
         dockerfile: Dockerfile
@@ -72,7 +72,7 @@ services:
       stdin_open: true
 
   fileMicroservice:
-    image: micro/fileservice
+    image: alexrudenkiy/rsoi-project:fileservice
     environment:
       - fileservice_port=19776
       - minio_service_endPoint=s3
@@ -89,7 +89,7 @@ services:
     restart: always
 
   apiGateway:
-    image: micro/gateway
+    image: alexrudenkiy/rsoi-project:gateway
     environment:
       - redis_service_endPoint=redis
       - redis_service_port=7489
@@ -134,7 +134,7 @@ services:
 
 
   appeals:
-    image: micro/appeals
+    image: alexrudenkiy/rsoi-project:appeals
     expose:
       - 9990
     ports:
@@ -166,7 +166,7 @@ services:
       - app-tier      
 
   users:
-    image: micro/users
+    image: alexrudenkiy/rsoi-project:users
     expose:
       - 9991
     ports:
