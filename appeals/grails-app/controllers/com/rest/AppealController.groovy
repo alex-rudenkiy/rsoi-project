@@ -20,8 +20,10 @@ class AppealController {
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
+        params.offset = offset
         respond appealService.list(params), model:[appealCount: appealService.count()]
     }
+
 
     def show(Long id) {
         respond appealService.get(id)

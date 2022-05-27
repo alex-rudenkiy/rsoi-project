@@ -47,7 +47,7 @@ function ProblemsStorePage() {
     const loadAllOrders = useCallback(()=>{
         getAllOrders(paginationParams.page, 10).then(o => {
             setPaginationParams({ ...paginationParams, ...{ count: o.total } });
-            setPageListOrders(o.map(e =>
+            setPageListOrders(o?.content.map(e =>
                 <button key={e.id} type="button" className="list-group-item list-group-item-action" onClick={() => bus.emit('openAppealCardModal', { orderId: e.id })}>
                     <Row style={{ marginLeft: "1em" }}>
                         <Image style={{ maxWidth: "4em", maxHeight: "4em" }} src={e.attachments && `${baseUrl}/file/preview/${e.attachments[0]}`} fluid />
@@ -100,16 +100,16 @@ function ProblemsStorePage() {
 
     const createAppealBanner = (id, imgUrl, title, description, comments, views, createdAt, status) => {
         return (<Container style={{ height: "20em", overflow: "hidden" }}>
-            <div className="card text-white">
+            <div className="card text-white" style={{backgroundColor: "rgb(0 0 0 / 34%)"}}>
                 {/*<img className="card-img" src={templateImage} alt="Card image"/>*/}
                 <Blur img={imgUrl}
                     blurRadius={45} enableStyles style={{
                         // width: "1364px",
-                        height: "20em",width: "100%",
+                        height: "20em",width: "100%"
 
 
                     }}>
-                    The content.
+                    {/*The content.*/}
                 </Blur>
                 <div className="card-img-overlay">
                     <div className="pl-5" style={{    display: "flex",
