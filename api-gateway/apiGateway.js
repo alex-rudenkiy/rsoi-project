@@ -21,8 +21,7 @@ var FormData = require('form-data');
 
 // const signer = require('node-signpdf')
 const PDFDocument = require('pdf-lib').PDFDocument
-
-
+const setFontAndSize = require('pdf-lib').setFontAndSize
 
 
 var redis = require('redis');
@@ -166,8 +165,48 @@ app.use(express.json())
 
 
 async function fillTemplate(fio, description, date) {
-    const pdfDoc = await PDFDocument.load(readFileSync("./pdfTemplateA.pdf"));
+    var fill_pdf = require('fill-pdf-utf8');
+    let fileFakeName = crypto.randomBytes(20).toString('hex')
+
+    let respromise = await new Promise((resolve, reject) => {
+
+        fill_pdf.generatePdf({fields:{
+                    "myfield1" : fio,
+                    "myfield2" : description,
+                    "myfield3" : date
+                }},
+            'pdfTemplateA.pdf',{fontSize: 12.0},
+            fileFakeName+'.pdf',function (error, stdout, stderr) {
+                if(error){
+                    reject(error);
+                }
+                resolve();
+            })
+
+    });
+
+    const pdfBytes = fs.readFileSync(fileFakeName+'.pdf');
+
+    //fs.writeFileSync(fileFakeName+'.pdf', pdfBytes);
+    console.log('PDF created!')
+
+    var metaData = {
+        'Content-Type': 'application/octet-stream',
+        'Mime-Type': 'application/pdf',
+        'X-Amz-Meta-Testing': 1234,
+        'example': 5678,
+    }
+
+    await minioClient.fPutObject('filespace', fileFakeName+'.pdf', fileFakeName+'.pdf', metaData);
+    console.log('File uploaded successfully.')
+    console.log(pdfBytes);
+
+
+
+
+    /*const pdfDoc = await PDFDocument.load(readFileSync("./pdfTemplateA.pdf"));
     const form = pdfDoc.getForm()
+
 
     const field1 = form.getTextField('myfield1')
     const field2 = form.getTextField('myfield2')
@@ -176,6 +215,7 @@ async function fillTemplate(fio, description, date) {
     field1.setText(fio)
     field2.setText(description)
     field3.setText(date)
+
 
 
     const pdfBytes = await pdfDoc.save()
@@ -193,7 +233,7 @@ async function fillTemplate(fio, description, date) {
 
     await minioClient.fPutObject('filespace', fileFakeName+'.pdf', fileFakeName+'.pdf', metaData);
     console.log('File uploaded successfully.')
-    console.log(pdfBytes);
+    console.log(pdfBytes);*/
 
     return fileFakeName+'.pdf';
 
@@ -686,7 +726,16 @@ app.route('/appeal/')
         var id = req.params.id;
 
         try {
+
             results = (await axios.get(services.appeals + "/appeal")).data
+
+            for (const res of results) {
+                res['author'] = (await axios.get(services.users + "/users/" + res.authorid)).data;
+                res.comments = _.sortBy(res.comments, 'id')
+                for (const c of res.comments)
+                    c.createdBy = (await axios.get(services.users + "/users/" + c.createdBy)).data;
+            }
+
             results = req.query.filter ? _.filter(results, JSON.parse(req.query.filter)) : results;
             for (const res of results) res.comments = _.sortBy(res.comments, 'id')
 
@@ -851,7 +900,7 @@ app.route('/moderator/appeal/:id')
             }
 
 
-
+            res.send(result);
         } catch (e) {
             console.log(e)
             res.status(440).send({
@@ -859,7 +908,7 @@ app.route('/moderator/appeal/:id')
             });
         }
 
-        res.send(result);
+
     })
 
 app.route('/moderator/comment/:id')
