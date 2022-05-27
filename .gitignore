@@ -10,7 +10,7 @@ lerna-debug.log*
 my-app
 SSRFrontend
 pythonFaceAnonymization
-
+VkParser
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
@@ -1247,3 +1247,4 @@ api-gateway/uploads/DSC_0183.JPG
 mailservice/src/main/java/com/bmstu/mailservice/MailConfig.java
 mailservice/src/main/java/com/bmstu/mailservice/MailserviceApplication.java
 mailservice/src/main/java/com/bmstu/mailservice/MailConfig.java
+mailservice/src/main/java/com/bmstu/mailservice/MailserviceApplication.java
