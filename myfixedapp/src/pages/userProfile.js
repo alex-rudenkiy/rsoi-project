@@ -204,11 +204,11 @@ function UserProfilePage() {
                             <div className="list-group">
                                 {userOrdersView}
                                 <div className={"pt-4"} style={{ alignSelf: "center" }}>
-                                    <Pagination
+{/*                                    <Pagination
                                         count={pagesCount}
                                         page={currentPage}
                                         onChange={(e, p) => setCurrentPage(p)}
-                                    />
+                                    />*/}
                                 </div>
                             </div>
                         ) : (

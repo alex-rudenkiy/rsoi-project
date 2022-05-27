@@ -175,7 +175,9 @@ function LeaderBoardPage() {
                                 ))}
 
                             <div className={"pt-4"} style={{ alignSelf: "center" }}>
-                                <Pagination count={10} page={0} />
+{/*
+                                <Pagination count={1} page={0} />
+*/}
                             </div>
                         </div>
                     </div>
