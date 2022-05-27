@@ -18,7 +18,7 @@ class AppealController {
     static responseFormats = ['json', 'xml']
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
-    def index(Integer max) {
+    def index(Integer max, Integer offset) {
         params.max = Math.min(max ?: 10, 100)
         params.offset = offset
         respond appealService.list(params), model:[appealCount: appealService.count()]
