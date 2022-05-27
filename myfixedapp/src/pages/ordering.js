@@ -290,8 +290,8 @@ function OrderingPage() {
     const onChangingAddress = useCallback((display_name, address, lat, lon)=>{
         setTextFieldsData({...textFieldsData, ...{"geoPosition": {
                     "fullname":display_name,
-                    "lat":lat,
-                    "lon":lon}}})
+                    "lat":display_name.lat,
+                    "lon":display_name.lon}}})
     },[textFieldsData]);
 
     useEffect(()=>{
