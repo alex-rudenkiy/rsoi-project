@@ -55,7 +55,7 @@ function Community(props) {
                 <header className="masthead">
 
 
-                    <HeaderNav/>
+                    <HeaderNav isAuth={props.isAuth}/>
 
 
 
