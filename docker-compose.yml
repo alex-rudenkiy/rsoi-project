@@ -60,8 +60,8 @@ services:
         context: SSRFrontend
         dockerfile: Dockerfile
       volumes:
-        - '.:/app'
-        - '/app/node_modules'
+        - ./backend/:/usr/src/app
+        - /usr/src/app/node_modules
       ports:
         - 8088:3000
       environment:
