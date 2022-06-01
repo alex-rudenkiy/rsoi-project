@@ -57,18 +57,17 @@ services:
   reactFrontend:
       image: alexrudenkiy/rsoi-project:frontend
       build:
-        context: myfixedapp
+        context: SSRFrontend
         dockerfile: Dockerfile
       volumes:
         - '.:/app'
         - '/app/node_modules'
       ports:
-        - 8088:80
+        - 8088:3000
       environment:
         - CHOKIDAR_USEPOLLING=true
         - REACT_APP_API_GATEWAY_IP=api_gateway
         - REACT_APP_API_GATEWAY_PORT=8082
-
       stdin_open: true
 
   fileMicroservice:
