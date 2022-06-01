@@ -14,7 +14,7 @@ import {useBus} from "react-bus";
 // import "fomantic-ui-css/semantic.min.css";
 import { useRouter } from 'next/router';
 import Image from "next/image";
-import {IUserProfilePage} from "../types";
+import {IUserProfilePage} from "../../../src/types";
 import {NextApiRequest, NextApiResponse} from "next";
 import {useSession} from "next-auth/react";
 import Illustration from "../../../public/resources/urban-681.svg";
