@@ -67,7 +67,6 @@ services:
       environment:
         - JWT_SECRET=qwertysecret
         - NEXTAUTH_URL=http://localhost:3008/api/auth/session
-        - JWT_SECRET=qwertysecret
       stdin_open: true
 
   fileMicroservice:
