@@ -219,9 +219,23 @@ export async function getServerSideProps({req}) {
     const {getUserInfoById} = useBackendApi();
 
     const session = await getSession({req});
-    const userInfo = await getUserInfoById(session.user?.id);
+
+    if(!session?.user?.id)
+        return {
+            redirect: {
+                permanent: false,
+                destination: "/login"
+            }
+        }
+
+    const userInfo = await getUserInfoById(session?.user?.id);
     const appealCategories = await getAllAppealCategory();
-    return {props: {appealCategories: appealCategories, isAuth: userInfo?.id >=0}}
+
+    const isAuth = userInfo?.id >=0;
+
+
+
+    return {props: {appealCategories: appealCategories, isAuth: isAuth}}
 }
 
 function LazyMap(onChangingAddress) {

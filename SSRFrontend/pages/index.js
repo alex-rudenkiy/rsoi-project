@@ -7,8 +7,8 @@ const { getUserInfoById } = useBackendApi();
 
 export async function getServerSideProps({ req }) {
     const session = await getSession({req});
-    const userInfo = (await getUserInfoById(session?.user?.id)) || undefined
-    return { props: { userInfo: userInfo, isAuth: session !== undefined } }
+    const authUserInfo = session?.user ? (await getUserInfoById(session.user?.id)) : null;
+    return { props: { userInfo: authUserInfo, isAuth: authUserInfo?.id >=0 } }
 }
 
 export default function App(props) {

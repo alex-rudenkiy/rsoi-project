@@ -29,7 +29,8 @@ export async function getServerSideProps(context) {
     const {req} = context;
 
     const session = await getSession({req});
-    const authUserInfo = await getUserInfoById(session.user?.id)
+
+    const authUserInfo = session?.user?.id ? await getUserInfoById(session.user?.id) : null;
 
     const allUsers = await getAllUsers();
 

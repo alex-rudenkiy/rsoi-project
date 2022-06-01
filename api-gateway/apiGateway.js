@@ -500,7 +500,8 @@ app.route('/token')
         console.log(userJWTToken);
         await redisClient.set(user.login, userJWTToken);
         console.log(await redisClient.get(user.login))
-        res.send(userJWTToken)
+        user['token'] = userJWTToken;
+        res.send(user)
     })
     .put(function (req, res) {
         res.send('Update the token');
