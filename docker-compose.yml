@@ -66,7 +66,8 @@ services:
         - 8088:3000
       environment:
         - JWT_SECRET=qwertysecret
-        - NEXTAUTH_URL=http://localhost:3008/api/auth/session
+        - NEXTAUTH_SECRET=qwertysecret
+        - NEXTAUTH_URL=http://reactFrontend:3000/api/auth/session
       stdin_open: true
 
   fileMicroservice:
