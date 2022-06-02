@@ -19,8 +19,9 @@ import ChatBox from "../src/components/ChatBox";
 import {format} from "date-fns";
 import useUrlStore from "../UrlsStore";
 import Button from "@material-ui/core/Button";
+import Link from "next/link";
 
-function MakeRequest() {
+function MakeRequest(props) {
     const { getUserInfo, getOrderInfoById, postComment, deleteComment, checkAuth } = useFrontendApi();
     const [orderInfo, setOrderInfo] = useState();
     const [authorInfo, setAuthorInfo] = useState();
@@ -56,39 +57,42 @@ function MakeRequest() {
                 <MDBModalHeader style={{ display: "content" }}>
                     <div style={{ display: "flex", width: "100%", alignItems: 'center' }}>
                         <h5 className="font-weight-light text-left flex-grow-1 mb-0">{`Заявка №${orderInfo?.id} (от ${orderInfo !== undefined ? format(new Date(orderInfo?.createdAt), 'dd.MM.yyyy') : ""})`}</h5>
-                        <PopupState
-                            variant="popover"
-                            popupId="demo-popup-menu"
-                            style={{ float: "right" }}
-                        >
-                            {(popupState) => (
-                                <React.Fragment>
-                                    <IconButton
-                                        aria-label="more"
-                                        aria-controls="long-menu"
-                                        aria-haspopup="true"
-                                        style={{
-                                            width: "1.5em",
-                                            height: "1.5em",
-                                            marginRight: "1em",
-                                        }}
-                                        {...bindTrigger(popupState)}
-                                    >
-                                        <MoreVertIcon />
-                                    </IconButton>
 
-                                    <Menu {...bindMenu(popupState)}>
-                                        <MenuItem onClick={popupState.close}>
-                                            Скачать сопутствующие документы
-                                        </MenuItem>
-                                        <MenuItem onClick={popupState.close}>
-                                            Редактировать
-                                        </MenuItem>
-                                        <MenuItem onClick={popupState.close}>Закрыть</MenuItem>
-                                    </Menu>
-                                </React.Fragment>
-                            )}
-                        </PopupState>
+                        {props.WithActions &&
+                            <PopupState
+                                variant="popover"
+                                popupId="demo-popup-menu"
+                                style={{float: "right"}}
+                            >
+                                {(popupState) => (
+                                    <React.Fragment>
+                                        <IconButton
+                                            aria-label="more"
+                                            aria-controls="long-menu"
+                                            aria-haspopup="true"
+                                            style={{
+                                                width: "1.5em",
+                                                height: "1.5em",
+                                                marginRight: "1em",
+                                            }}
+                                            {...bindTrigger(popupState)}
+                                        >
+                                            <MoreVertIcon/>
+                                        </IconButton>
+
+                                        <Menu {...bindMenu(popupState)}>
+                                            <MenuItem onClick={popupState.close}>
+                                                Скачать сопутствующие документы
+                                            </MenuItem>
+                                            <MenuItem onClick={popupState.close}>
+                                                Редактировать
+                                            </MenuItem>
+                                            <MenuItem onClick={popupState.close}>Закрыть</MenuItem>
+                                        </Menu>
+                                    </React.Fragment>
+                                )}
+                            </PopupState>
+                        }
                         <IconButton
                             aria-label="more"
                             aria-controls="long-menu"
@@ -124,17 +128,16 @@ function MakeRequest() {
                         <div style={{    paddingLeft: "1em"}} className="col-sm-4 pt-4 pl-4 pr-4 pb-4">
 
                             {
-                                orderInfo?.status === "closed" ? <Alert
+                                orderInfo?.status === "working" || orderInfo?.status === "done" ? <Alert
                                     className={"mb-3"}
-                                    severity="success"
+                                    severity={orderInfo?.status === "working"?"info":"success"}
                                     style={{ textAlign: "left", width: "100%" }}
                                 >
-                                    <AlertTitle>Объект ремонтируется</AlertTitle>
-                                    {/*                 Ремонтом объекта занимается волонтёрская команда{" "}
-                                <strong style={{ color: "#4e96ce" }}></strong>*/}
+                                    <AlertTitle>{
+                                        orderInfo?.status === "working"?
+                                            "Объект ремонтируется": "Объект отремантирован"}</AlertTitle>
                                 </Alert> : <></>
                             }
-
 
                             {orderInfo?.author &&
                                 <div className="ml-1" style={{display: "flex"}}>
@@ -173,10 +176,10 @@ function MakeRequest() {
 
 
 
-                            <ChatBox orderInfo={orderInfo}></ChatBox>
+                            <ChatBox orderInfo={orderInfo} withActions={props.isAuth}/>
 
 
-                            <div className={"d-flex"}>
+                            {props.isAuth&&<div className={"d-flex"}>
                                 <TextField
                                     className={"flex-grow-1 ml-3"}
                                     id="filled-basic"
@@ -198,7 +201,8 @@ function MakeRequest() {
 
                                     <SendIcon/>
                                 </IconButton>
-                            </div>
+                            </div>}
+
 
                         </div>
                     </div>
