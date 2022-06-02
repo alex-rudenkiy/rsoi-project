@@ -47,6 +47,10 @@ export function getStatusRusStr(status) {
         case "working":
             result = "в работе";
             break;
+
+        case "done":
+            result = "завершено";
+            break;
     }
     return result;
 }
