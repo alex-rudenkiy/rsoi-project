@@ -291,7 +291,7 @@ function ProblemsStorePage(props) {
     return (
         <div className="App">
 
-            <MakeRequest />
+            <MakeRequest isAuth={props.isAuth}/>
 
 
 
