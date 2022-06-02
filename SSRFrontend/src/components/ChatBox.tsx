@@ -59,45 +59,47 @@ function ChatBox(props:IChatBox) {
                             }
                         />
 
-                        <PopupState
-                            variant="popover"
-                            popupId="demo-popup-menu"
-                            style={{ float: "right" }}
-                        >
-                            {(popupState) => (
-                                <React.Fragment>
-                                    <IconButton
-                                        aria-label="more"
-                                        aria-controls="long-menu"
-                                        aria-haspopup="true"
-                                        style={{
-                                            width: "1.5em",
-                                            height: "1.5em",
-                                            marginRight: "1em",
-                                            marginTop: "0.5em",
-                                        }}
-                                        {...bindTrigger(popupState)}
-                                    >
-                                        <MoreVertIcon />
-                                    </IconButton>
-
-                                    <Menu {...bindMenu(popupState)}>
-                                        <MenuItem
-                                            onClick={() => {
-                                                deleteComment(e.id);
-                                                popupState.close();
-                                                props.onDelete();
+                        {props.withActions&&
+                            <PopupState
+                                variant="popover"
+                                popupId="demo-popup-menu"
+                                style={{ float: "right" }}
+                            >
+                                {(popupState) => (
+                                    <React.Fragment>
+                                        <IconButton
+                                            aria-label="more"
+                                            aria-controls="long-menu"
+                                            aria-haspopup="true"
+                                            style={{
+                                                width: "1.5em",
+                                                height: "1.5em",
+                                                marginRight: "1em",
+                                                marginTop: "0.5em",
                                             }}
+                                            {...bindTrigger(popupState)}
                                         >
-                                            Удалить сообщение
-                                        </MenuItem>
-                                        <MenuItem onClick={popupState.close}>
-                                            Заблокировать автора
-                                        </MenuItem>
-                                    </Menu>
-                                </React.Fragment>
-                            )}
-                        </PopupState>
+                                            <MoreVertIcon />
+                                        </IconButton>
+
+                                        <Menu {...bindMenu(popupState)}>
+                                            <MenuItem
+                                                onClick={() => {
+                                                    deleteComment(e.id);
+                                                    popupState.close();
+                                                    props.onDelete();
+                                                }}
+                                            >
+                                                Удалить сообщение
+                                            </MenuItem>
+                                            <MenuItem onClick={popupState.close}>
+                                                Заблокировать автора
+                                            </MenuItem>
+                                        </Menu>
+                                    </React.Fragment>
+                                )}
+                            </PopupState>}
+
                     </ListItem>
                     <Divider variant="inset" component="li" />
                 </>
