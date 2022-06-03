@@ -15,6 +15,15 @@ export async function getServerSideProps(context) {
     const session = await getSession({req});
     const authUserInfo = session?.user ? (await getUserInfoById(session.user?.id)) : null;
 
+    if(!(authUserInfo?.id>=0 || authUserInfo?.role == "gov" || authUserInfo?.role == 'admin')){
+        return {
+            redirect: {
+                destination: '/login',
+                permanent: false,
+            },
+        }
+    }
+
     const orderInfo = await getOrderInfoById(pid, session.user?.accessToken);
 
 
