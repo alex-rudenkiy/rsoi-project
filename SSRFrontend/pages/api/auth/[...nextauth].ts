@@ -36,7 +36,7 @@ export default NextAuth({
 
                 let authResponse: IAuthenticationResponse = await authentication(payload);
                 if (!authResponse.ok) {
-                    return null; //throw new Error("К сожалению пользователь с таким логином или паролем не существует!");
+                    throw new Error("К сожалению пользователь с таким логином или паролем не существует!");
                 }
 
                 const user: User = authResponse.user;
