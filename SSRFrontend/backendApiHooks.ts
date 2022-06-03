@@ -49,7 +49,9 @@ const useBackendApi = () => {
         console.log(data);
 
         try {
-            let result = await axios.post(`${baseUrl}/token`, data)
+            let result = await axios.post(`${baseUrl}/token`, data, {
+                // timeout: 3000
+            })
             if (result.status === 204 || result.data.token?.length < 5) {
                 // bus.emit('openToast', {msg: "К сожалению пользователь с таким логином или паролем не существует!"});
                 return ap;
@@ -60,7 +62,7 @@ const useBackendApi = () => {
             return ap;
 
         }catch (e) {
-            return ap;
+            return {...ap, ...{message: e.message}};
         }
     }
 
