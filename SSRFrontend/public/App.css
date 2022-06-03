@@ -10,9 +10,28 @@
   right:auto;
 }
 
+.modal {
+  height: auto;
+  top: auto;
+  left: auto;
+  bottom: auto;
+  right: auto;
+}
+
+.ui.modal.semanticModal{
+  height: auto;
+  top: auto;
+  left: auto;
+  bottom: auto;
+  right: auto;
+}
+
+/*.dimmed.dimmable > .ui.modals.dimmer.visible {
+  display: flex !important;
+}
 .modals.dimmer .ui.scrolling.modal:not([class*="overlay fullscreen"])::after{
   content: none;
-}
+}*/
 
 .modal-content{
   width: fit-content!important;
