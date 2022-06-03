@@ -1,29 +1,25 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useState} from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {AccountCircle} from "@material-ui/icons";
 import TextField from "@material-ui/core/TextField";
 import KeyIcon from '@material-ui/icons/VpnKey';
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-// import DividerWithText from "../components/DividerWithText";
 import Container from "@material-ui/core/Container";
-import 'video-react/dist/video-react.css'; // import css
+import 'video-react/dist/video-react.css';
 import HeaderNav from "../src/components/headerNav";
 import useUrlStore from "../UrlsStore";
-import useFrontendApi from "../frontendApiHooks";
 import Link from 'next/link'
-import { useSession, signIn, signOut } from "next-auth/react"
-import {IAuthenticationResponse, User} from "../backendApiHooks";
+import { signIn } from "next-auth/react"
 import {useRouter} from "next/router";
+import {useBus} from "react-bus";
 
 
 function LoginPage() {
-    const { authentication, checkAuth } = useFrontendApi();
     const [ textFieldsData, settextFieldsData ] = useState({"remember":false});
     const {getBackendUrl} = useUrlStore();
-    const baseUrl = getBackendUrl();
     const history = useRouter();
-
+    const bus = useBus();
 
 /*    useEffect(() => {
         checkAuth();
@@ -104,10 +100,8 @@ function LoginPage() {
                                         const res = await signIn('credentials', { redirect: false, callbackUrl: `${window.location.origin}`}, textFieldsData)
 
                                         if (res?.error) {
-                                            console.log(res.error);
-                                        }
-
-                                        if (res?.ok) history.push("profile");
+                                            bus.emit('openToast', {msg: res.error, style: 'info'});
+                                        }else if (res?.ok) history.push("profile");
 
 
 
