@@ -17,5 +17,9 @@ COPY . .
 
 RUN ls
 
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jre-headless && \
+    apt-get clean;
+
 EXPOSE 8080
 CMD [ "node", "apiGateway.js" ]
