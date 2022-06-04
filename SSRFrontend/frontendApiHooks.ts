@@ -241,14 +241,14 @@ const useFrontendApi = () => {
             console.log("t=", t);
             try {
                 const r = (await axios.get(`${baseUrl}/token?jwt=${t}`)).data;
-                if (r.id === null && redirect) history('/login')
+                if (r.id === null && redirect) history.push('/login')
                 console.log(r);
                 res = (await axios.get(`${baseUrl}/user/${r.id}`)).data;
                 console.log(res);
                 return res;
             } catch (e) {
                 if (redirect)
-                    history('/login');
+                    history.push('/login');
             }
 
             /*
@@ -339,6 +339,7 @@ const useFrontendApi = () => {
     }
 
     async function patchOrder(data, appealId) {
+        bus.emit('openToast', {msg: "Ожидайте сохранения!", style: 'info'});
         const cfg = {
             headers: {
                 token: getLocalToken(),
@@ -346,6 +347,8 @@ const useFrontendApi = () => {
         }
         const result = await axios.patch(`${baseUrl}/moderator/appeal/${appealId}`, data, cfg);
         console.log(result);
+        bus.emit('openToast', {msg: "Изменения по идее должны быть сохранены!", style: 'success'});
+
         return result;
     }
 
