@@ -8,6 +8,15 @@ const { getUserInfoById } = useBackendApi();
 
 export async function getServerSideProps({ req }) {
     const session = await getSession({req});
+    if(!session){
+        return {
+            redirect: {
+                destination: '/login',
+                permanent: false,
+            },
+        }
+    }
+
     const userInfo = await getUserInfoById(session.user?.id)
     return { props: { userInfo: userInfo, authUserInfo: userInfo, isAuth: userInfo?.id >=0 } }
 }

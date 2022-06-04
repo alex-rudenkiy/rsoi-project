@@ -36,7 +36,7 @@ const useBackendApi = () => {
         let res;
 
         try {
-            res = (await axios.get(`${baseUrl}/user`)).data;
+            res = (await axios.get(`${baseUrl}/user?min=100`)).data;
         } catch (e) {
             console.log('ERRRRORR!!');
         }

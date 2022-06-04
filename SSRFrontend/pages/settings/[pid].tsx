@@ -12,6 +12,15 @@ export async function getServerSideProps({ req }) {
     const { pid } = router.query
 
     const session = await getSession({req});
+    if(!session){
+        return {
+            redirect: {
+                destination: '/login',
+                permanent: false,
+            },
+        }
+    }
+
     const authUserInfo = await getUserInfoById(session.user?.id)
     const userInfo = await getUserInfoById(pid)
     return { props: { userInfo: userInfo, authUserInfo: authUserInfo, isAuth: userInfo?.id >=0 } }
