@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {Button, Col, Row} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -22,6 +22,7 @@ import DropdownSimple from "../../../src/components/DropdownSimple";
 import useUrlStore from "../../../UrlsStore";
 import ChatBox from "../../../src/components/ChatBox";
 import {getStatusRusStr} from "../../../utils";
+import {useBus} from "react-bus";
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -108,6 +109,7 @@ const Statuses = ["closed", "check", "accepted", "working", "done"];
 
 function RequestBase(props) {
     const history = useRouter();
+    const bus = useBus();
 
     const currentUserInfo = props.userInfo;
 
@@ -116,8 +118,6 @@ function RequestBase(props) {
     const {
         getOrderInfoById,
         patchOrder,
-        deleteComment,
-        getUserInfo,
         postComment
     } = useFrontendApi();
     const [order, setOrder] = React.useState(props.orderInfo);
@@ -131,6 +131,10 @@ function RequestBase(props) {
     const commentTextRef = useRef();
 
 
+    const loadAppeal = useCallback(async () => {
+        const orderInfo = await getOrderInfoById(order?.id, undefined);
+        setOrder(orderInfo);
+    },[])
 
     const onOpenAppealCardModal = React.useCallback(async function () {
         // alert('opened'+props.orderId);
@@ -425,7 +429,10 @@ function RequestBase(props) {
                                                                 patchOrder(
                                                                     {status: Statuses.at(data.value)},
                                                                     order.id //
-                                                                ).then((r) => console.log(r));
+                                                                ).then((r) => {
+                                                                    console.log(r);
+                                                                    loadAppeal();
+                                                                })
                                                             }}
                                                         />
                                                     </Col>
