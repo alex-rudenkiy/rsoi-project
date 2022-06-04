@@ -19,6 +19,16 @@ export async function getServerSideProps(context) {
     const {req} = context;
 
     const session = await getSession({req});
+
+    if(!session){
+        return {
+            redirect: {
+                destination: '/login',
+                permanent: false,
+            },
+        }
+    }
+
     const authUserInfo = session?.user ? (await getUserInfoById(session.user?.id)) : null;
     const userOrders = await getOrdersByOwnerId(0, 100, pid);
     return { props: { userInfo: authUserInfo, authUserInfo: authUserInfo, userOrders: userOrders, isAuth: authUserInfo?.id >=0 } }

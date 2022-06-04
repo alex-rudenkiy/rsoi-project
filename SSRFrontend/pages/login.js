@@ -101,7 +101,10 @@ function LoginPage() {
 
                                         if (res?.error) {
                                             bus.emit('openToast', {msg: res.error, style: 'info'});
-                                        }else if (res?.ok) history.push("profile");
+                                        }else if (res?.ok){
+                                            bus.emit('openToast', {msg: "Добро пожаловать!", style: 'success'});
+                                            history.push("profile");
+                                        }
 
 
 
